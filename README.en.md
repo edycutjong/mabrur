@@ -2,7 +2,7 @@
   <img src="docs/icon-animated.svg" alt="Mabrur icon" width="144" height="144">
   <h1>Mabrur 🕋</h1>
   <p><a href="README.md">Bahasa Indonesia</a> · <strong>English</strong></p>
-  <p><em>Dana jamaah adalah amanah, bukan modal kerja agen.<br/>Each pilgrim's prepaid rupiah is earmarked onchain, line by line, payable only to verified vendors, and refundable by anyone.</em></p>
+  <p><em>A pilgrim's money is held in trust, not the agency's working capital.<br/>Each pilgrim's prepaid rupiah is earmarked onchain, line by line, payable only to verified vendors, and refundable by anyone.</em></p>
   <img src="docs/readme-hero-animated.svg" alt="Mabrur: the agency's four attempts on Pak Ahmad's booking, three rejected, one paid; Ibu Siti refunded" width="100%">
 
   <br/>
@@ -51,9 +51,9 @@ you can open on Arbiscan, decoded by name. See [DEMO.md](DEMO.md) for the full l
 Umrah is prepaid, often months ahead, to a licensed travel agency (PPIU). When an agency treats that money as working
 capital, new pilgrims pay for earlier pilgrims' trips until it collapses:
 
-- **First Travel:** 63,310 prospective jamaah, Rp 905 miliar lost ([Kompas, 5 Jan 2023](https://megapolitan.kompas.com/read/2023/01/05/15482901/aset-first-travel-dirampas-negara-mahkamah-agung-putuskan-dikembalikan-ke)); new sign-ups funded earlier departures ([detik, 24 Jul 2017](https://finance.detik.com/moneter/d-3571069/first-travel-diduga-pakai-skema-ponzi-apa-itu)).
-- **Abu Tours:** 86,720 jamaah, an estimated Rp 1,8 triliun ([Kompas, 29 Jan 2019](https://regional.kompas.com/read/2019/01/29/13221841/5-fakta-vonis-20-tahun-bos-abu-tour-tipu-86720-jemaah-umrah-hingga-30-kali?page=all)).
-- **Scale:** about 1,4 juta jamaah departed through PPIU in 2024 (SISKOPATUH data as reported by [HIMPUH, 18 Feb 2025](https://himpuh.or.id/blog/detail/2307/himpuh-400-ribu-jemaah-indonesia-berangkat-umrah-tidak-lewat-ppiu-di-tahun-2024); secondary source).
+- **First Travel:** 63,310 prospective pilgrims, IDR 905 billion lost ([Kompas, 5 Jan 2023](https://megapolitan.kompas.com/read/2023/01/05/15482901/aset-first-travel-dirampas-negara-mahkamah-agung-putuskan-dikembalikan-ke)); new sign-ups funded earlier departures ([detik, 24 Jul 2017](https://finance.detik.com/moneter/d-3571069/first-travel-diduga-pakai-skema-ponzi-apa-itu)).
+- **Abu Tours:** 86,720 pilgrims, an estimated IDR 1.8 trillion ([Kompas, 29 Jan 2019](https://regional.kompas.com/read/2019/01/29/13221841/5-fakta-vonis-20-tahun-bos-abu-tour-tipu-86720-jemaah-umrah-hingga-30-kali?page=all)).
+- **Scale:** about 1.4 million pilgrims departed through licensed agencies (PPIU) in 2024 (SISKOPATUH data as reported by [HIMPUH, 18 Feb 2025](https://himpuh.or.id/blog/detail/2307/himpuh-400-ribu-jemaah-indonesia-berangkat-umrah-tidak-lewat-ppiu-di-tahun-2024); secondary source).
 
 **Mabrur** makes the pilgrim's prepayment a **real-world asset she holds**: a non-transferable claim on a licensed
 service (`mUMRAH`), split into FLIGHT · HOTEL · VISA · MARGIN lines. The agency can move money only one way.
@@ -62,7 +62,7 @@ service (`mUMRAH`), split into FLIGHT · HOTEL · VISA · MARGIN lines. The agen
 - 🧾 **Per-pilgrim earmarks:** one EIP-2612 permit signature plus `book()` wraps her rupiah into her own booking. `_update` blocks every transfer, so one pilgrim's money can never pay for another's trip ([`MabrurPBM.sol:241`](packages/foundry/contracts/MabrurPBM.sol#L241)).
 - ✍️ **Nobody chooses the payee:** `spend()` pays the **EIP-712 invoice signer**, and only if that signer holds a valid AIRLINE / HOTEL / VISA claim in the [`ClaimRegistry`](packages/foundry/contracts/ClaimRegistry.sol). There is no address field for the agency to type its director into ([`MabrurPBM.sol:162`](packages/foundry/contracts/MabrurPBM.sol#L162)).
 - 🛫 **Fee after departure:** the agency's MARGIN (capped at 20 %) unlocks only on a `Departure` signature from the pilgrim, or from the licensed airline paid from her FLIGHT line ([`MabrurPBM.sol:197`](packages/foundry/contracts/MabrurPBM.sol#L197)).
-- 🎫 **"Tiket lunas atau sisa dana kembali":** if no full ticket is paid by the pilgrim-signed `ticketBy` date, or once `departBy` passes, **anyone** (a neighbour, an NGO, the regulator) can call `refund()` and every unspent rupiah returns to her ([`MabrurPBM.sol:218`](packages/foundry/contracts/MabrurPBM.sol#L218)). `book` also rejects a departure date more than 180 days out.
+- 🎫 **"Tiket lunas atau sisa dana kembali" (a paid ticket, or the rest of the money back):** if no full ticket is paid by the pilgrim-signed `ticketBy` date, or once `departBy` passes, **anyone** (a neighbour, an NGO, the regulator) can call `refund()` and every unspent rupiah returns to her ([`MabrurPBM.sol:218`](packages/foundry/contracts/MabrurPBM.sol#L218)). `book` also rejects a departure date more than 180 days out.
 - 🏛️ **Live regulator view:** `regulatorView(agency)` (open bookings, liabilities from an independent deposited − paid-out ledger, earmarked) and `conservation()` show that outstanding prepayments are backed by rupiah held in the contract.
 - 🔑 **No override key:** no owner, pause or upgrade path touches balances. The registry owner (the regulator key, never the agency) only decides who counts as a vendor.
 
@@ -120,7 +120,7 @@ Rp 32.000.000 package.
 **For judges, no install:** open **[mabrur.edycu.dev](https://mabrur.edycu.dev)** (or go straight to
 [/judge](https://mabrur.edycu.dev/judge)). Reads work with no wallet.
 - `/app/jamaah`: look up a booking by pilgrim address or id and see each line's state from chain.
-- `/app/agen`: load a signed invoice (paste or file), press **Simulasi saja**, and get the decoded verdict from Arbitrum One without a wallet. The regulator panel is on the right.
+- `/app/agen`: load a signed invoice (paste or file), press **Simulate only**, and get the decoded verdict from Arbitrum One without a wallet. The regulator panel is on the right.
 - `/app/vendor`: sign an `Invoice` with a burner key and paste it into the console.
 
 **Run it yourself:**
