@@ -75,6 +75,9 @@ b, strong { font-weight: 600; }
 .en-line { color: var(--muted); font: 300 .5em/1.5 var(--font-body); display: block; letter-spacing: 0; }
 .t-en { display: none; }
 html.lang-en .t-en { display: revert; } html.lang-en .t-id { display: none; }
+/* EN mode: the English line becomes the heading / answer itself, not a muted subtitle */
+html.lang-en .en-line { font: inherit; color: inherit; letter-spacing: inherit; margin: 0; }
+html.lang-en .faq .ans .en-line { font-size: inherit; color: inherit; }
 h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.06; margin: 0; text-wrap: balance; font-variant-numeric: lining-nums; }
 h2 { font-size: clamp(34px, 4.1vw, 52px); letter-spacing: -.025em; }
 h2 .en-line { font-size: 17px; margin-top: 14px; }
@@ -454,15 +457,15 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
   <div class="wrap">
     <a class="brand" href="#top" aria-label="Mabrur, ke atas"><img src="/landing/assets/icon.svg" alt="" width="34" height="34">Mabrur</a>
     <nav class="nav-links" aria-label="Bagian halaman">
-      <a href="#masalah">Masalah</a>
-      <a href="#bukti">Bukti onchain</a>
-      <a href="#cara-kerja">Cara kerja</a>
-      <a href="#dampak">Dampak</a>
+      <a href="#masalah"><span class="t-id">Masalah</span><span class="t-en">Problem</span></a>
+      <a href="#bukti"><span class="t-id">Bukti onchain</span><span class="t-en">Onchain proof</span></a>
+      <a href="#cara-kerja"><span class="t-id">Cara kerja</span><span class="t-en">How it works</span></a>
+      <a href="#dampak"><span class="t-id">Dampak</span><span class="t-en">Impact</span></a>
       <a href="#faq">FAQ</a>
       <a href="/pitch">Pitch deck</a>
     </nav>
     <button class="lang" type="button" id="lang" aria-label="ID EN · Ganti bahasa / switch language"><span aria-current="true" data-l="id">ID</span> <span data-l="en">EN</span></button>
-    <a class="btn small primary" href="/app/jamaah">Buka aplikasi</a>
+    <a class="btn small primary" href="/app/jamaah"><span class="t-id">Buka aplikasi</span><span class="t-en">Open the app</span></a>
   </div>
 </header>
 
@@ -471,8 +474,7 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
 <section class="hero" id="top">
   <div class="wrap hero-grid">
     <div class="stagger">
-      <h1>Uang umrah Pak Ahmad hanya mau <em>berangkat bersamanya.</em></h1>
-      <span class="en-line">Pak Ahmad’s umrah money only departs with him.</span>
+      <h1><span class="t-id">Uang umrah Pak Ahmad hanya mau <em>berangkat bersamanya.</em></span><span class="t-en">Pak Ahmad’s umrah money only <em>departs with him.</em></span></h1>
       <div class="mini-slip" aria-hidden="true">
         <div class="label">Kuitansi amanah · Pak Ahmad</div>
         <div class="line refused"><div class="what"><b>Hotel</b><small class="mono">faktur Ibu Siti</small></div><div class="amt">Rp 9.000.000</div><span class="stamp no" style="--rot:-7deg;--d:.9s">Ditolak<small>EarmarkMismatch</small></span></div>
@@ -489,8 +491,8 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
       </div>
       <div class="sublinks">
         <a href="https://github.com/edycutjong/mabrur">GitHub · edycutjong/mabrur</a>
-        <a href="https://github.com/edycutjong/mabrur/blob/main/DEMO.md">DEMO.md · setiap langkah di Arbiscan</a>
-        <a href="https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code" class="arr-ext">Kontrak terverifikasi</a>
+        <a href="https://github.com/edycutjong/mabrur/blob/main/DEMO.md"><span class="t-id">DEMO.md · setiap langkah di Arbiscan</span><span class="t-en">DEMO.md · every step on Arbiscan</span></a>
+        <a href="https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code" class="arr-ext"><span class="t-id">Kontrak terverifikasi</span><span class="t-en">Verified contract</span></a>
         <a href="/pitch">Pitch deck</a>
       </div>
     </div>
@@ -585,7 +587,7 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
   <div class="wrap problem-grid">
     <div>
       <div class="sec-head" style="margin-bottom:0">
-        <h2>Uang jamaah baru membayar keberangkatan jamaah lama.<span class="en-line">New pilgrims’ money paid for old pilgrims’ trips, until it collapsed.</span></h2>
+        <h2><span class="t-id">Uang jamaah baru membayar keberangkatan jamaah lama.</span><span class="en-line t-en">New pilgrims’ money paid for old pilgrims’ trips, until it collapsed.</span></h2>
         <p class="lede t-id">Umrah dibayar di muka, berbulan-bulan sebelum berangkat, kepada biro perjalanan berizin (PPIU). Ketika agen memperlakukan setoran itu sebagai modal kerja, setiap jamaah baru menambal lubang jamaah sebelumnya, sampai semuanya runtuh.</p>
         <p class="lede t-en">Umrah is paid up front, months before departure, to a licensed travel agency (PPIU). When the agency treats deposits as working capital, each new pilgrim plugs the previous one’s hole, until the whole thing collapses.</p>
       </div>
@@ -666,7 +668,7 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
 <section class="demo" id="bukti">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Agen mencoba. Kontrak memutuskan. Capnya mendarat di baris yang tepat.<span class="en-line">The agency tries. The contract decides. The stamp lands on the exact line.</span></h2>
+      <h2><span class="t-id">Agen mencoba. Kontrak memutuskan. Capnya mendarat di baris yang tepat.</span><span class="en-line t-en">The agency tries. The contract decides. The stamp lands on the exact line.</span></h2>
       <p class="lede t-id">Tangkapan layar di bawah diambil dari aplikasi yang sedang berjalan di <b>mabrur.edycu.dev</b>, membaca Arbitrum One langsung. Tidak ada mode mock: setiap cap adalah keputusan kontrak.</p>
       <p class="lede t-en">The screens below were captured from the live app at <b>mabrur.edycu.dev</b>, reading Arbitrum One directly. There is no mock mode: every stamp is the contract’s verdict.</p>
     </div>
@@ -730,7 +732,7 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
 <section id="cara-kerja">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Agen hanya punya satu jalan untuk memindahkan uang.<span class="en-line">The agency has exactly one way to move money.</span></h2>
+      <h2><span class="t-id">Agen hanya punya satu jalan untuk memindahkan uang.</span><span class="en-line t-en">The agency has exactly one way to move money.</span></h2>
     </div>
     <div class="bento">
       <article class="card a rise">
@@ -786,7 +788,7 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
   <div class="wrap">
     <div class="sec-head">
       <div class="label tag">Use case RWA · Aset dunia nyata</div>
-      <h2>Asetnya adalah hak jamaah atas layanan berizin.<span class="en-line">The asset is the pilgrim’s claim on licensed services.</span></h2>
+      <h2><span class="t-id">Asetnya adalah hak jamaah atas layanan berizin.</span><span class="en-line t-en">The asset is the pilgrim’s claim on licensed services.</span></h2>
       <p class="lede t-id">Uang muka umrah adalah aktivitas ekonomi nyata yang sudah berjalan setiap hari. Mabrur menjadikannya <b>klaim yang dipegang jamaah sendiri</b> (<span class="mono">mUMRAH</span>), dipecah per pos dan hanya bisa ditebus oleh pelaku nyata yang memegang izin.</p>
       <p class="lede t-en">Umrah prepayment is real economic activity that already happens every day. Mabrur turns it into <b>a claim the pilgrim holds herself</b> (<span class="mono">mUMRAH</span>), split per line and redeemable only by real, licensed actors.</p>
     </div>
@@ -817,7 +819,7 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
 <section id="dampak">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Mengunci uang satu jamaah, dari pesan sampai berangkat: Rp 809.<span class="en-line">Guarding one pilgrim’s money, from booking to departure: Rp 809.</span></h2>
+      <h2><span class="t-id">Mengunci uang satu jamaah, dari pesan sampai berangkat: Rp 809.</span><span class="en-line t-en">Guarding one pilgrim’s money, from booking to departure: Rp 809.</span></h2>
     </div>
     <div class="impact-grid">
       <div class="costslip rise">
@@ -856,7 +858,7 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
 <section id="adopsi" style="padding-top:24px">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Kontraknya sudah jalan. Yang belum ada: rupiah berizin dan mandat.<span class="en-line">The contract runs today. Still missing: a licensed rupiah and a mandate.</span></h2>
+      <h2><span class="t-id">Kontraknya sudah jalan. Yang belum ada: rupiah berizin dan mandat.</span><span class="en-line t-en">The contract runs today. Still missing: a licensed rupiah and a mandate.</span></h2>
     </div>
     <div class="road">
       <article class="card now rise">
@@ -882,7 +884,7 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
 <section id="jujur" style="padding-top:40px">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Yang tidak dijanjikan Mabrur, tertulis di README.<span class="en-line">What Mabrur does not promise is written in the README.</span></h2>
+      <h2><span class="t-id">Yang tidak dijanjikan Mabrur, tertulis di README.</span><span class="en-line t-en">What Mabrur does not promise is written in the README.</span></h2>
     </div>
     <div class="quotes">
       <figure class="quote rise"><blockquote>Uangnya adalah token uji. … Jalur produksinya adalah token rupiah berizin (deposito tertokenisasi bank atau Rupiah Digital) ditambah mandat regulator untuk dana PPIU; keduanya belum ada hari ini.</blockquote><figcaption>README · Asumsi kepercayaan &amp; batasan yang jujur</figcaption></figure>
@@ -896,31 +898,31 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
 <section id="faq" style="padding-top:40px">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Yang ditanyakan di arena, dijawab di sini.<span class="en-line">Asked at the arena, answered here.</span></h2>
+      <h2><span class="t-id">Yang ditanyakan di arena, dijawab di sini.</span><span class="en-line t-en">Asked at the arena, answered here.</span></h2>
     </div>
     <div class="faq">
       <details>
-        <summary>Apakah Mabrur menjamin jamaah dapat kursi dan berangkat?</summary>
-        <div class="ans"><p><b>Tidak.</b> Kursi bergantung pada maskapai dan kuota visa. Yang dijamin: uang jamaah tidak bisa dipakai untuk orang lain, dan sebelum tanggal yang ditandatangani jamaah, <b>tiket lunas atau sisa dana kembali</b>.</p><p class="en-line">No seat guarantee. The guarantee is: a paid ticket, or every unspent rupiah back.</p></div>
+        <summary><span class="t-id">Apakah Mabrur menjamin jamaah dapat kursi dan berangkat?</span><span class="t-en">Does Mabrur guarantee a seat and a departure?</span></summary>
+        <div class="ans"><p><b>Tidak.</b> Kursi bergantung pada maskapai dan kuota visa. Yang dijamin: uang jamaah tidak bisa dipakai untuk orang lain, dan sebelum tanggal yang ditandatangani jamaah, <b>tiket lunas atau sisa dana kembali</b>.</p><p class="en-line t-en">No seat guarantee. The guarantee is: a paid ticket, or every unspent rupiah back.</p></div>
       </details>
       <details>
-        <summary>Kenapa tidak disimpan di rekening bank saja?</summary>
-        <div class="ans"><p>Agen memang harus membayar vendor berbulan-bulan sebelum berangkat, jadi uang pasti keluar dari rekening. <b>Bank menjawab di mana uang disimpan; Mabrur menjawab untuk apa uang boleh dipakai.</b> Rekening bank tidak bisa menolak perintah transfer dari agen. Mabrur bisa, dan alasannya tercatat onchain.</p><p class="en-line">A bank account cannot refuse the agency’s transfer order. Mabrur can.</p></div>
+        <summary><span class="t-id">Kenapa tidak disimpan di rekening bank saja?</span><span class="t-en">Why not just keep it in a bank account?</span></summary>
+        <div class="ans"><p>Agen memang harus membayar vendor berbulan-bulan sebelum berangkat, jadi uang pasti keluar dari rekening. <b>Bank menjawab di mana uang disimpan; Mabrur menjawab untuk apa uang boleh dipakai.</b> Rekening bank tidak bisa menolak perintah transfer dari agen. Mabrur bisa, dan alasannya tercatat onchain.</p><p class="en-line t-en">A bank account cannot refuse the agency’s transfer order. Mabrur can.</p></div>
       </details>
       <details>
-        <summary>Apa yang belum nyata di demo ini?</summary>
-        <div class="ans"><p><b>Uangnya:</b> tIDR adalah token uji tanpa nilai. <b>Penerbit klaim:</b> kunci demo pengganti Kemenag / IATA. <b>Nama:</b> “PT Amanah Contoh Wisata”, “PT Contoh GSA” fiktif. Selebihnya nyata: kontrak di Arbitrum One, terverifikasi, dan setiap langkah adalah transaksi publik di DEMO.md. Tidak ada mode mock, offline, atau dry-run.</p><p class="en-line">Mocked: the money (test token), the issuer (demo key), the names. Real: contracts, chain, every transaction.</p></div>
+        <summary><span class="t-id">Apa yang belum nyata di demo ini?</span><span class="t-en">What in this demo is not real yet?</span></summary>
+        <div class="ans"><p><b>Uangnya:</b> tIDR adalah token uji tanpa nilai. <b>Penerbit klaim:</b> kunci demo pengganti Kemenag / IATA. <b>Nama:</b> “PT Amanah Contoh Wisata”, “PT Contoh GSA” fiktif. Selebihnya nyata: kontrak di Arbitrum One, terverifikasi, dan setiap langkah adalah transaksi publik di DEMO.md. Tidak ada mode mock, offline, atau dry-run.</p><p class="en-line t-en">Mocked: the money (test token), the issuer (demo key), the names. Real: contracts, chain, every transaction.</p></div>
       </details>
       <details>
-        <summary>Bagaimana kalau agennya menghilang?</summary>
-        <div class="ans"><p>Setelah <span class="mono">ticketBy</span> lewat tanpa tiket lunas, atau setelah <span class="mono">departBy</span>, <b>siapa pun</b> bisa memanggil <span class="mono">refund()</span>. Tidak butuh kerja sama agen, arbiter, atau pengadilan. Itulah yang terjadi pada Ibu Siti: Rp 23.000.000 kembali lewat pihak ketiga.</p></div>
+        <summary><span class="t-id">Bagaimana kalau agennya menghilang?</span><span class="t-en">What if the agency disappears?</span></summary>
+        <div class="ans"><p class="t-id">Setelah <span class="mono">ticketBy</span> lewat tanpa tiket lunas, atau setelah <span class="mono">departBy</span>, <b>siapa pun</b> bisa memanggil <span class="mono">refund()</span>. Tidak butuh kerja sama agen, arbiter, atau pengadilan. Itulah yang terjadi pada Ibu Siti: Rp 23.000.000 kembali lewat pihak ketiga.</p><p class="en-line t-en">After <span class="mono">ticketBy</span> passes with no ticket paid, or after <span class="mono">departBy</span>, <b>anyone</b> can call <span class="mono">refund()</span>, with no agency, arbiter or court involved. That is what happened to Ibu Siti: Rp 23.000.000 returned by a third party.</p></div>
       </details>
       <details>
-        <summary>Siapa yang membayar, dan apa untungnya bagi agen yang jujur?</summary>
-        <div class="ans"><p>Rencana model bisnis: <b>biro travel membayar biaya kecil per jamaah</b> sebagai bukti bahwa uang jamaahnya aman, lencana kepercayaan yang bisa diperiksa calon jamaah sendiri. Untuk agen yang jujur, tiket, hotel, dan visa tetap bisa dibayar kapan saja; yang tertahan hanya ujrah sampai jamaah berangkat. Biaya gasnya sekitar Rp 809 per jamaah.</p><p class="en-line">Plan: the agency pays a small per-pilgrim fee as a verifiable trust badge. Honest agencies still pay vendors any time; only the fee waits for departure.</p></div>
+        <summary><span class="t-id">Siapa yang membayar, dan apa untungnya bagi agen yang jujur?</span><span class="t-en">Who pays, and what does an honest agency gain?</span></summary>
+        <div class="ans"><p>Rencana model bisnis: <b>biro travel membayar biaya kecil per jamaah</b> sebagai bukti bahwa uang jamaahnya aman, lencana kepercayaan yang bisa diperiksa calon jamaah sendiri. Untuk agen yang jujur, tiket, hotel, dan visa tetap bisa dibayar kapan saja; yang tertahan hanya ujrah sampai jamaah berangkat. Biaya gasnya sekitar Rp 809 per jamaah.</p><p class="en-line t-en">Plan: the agency pays a small per-pilgrim fee as a verifiable trust badge. Honest agencies still pay vendors any time; only the fee waits for departure.</p></div>
       </details>
       <details>
-        <summary>Apakah dana diputar ke DeFi atau diberi bunga?</summary>
+        <summary><span class="t-id">Apakah dana diputar ke DeFi atau diberi bunga?</span><span class="t-en">Is the money put into DeFi or paid interest?</span></summary>
         <div class="ans"><p><b>Tidak.</b> Dana diam di kontrak sampai dibayar ke vendor jamaah itu sendiri: tidak di-stake, tidak di-pool, tidak dipinjamkan. Memutar dana bersama adalah pola kegagalan First Travel, dan risikonya jatuh pada uang yang harus ada saat berangkat.</p></div>
       </details>
     </div>
@@ -933,7 +935,7 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
     <div class="final-card">
       <span class="stamp gold" style="--rot:-6deg" aria-hidden="true">Amanah</span>
       <div>
-        <h2>Buka buku Pak Ahmad. <em>Coba bayar hotel orang lain.</em><span class="en-line">Open Ahmad’s passbook. Try to pay someone else’s hotel.</span></h2>
+        <h2><span class="t-id">Buka buku Pak Ahmad. <em>Coba bayar hotel orang lain.</em></span><span class="en-line t-en">Open Ahmad’s passbook. Try to pay someone else’s hotel.</span></h2>
         <div class="ctas">
           <a class="btn primary" href="/app/jamaah"><span class="t-id">Buka Buku Amanah</span><span class="t-en">Open the passbook</span></a>
           <a class="btn" href="/app/agen"><span class="t-id">Konsol agen</span><span class="t-en">Agency console</span></a>

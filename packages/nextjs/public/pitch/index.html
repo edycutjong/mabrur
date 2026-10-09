@@ -55,7 +55,10 @@
   --ease: cubic-bezier(.16, 1, .3, 1);
 }
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; overflow: hidden; background: #ECE8DF; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); }
+/* full-bleed: the area around the 16:9 stage takes the current slide's own background, so no frame ever shows */
+body { transition: background-color .35s var(--ease); }
+body.on-dark, html:has(body.on-dark) { background: var(--returned); }
 body { font-family: var(--font-body); color: var(--ink); -webkit-font-smoothing: antialiased; }
 ::selection { background: rgba(14, 138, 95, .16); }
 :focus-visible { outline: 2px solid var(--paid-ink); outline-offset: 3px; }
