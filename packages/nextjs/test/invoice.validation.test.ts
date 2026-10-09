@@ -35,12 +35,12 @@ describe("parseInvoices — accepts", () => {
     expect(parse(ok({ bookingId: `0x${"f".repeat(64)}`, amount: max }))[0].invoice.amount).toBe((1n << 256n) - 1n);
   });
 
-  it("script/out/invoices.json from the seed script, metadata keys ignored", () => {
-    const file = path.resolve(process.cwd(), "../foundry/script/out/invoices.json");
-    if (!fs.existsSync(file)) return;
+  it("a real SeedDemo invoices.json (committed fixture), metadata keys ignored", () => {
+    // fixture = SeedDemo.s.sol output on Arbitrum One: 5 signed invoices + booking/agency metadata (all public)
+    const file = path.resolve(process.cwd(), "test/fixtures/invoices.seed.json");
     const list = parseInvoices(fs.readFileSync(file, "utf8"));
-    expect(list.length).toBeGreaterThan(0);
-    for (const i of list) expect(i.invoice.line).toBeGreaterThanOrEqual(0);
+    expect(list).toHaveLength(5);
+    expect(list.map(i => i.invoice.line).sort()).toEqual([0, 1, 1, 1, 2]);
   });
 });
 
