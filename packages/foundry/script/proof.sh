@@ -20,7 +20,11 @@ mine() { # label, expected error, cast args…
   out=$(cast send "$PBM" "$@" --gas-limit 1000000 --private-key "$AGENCY_PK" --rpc-url "$RPC" --json 2>&1)
   hash=$(echo "$out" | python3 -c 'import json,sys;print(json.load(sys.stdin)["transactionHash"])' 2>/dev/null || echo "NOT-MINED: $out")
   status=$(echo "$out" | python3 -c 'import json,sys;print(json.load(sys.stdin)["status"])' 2>/dev/null || echo "?")
-  echo "| $label | $expected | $hash | status $status |"
+  # status 0x0 alone proves only "some revert": replay the trace and require the expected custom error
+  local got
+  got=$(cast run "$hash" --rpc-url "$RPC" --quick 2>&1 | grep -oE '← \[Revert\] [A-Za-z]+' | tail -1 | awk '{print $NF}')
+  local verdict="✗ got ${got:-nothing}"; [ "$status" = "0x0" ] && [ "$got" = "$expected" ] && verdict="✓ mined revert $got"
+  echo "| $label | $expected | $hash | $verdict |"
 }
 echo "| Attempt | Expected revert | Tx hash | Result |"
 echo "|---|---|---|---|"

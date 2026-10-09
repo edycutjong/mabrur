@@ -659,6 +659,35 @@ contract ClaimRegistryTest is MabrurBase {
         assertTrue(registry.hasValidClaim(hotel, 3));
     }
 
+    function test_NarrowedThenRestoredTopicDoesNotResurrectClaims() public {
+        uint256[] memory noAirline = new uint256[](3);
+        noAirline[0] = 1;
+        noAirline[1] = 3;
+        noAirline[2] = 4;
+        uint256[] memory all = new uint256[](4);
+        (all[0], all[1], all[2], all[3]) = (1, 2, 3, 4);
+        vm.startPrank(regulator);
+        registry.addTrustedIssuer(issuer, noAirline);
+        assertFalse(registry.hasValidClaim(airline, 2));
+        assertTrue(registry.hasValidClaim(hotel, 3)); // kept topics stay valid
+        registry.addTrustedIssuer(issuer, all);
+        vm.stopPrank();
+        assertFalse(registry.hasValidClaim(airline, 2));
+        assertTrue(registry.hasValidClaim(hotel, 3));
+    }
+
+    function test_ExpiredClaimOfOtherIssuerDoesNotBlockRecertification() public {
+        address issuerB = makeAddr("issuerB");
+        uint256[] memory topics = new uint256[](1);
+        topics[0] = 3;
+        vm.prank(regulator);
+        registry.addTrustedIssuer(issuerB, topics);
+        vm.warp(block.timestamp + 366 days); // issuer A's hotel claim lapsed
+        vm.prank(issuerB);
+        registry.issueClaim(hotel, 3, uint64(block.timestamp + 1 days));
+        assertTrue(registry.hasValidClaim(hotel, 3));
+    }
+
     function test_FaucetDailyLimit() public {
         address m = makeAddr("mentor");
         for (uint256 i; i < 100; ++i) {

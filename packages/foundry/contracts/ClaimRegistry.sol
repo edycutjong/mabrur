@@ -22,9 +22,9 @@ contract ClaimRegistry {
 
     mapping(address => bool) private _trusted;
     mapping(address => mapping(uint256 => bool)) private _issuerTopics;
-    mapping(address => uint256[]) private _issuerTopicList;
-    /// @dev Bumped on removal, so re-adding an issuer never resurrects its earlier claims.
-    mapping(address => uint64) public issuerEpoch;
+    /// @dev issuer => topic => epoch. Bumped whenever the issuer loses the topic (narrowed or removed), so giving
+    ///      the topic back never resurrects claims it issued before.
+    mapping(address => mapping(uint256 => uint64)) public topicEpoch;
     /// @dev subject => topic => latest claim
     mapping(address => mapping(uint256 => Claim)) public claims;
 
@@ -49,21 +49,27 @@ contract ClaimRegistry {
     }
 
     function addTrustedIssuer(address issuer, uint256[] calldata topics) external onlyOwner {
-        _clearTopics(issuer);
-        uint256[] storage list = _issuerTopicList[issuer];
+        bool[5] memory keep;
         for (uint256 i; i < topics.length; ++i) {
             if (topics[i] < PPIU_AGENCY || topics[i] > VISA_PROVIDER) revert UnknownTopic(topics[i]);
-            _issuerTopics[issuer][topics[i]] = true;
-            list.push(topics[i]);
+            keep[topics[i]] = true;
+        }
+        for (uint256 t = PPIU_AGENCY; t <= VISA_PROVIDER; ++t) {
+            if (_issuerTopics[issuer][t] && !keep[t]) topicEpoch[issuer][t]++;
+            _issuerTopics[issuer][t] = keep[t];
         }
         _trusted[issuer] = true;
         emit TrustedIssuerAdded(issuer, topics);
     }
 
     function removeTrustedIssuer(address issuer) external onlyOwner {
-        _clearTopics(issuer);
+        for (uint256 t = PPIU_AGENCY; t <= VISA_PROVIDER; ++t) {
+            if (_issuerTopics[issuer][t]) {
+                topicEpoch[issuer][t]++;
+                _issuerTopics[issuer][t] = false;
+            }
+        }
         _trusted[issuer] = false;
-        issuerEpoch[issuer]++;
         emit TrustedIssuerRemoved(issuer);
     }
 
@@ -79,11 +85,15 @@ contract ClaimRegistry {
         if (topic < PPIU_AGENCY || topic > VISA_PROVIDER) revert UnknownTopic(topic);
         if (!hasClaimTopic(msg.sender, topic)) revert IssuerNotTrustedForTopic(msg.sender, topic);
         if (expiry <= block.timestamp) revert InvalidExpiry();
-        // one trusted issuer can never overwrite (and so un-revoke or cut short) another live issuer's claim
+        // one trusted issuer can never overwrite (and so un-revoke or cut short) another issuer's live or revoked
+        // claim; an expired claim, or one whose issuer lost the topic, is free to be re-certified
         Claim memory prev = claims[subject][topic];
-        if (prev.issuer != address(0) && prev.issuer != msg.sender && _isCurrent(prev, topic)) revert NotClaimIssuer();
+        if (
+            prev.issuer != address(0) && prev.issuer != msg.sender && _isCurrent(prev, topic)
+                && (prev.revoked || block.timestamp < prev.expiry)
+        ) revert NotClaimIssuer();
         claims[subject][topic] =
-            Claim({ issuer: msg.sender, expiry: expiry, revoked: false, epoch: issuerEpoch[msg.sender] });
+            Claim({ issuer: msg.sender, expiry: expiry, revoked: false, epoch: topicEpoch[msg.sender][topic] });
         emit ClaimIssued(msg.sender, subject, topic, expiry);
     }
 
@@ -103,14 +113,7 @@ contract ClaimRegistry {
 
     /// @dev The claim's issuer is still trusted for the topic and has not been removed since it issued the claim.
     function _isCurrent(Claim memory c, uint256 topic) private view returns (bool) {
-        return hasClaimTopic(c.issuer, topic) && c.epoch == issuerEpoch[c.issuer];
-    }
-
-    function _clearTopics(address issuer) private {
-        uint256[] storage list = _issuerTopicList[issuer];
-        for (uint256 i; i < list.length; ++i) {
-            _issuerTopics[issuer][list[i]] = false;
-        }
-        delete _issuerTopicList[issuer];
+        return hasClaimTopic(c.issuer, topic) && c.epoch == topicEpoch[c.issuer][topic];
     }
 }
+
