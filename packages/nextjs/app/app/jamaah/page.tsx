@@ -346,7 +346,7 @@ const BookingTab = ({ b, active, onClick }: { b: Booking; active: boolean; onCli
   const name = getLabel(idHex(b.id), chainId) ?? getLabel(b.pilgrim, chainId);
   const chip = b.refunded ? (
     <span className="mb-chip mb-chip-after">Dikembalikan</span>
-  ) : b.refundable ? (
+  ) : b.refundable && total > 0n ? (
     <span className="mb-chip mb-chip-refused">Bisa refund</span>
   ) : b.flightVendor !== ZERO ? (
     <span className="mb-chip mb-chip-after">Tiket lunas</span>

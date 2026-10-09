@@ -28,21 +28,20 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-20 border-b border-[var(--rule)] bg-[var(--bg)]/95 backdrop-blur">
-      <div className="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 lg:px-8 py-2">
-        <div className="flex items-center gap-4 flex-wrap">
-          <Link href="/app" className="mb-logo flex items-center gap-2" aria-label="Mabrur — beranda aplikasi">
-            <Mark />
-            <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 26 }}>Mabrur</span>
-          </Link>
-          <nav className="mb-nav flex flex-wrap gap-1 text-[15px]" aria-label="Peran">
-            {menuLinks.map(l => (
-              <Link key={l.href} href={l.href} aria-current={pathname?.startsWith(l.href) ? "page" : undefined}>
-                {l.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
+      {/* At 375px: row 1 = logo + wallet, row 2 = the three roles. From sm up: logo · roles · wallet on one row. */}
+      <div className="max-w-[1600px] mx-auto flex flex-wrap items-center gap-x-4 gap-y-1 px-4 lg:px-8 py-2">
+        <Link href="/app" className="mb-logo order-1 flex items-center gap-2" aria-label="Mabrur — beranda aplikasi">
+          <Mark />
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 26 }}>Mabrur</span>
+        </Link>
+        <nav className="mb-nav order-3 sm:order-2 w-full sm:w-auto flex flex-wrap gap-1 text-[15px]" aria-label="Peran">
+          {menuLinks.map(l => (
+            <Link key={l.href} href={l.href} aria-current={pathname?.startsWith(l.href) ? "page" : undefined}>
+              {l.label}
+            </Link>
+          ))}
+        </nav>
+        <div className="order-2 sm:order-3 ml-auto flex items-center gap-2">
           <Link
             href="/judge"
             className="mb-link text-sm font-bold px-1 hidden sm:inline"
@@ -51,7 +50,7 @@ export const Header = () => {
             Untuk juri
           </Link>
           {/* wrapper carries the breakpoint: .mb-chip's own display would beat a utility class */}
-          <span className="hidden sm:inline-flex">
+          <span className="hidden lg:inline-flex">
             <span className="mb-chip mb-chip-ink text-xs" title="tIDR is a test token with no value">
               {targetNetwork.name} · tIDR tanpa nilai
             </span>

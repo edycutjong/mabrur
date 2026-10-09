@@ -1,5 +1,5 @@
 import { wagmiConnectors } from "./wagmiConnectors";
-import { Chain, createClient, fallback, http } from "viem";
+import { Chain, createClient, fallback, http as viemHttp } from "viem";
 import { hardhat, mainnet } from "viem/chains";
 import { createConfig } from "wagmi";
 import scaffoldConfig, { DEFAULT_ALCHEMY_API_KEY, ScaffoldConfig } from "~~/scaffold.config";
@@ -17,6 +17,8 @@ export const wagmiConfig = createConfig({
   connectors: wagmiConnectors(),
   ssr: true,
   client: ({ chain }) => {
+    // JSON-RPC batching: the reads a screen fires together (booking + refundable per row) share one HTTP request
+    const http = (url?: string) => viemHttp(url, { batch: true });
     const mainnetFallbackWithDefaultRPC = [http("https://mainnet.rpc.buidlguidl.com")];
     let rpcFallbacks = [...(chain.id === mainnet.id ? mainnetFallbackWithDefaultRPC : []), http()];
     const rpcOverrideUrl = (scaffoldConfig.rpcOverrides as ScaffoldConfig["rpcOverrides"])?.[chain.id];

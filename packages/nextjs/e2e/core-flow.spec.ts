@@ -16,6 +16,9 @@ test("vendor → agency round trip: an unlicensed signer is refused with VendorC
   // a brand-new burner key: guaranteed to hold no vendor claim
   await page.getByText("Ganti / impor kunci burner").click();
   await page.getByRole("button", { name: "Buat burner baru" }).click();
+  // replacing a key is destructive: the page asks first (and offers to copy the old key)
+  await expect(page.getByRole("button", { name: "Salin kunci lama" })).toBeVisible();
+  await page.getByRole("button", { name: "Ya, buat burner baru" }).click();
   const idInput = page.getByLabel("Id booking");
   await idInput.fill(AHMAD_ID);
   await expect(idInput).toHaveValue(AHMAD_ID);

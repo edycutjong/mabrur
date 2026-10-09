@@ -73,45 +73,54 @@ const JudgePage: NextPage = () => (
           Open the four rejected attempts below on Arbiscan: each is a mined, failed transaction with a named error.
         </li>
         <li>
-          Open the{" "}
+          Get the contract&apos;s verdict on your own invoice: sign one on the{" "}
+          <Link className="link" href="/app/vendor">
+            vendor page
+          </Link>
+          , paste its JSON into the{" "}
           <Link className="link" href="/app/agen">
             agency console
           </Link>{" "}
-          to read the live regulator panel, or sign your own invoice on the{" "}
-          <Link className="link" href="/app/vendor">
-            vendor page
-          </Link>{" "}
-          and press <em>Simulasi saja</em> to see the contract&apos;s verdict.
+          (<em>Tempel faktur</em> → <em>Baca faktur</em>), then press <em>Simulasi saja</em> there. The same console
+          shows the live regulator panel.
         </li>
       </ol>
     </section>
 
     <section className="mb-sheet flex flex-col gap-3">
       <h2 className="mb-h2">Receipts</h2>
-      <div className="overflow-x-auto">
-        <table className="table table-sm">
-          <thead>
-            <tr>
-              <th>Rejected attempt</th>
-              <th>What the agency tried</th>
-              <th>Mined tx</th>
+      {/* A table on wide screens; below 640px each row stacks into a card (see .mb-receipts in mabrur.css). */}
+      <table className="table table-sm mb-receipts" data-testid="receipts">
+        <thead>
+          <tr>
+            <th scope="col">Rejected attempt</th>
+            <th scope="col">What the agency tried</th>
+            <th scope="col">Mined tx</th>
+          </tr>
+        </thead>
+        <tbody>
+          {REVERTS.map(([err, what, tx]) => (
+            <tr key={tx}>
+              <td className="mb-receipt-err" data-label="Rejected attempt">
+                {err}
+              </td>
+              <td data-label="What the agency tried">{what}</td>
+              <td data-label="Mined tx">
+                <a
+                  className="link mb-receipt-tx"
+                  href={`${SCAN}/tx/${tx}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  title={tx}
+                  aria-label={`${err} transaction ${short(tx)} on Arbiscan`}
+                >
+                  {short(tx)}
+                </a>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {REVERTS.map(([err, what, tx]) => (
-              <tr key={tx}>
-                <td className="font-mono">{err}</td>
-                <td>{what}</td>
-                <td>
-                  <a className="link font-mono" href={`${SCAN}/tx/${tx}`} target="_blank" rel="noreferrer">
-                    {short(tx)}
-                  </a>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
       <ul className="list-disc pl-5 mb-p flex flex-col gap-1">
         <li>
           <strong>87 tests</strong> with 100% line, branch and function coverage of the contracts, including an
@@ -142,7 +151,12 @@ const JudgePage: NextPage = () => (
 
     <section className="mb-sheet flex flex-col gap-3">
       <h2 className="mb-h2">Reproduce</h2>
-      <pre className="bg-base-200 rounded p-3 text-sm overflow-x-auto">
+      <pre
+        className="mb-pre"
+        tabIndex={0}
+        role="region"
+        aria-label="Reproduce commands: clone, run the Foundry tests, replay a transaction"
+      >
         {`git clone --recursive https://github.com/edycutjong/mabrur.git
 cd mabrur/packages/foundry && forge test
 cast run <any tx above> --rpc-url https://arb1.arbitrum.io/rpc --quick`}
@@ -168,18 +182,18 @@ cast run <any tx above> --rpc-url https://arb1.arbitrum.io/rpc --quick`}
     </section>
 
     <section className="flex flex-wrap gap-3">
-      <a className="btn btn-primary" href="https://github.com/edycutjong/mabrur" target="_blank" rel="noreferrer">
+      <a className="mb-btn" href="https://github.com/edycutjong/mabrur" target="_blank" rel="noreferrer">
         GitHub repo
       </a>
       <a
-        className="btn btn-outline"
+        className="mb-btn mb-btn-ghost"
         href="https://github.com/edycutjong/mabrur/blob/main/DEMO.md"
         target="_blank"
         rel="noreferrer"
       >
         DEMO.md ledger
       </a>
-      <Link className="btn btn-outline" href="/app">
+      <Link className="mb-btn mb-btn-ghost" href="/app">
         Open the app
       </Link>
     </section>

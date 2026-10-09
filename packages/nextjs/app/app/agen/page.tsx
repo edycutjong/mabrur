@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Address, Hex, encodeAbiParameters, isAddress, isHex, keccak256, recoverTypedDataAddress } from "viem";
+import { Address, Hex, isAddress, isHex, recoverTypedDataAddress } from "viem";
 import { useAccount } from "wagmi";
 import { RegulatorPanel } from "~~/components/mabrur/RegulatorPanel";
 import { AddressChip, Bi, ContractsGuard, ErrorCall, Label, PageShell, Stamp, TxLink } from "~~/components/mabrur/ui";
 import {
   Booking,
   ZERO,
+  bookingIdOf,
   eventsFrom,
   useBooking,
   useChainNow,
@@ -24,7 +25,15 @@ import {
   parseBookingId,
   shortHex,
 } from "~~/utils/mabrur/format";
-import { INVOICE_TYPES, SignedInvoice, parseInvoices, pbmDomain, refToLabel } from "~~/utils/mabrur/invoice";
+import {
+  INVOICE_TYPES,
+  InvoiceParseError,
+  MAX_INVOICE_FILE_BYTES,
+  SignedInvoice,
+  parseInvoices,
+  pbmDomain,
+  refToLabel,
+} from "~~/utils/mabrur/invoice";
 import { defaultAgency, getLabel, loadJson, saveJson, setLabel } from "~~/utils/mabrur/names";
 
 type Attempt = {
@@ -154,7 +163,9 @@ const BookingRow = ({
   const deadline = !flightPaid ? Number(b.ticketBy) : Number(b.departBy);
   const deadlineName = !flightPaid ? "batas tiket" : "batas berangkat";
   const left = deadline - now;
-  const showCountdown = !b.refunded && left < 3600;
+  // nothing left to refund or the trip is under way: the deadline no longer matters (no stale chip / countdown)
+  const settled = b.refunded || b.departed || b.marginReleased || total === 0n;
+  const showCountdown = !settled && left < 3600;
   const canRefund = b.refundable && !b.refunded && total > 0n;
 
   const doRefund = async () => {
@@ -184,9 +195,13 @@ const BookingRow = ({
   };
 
   return (
+    // The whole card selects the booking (the inner button is the keyboard path); its own controls keep their clicks.
     <div
-      className={`mb-sheet mb-hover flex flex-col gap-1 ${active ? "outline-3 outline-[var(--ink)]" : ""}`}
+      className={`mb-sheet mb-hover flex flex-col gap-1 cursor-pointer ${active ? "outline-3 outline-[var(--ink)]" : ""}`}
       style={{ padding: 14 }}
+      onClick={e => {
+        if (!(e.target as HTMLElement).closest("button, a, input, textarea, select, label")) onSelect();
+      }}
     >
       <button className="text-left flex flex-col gap-1 cursor-pointer" onClick={onSelect} aria-pressed={active}>
         <span className="font-bold">{label || "Booking"}</span>
@@ -195,7 +210,7 @@ const BookingRow = ({
         <span>
           {b.refunded ? (
             <span className="mb-chip mb-chip-after">Dikembalikan</span>
-          ) : b.refundable ? (
+          ) : canRefund ? (
             <span className="mb-chip mb-chip-refused">Bisa refund</span>
           ) : flightPaid ? (
             <span className="mb-chip mb-chip-after">Tiket lunas</span>
@@ -211,12 +226,12 @@ const BookingRow = ({
           {left <= 0 && <div className="mb-refused-text font-bold text-sm">lewat — siapa pun bisa refund</div>}
         </div>
       )}
-      {!showCountdown && !b.refunded && (
+      {!showCountdown && !settled && (
         <span className="text-sm mb-muted">
           {deadlineName} {formatDateWIB(deadline)}
         </span>
       )}
-      {(canRefund || (showCountdown && left <= 0 && !b.refunded)) && (
+      {(canRefund || (showCountdown && left <= 0)) && (
         <button className="mb-btn mb-btn-sm mt-1" disabled={!canRefund || busy || !walletClient} onClick={doRefund}>
           {canRefund ? `Kembalikan ${formatRp(total)}` : "Menunggu blok berikutnya…"}
         </button>
@@ -264,7 +279,8 @@ const InvoiceRow = ({
     setLast(a);
     onAttempt(a);
   };
-  const L = LINES[inv.invoice.line] ?? LINES[0];
+  // parseInvoices only admits lines 0..3; an unknown line is shown as such, never silently treated as the flight line
+  const L = LINES[inv.invoice.line] as (typeof LINES)[number] | undefined;
 
   useEffect(() => {
     if (!pbm) return;
@@ -331,6 +347,13 @@ const InvoiceRow = ({
       });
     }
   };
+
+  if (!L)
+    return (
+      <div className="mb-row mb-refused-text text-sm">
+        Pos tidak dikenal ({String(inv.invoice.line)}) · unknown invoice line — faktur ini diabaikan.
+      </div>
+    );
 
   return (
     <div className="mb-row flex flex-col gap-2">
@@ -403,7 +426,7 @@ const AttemptRow = ({ a }: { a: Attempt }) => (
     )}
     {a.kind === "lunas" && (
       <div className="flex flex-wrap gap-2 items-center text-sm">
-        {a.line !== undefined && <span>{LINES[a.line].id}</span>}
+        {a.line !== undefined && LINES[a.line] && <span>{LINES[a.line].id}</span>}
         {a.vendor && (
           <>
             <span>→</span>
@@ -499,26 +522,27 @@ const ConsoleInner = () => {
       setInvoices(list);
       addIds([...seeded, ...list.map(i => idHex(i.invoice.bookingId))]);
     } catch (e) {
-      setParseErr(`JSON tidak sah: ${(e as Error).message}`);
+      setParseErr(
+        e instanceof InvoiceParseError
+          ? `Faktur ditolak · invoice rejected: ${e.message}`
+          : `JSON tidak sah: ${(e as Error).message}`,
+      );
     }
   };
 
   const onFile = async (f: File | undefined) => {
     if (!f) return;
+    if (f.size > MAX_INVOICE_FILE_BYTES) {
+      setParseErr(`File terlalu besar (maks. ${MAX_INVOICE_FILE_BYTES / 1024} KB) · file too large`);
+      return;
+    }
     loadText(await f.text());
   };
 
   const addByPilgrim = () => {
     if (!isAddress(addPilgrim)) return;
     // bookingIdOf is pure: the same keccak256(abi.encode(pilgrim, nonce)), computed locally
-    const id = BigInt(
-      keccak256(
-        encodeAbiParameters(
-          [{ type: "address" }, { type: "uint256" }],
-          [addPilgrim as Address, BigInt(addNonce || "0")],
-        ),
-      ),
-    );
+    const id = bookingIdOf(addPilgrim as Address, BigInt(addNonce || "0"));
     addIds([idHex(id)]);
     setSelected(idHex(id));
   };

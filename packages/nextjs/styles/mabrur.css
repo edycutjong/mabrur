@@ -434,3 +434,65 @@ body.mabrur {
   white-space: normal;
   max-width: 100%;
 }
+
+/* ── /judge receipts: a table on wide screens, one card per row on a phone ── */
+.mb-receipts th {
+  color: var(--ink);
+  font-weight: 700;
+}
+.mb-receipt-err,
+.mb-receipt-tx {
+  font-family: var(--font-data);
+  font-weight: 700;
+}
+.mb-receipt-tx {
+  white-space: nowrap;
+}
+@media (max-width: 639px) {
+  .mb-receipts thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .mb-receipts,
+  .mb-receipts tbody,
+  .mb-receipts tr,
+  .mb-receipts td {
+    display: block;
+    width: 100%;
+  }
+  .mb-receipts tr {
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+  .mb-receipts tr:last-child {
+    margin-bottom: 0;
+  }
+  .mb-receipts td {
+    padding: 2px 0;
+    border: 0;
+  }
+  .mb-receipts td[data-label="Mined tx"]::before {
+    content: "Mined tx · ";
+    color: var(--muted);
+    font-weight: 700;
+  }
+}
+
+/* A command block: paper/ink, keyboard-scrollable (tabIndex=0), never SE-2 blue/grey. */
+.mb-pre {
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: var(--font-data);
+  font-size: 14px;
+  overflow-x: auto;
+  white-space: pre;
+}

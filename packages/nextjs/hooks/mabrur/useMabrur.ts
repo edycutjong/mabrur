@@ -2,7 +2,16 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Abi, Address, Hash, PublicClient, TransactionReceipt, decodeEventLog } from "viem";
+import {
+  Abi,
+  Address,
+  Hash,
+  PublicClient,
+  TransactionReceipt,
+  decodeEventLog,
+  encodeAbiParameters,
+  keccak256,
+} from "viem";
 import { useAccount, useBlock, usePublicClient, useWalletClient } from "wagmi";
 import { useDeployedContractInfo, useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { DecodedRevert, decodeRevert } from "~~/utils/mabrur/errors";
@@ -91,14 +100,21 @@ export const useBooking = (id: bigint | undefined) => {
   });
 };
 
-/** Every booking of one pilgrim: ids are bookingIdOf(pilgrim, 0..bookingNonce-1). No log scan. */
+/** bookingIdOf(pilgrim, nonce) is pure — keccak256(abi.encode(pilgrim, nonce)) — so it is computed locally, not read. */
+export const bookingIdOf = (pilgrim: Address, nonce: bigint): bigint =>
+  BigInt(keccak256(encodeAbiParameters([{ type: "address" }, { type: "uint256" }], [pilgrim, nonce])));
+
+/** How often a pilgrim's booking list is re-read (a new booking or a payout is rare; a mined tx invalidates at once). */
+export const BOOKINGS_OF_REFETCH_MS = 12_000;
+
+/** Every booking of one pilgrim: ids are bookingIdOf(pilgrim, 0..bookingNonce-1). No log scan, one nonce read. */
 export const useBookingsOf = (pilgrim: Address | undefined) => {
   const { pbm, publicClient, chainId } = useMabrurContracts();
-  const { blockNumber } = useChainNow();
   return useQuery({
-    queryKey: ["mabrur-bookings-of", chainId, pbm?.address, pilgrim, blockNumber?.toString()],
+    queryKey: ["mabrur-bookings-of", chainId, pbm?.address, pilgrim],
     enabled: Boolean(pbm && publicClient && pilgrim),
     placeholderData: prev => prev,
+    refetchInterval: BOOKINGS_OF_REFETCH_MS,
     queryFn: async () => {
       const client = publicClient as PublicClient;
       const c = pbm as any;
@@ -108,18 +124,7 @@ export const useBookingsOf = (pilgrim: Address | undefined) => {
         functionName: "bookingNonce",
         args: [pilgrim],
       })) as bigint;
-      const ids = await Promise.all(
-        Array.from(
-          { length: Number(nonce) },
-          (_, i) =>
-            client.readContract({
-              address: c.address,
-              abi: c.abi,
-              functionName: "bookingIdOf",
-              args: [pilgrim, BigInt(i)],
-            }) as Promise<bigint>,
-        ),
-      );
+      const ids = Array.from({ length: Number(nonce) }, (_, i) => bookingIdOf(pilgrim as Address, BigInt(i)));
       const bookings = await Promise.all(ids.map(id => readBooking(client, c, id)));
       return { nonce, bookings: bookings.reverse() };
     },

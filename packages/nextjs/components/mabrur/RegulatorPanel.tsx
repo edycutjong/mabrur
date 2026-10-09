@@ -47,15 +47,27 @@ export const RegulatorPanel = ({ agency }: { agency?: string }) => {
         </p>
       </div>
 
-      <dl className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-2 mb-num">
-        <dt>Rupiah di kontrak · held</dt>
-        <dd className="text-right font-bold">{formatRp(underlyingHeld)}</dd>
-        <dt>mUMRAH beredar · wrapped supply</dt>
-        <dd className="text-right font-bold">{formatRp(wrappedSupply)}</dd>
-        <dt>Σ pos tersimpan · Σ earmarks</dt>
-        <dd className="text-right font-bold">{formatRp(sumEarmarks)}</dd>
-        <dt>Surplus (donasi langsung)</dt>
-        <dd className="text-right">{formatRp(surplus)}</dd>
+      <dl className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3 gap-y-3 mb-num">
+        <dt className="min-w-0 leading-tight">
+          Rupiah di kontrak
+          <span className="mb-en">held in-contract</span>
+        </dt>
+        <dd className="text-right font-bold whitespace-nowrap">{formatRp(underlyingHeld)}</dd>
+        <dt className="min-w-0 leading-tight">
+          mUMRAH beredar
+          <span className="mb-en">wrapped supply</span>
+        </dt>
+        <dd className="text-right font-bold whitespace-nowrap">{formatRp(wrappedSupply)}</dd>
+        <dt className="min-w-0 leading-tight">
+          Σ pos tersimpan
+          <span className="mb-en">Σ earmarks</span>
+        </dt>
+        <dd className="text-right font-bold whitespace-nowrap">{formatRp(sumEarmarks)}</dd>
+        <dt className="min-w-0 leading-tight">
+          Surplus
+          <span className="mb-en">direct donations</span>
+        </dt>
+        <dd className="text-right whitespace-nowrap">{formatRp(surplus)}</dd>
       </dl>
       <p className="mb-p text-sm mb-muted">
         Surplus = tIDR yang dikirim langsung ke kontrak tanpa booking; bukan selisih, bukan kewajiban.
@@ -69,13 +81,22 @@ export const RegulatorPanel = ({ agency }: { agency?: string }) => {
         {a ? <AddressChip address={a} topic={1} /> : <span className="mb-muted">Pilih booking / isi alamat agen</span>}
       </div>
       {a && (
-        <dl className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-2 mb-num">
-          <dt>Booking terbuka · open</dt>
-          <dd className="text-right font-bold">{openBookings?.toString() ?? "–"}</dd>
-          <dt>Kewajiban ke jamaah · liabilities</dt>
-          <dd className="text-right font-bold">{formatRp(liabilities)}</dd>
-          <dt>Tersimpan per pos · earmarked</dt>
-          <dd className="text-right font-bold">{formatRp(earmarked)}</dd>
+        <dl className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3 gap-y-3 mb-num">
+          <dt className="min-w-0 leading-tight">
+            Booking terbuka
+            <span className="mb-en">open bookings</span>
+          </dt>
+          <dd className="text-right font-bold whitespace-nowrap">{openBookings?.toString() ?? "–"}</dd>
+          <dt className="min-w-0 leading-tight">
+            Kewajiban ke jamaah
+            <span className="mb-en">liabilities</span>
+          </dt>
+          <dd className="text-right font-bold whitespace-nowrap">{formatRp(liabilities)}</dd>
+          <dt className="min-w-0 leading-tight">
+            Tersimpan per pos
+            <span className="mb-en">earmarked</span>
+          </dt>
+          <dd className="text-right font-bold whitespace-nowrap">{formatRp(earmarked)}</dd>
         </dl>
       )}
       {a && liabilities !== undefined && earmarked !== undefined && (

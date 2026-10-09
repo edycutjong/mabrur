@@ -1,3 +1,4 @@
+import { expectNoHorizontalOverflow } from "./helpers";
 import { expect, test } from "@playwright/test";
 
 test.describe("/judge", () => {
@@ -16,6 +17,64 @@ test.describe("/judge", () => {
       .getByRole("contentinfo")
       .getByRole("link", { name: /Untuk juri/ })
       .click();
+    await expect(page).toHaveURL(/\/judge$/);
+  });
+
+  test("step 4 says sign → paste → Simulasi saja, with a space after the italics", async ({ page }) => {
+    await page.goto("/judge");
+    const step = page.getByRole("listitem").filter({ hasText: "Simulasi saja" });
+    await expect(step).toContainText(/sign one on the vendor page, paste its JSON into the agency console/);
+    await expect(step).toContainText("press Simulasi saja there");
+  });
+
+  test("receipts are readable at 375px: no sideways scroll, every tx link on screen", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto("/judge");
+    const receipts = page.getByTestId("receipts");
+    await receipts.scrollIntoViewIfNeeded();
+    const links = receipts.getByRole("link", { name: /on Arbiscan/ });
+    await expect(links).toHaveCount(4);
+    for (const link of await links.all()) {
+      await expect(link).toBeVisible();
+      const box = await link.boundingBox();
+      expect(box, "tx link has a box").not.toBeNull();
+      expect(box!.x).toBeGreaterThanOrEqual(0);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(375);
+      await expect(link).toHaveAttribute("href", /^https:\/\/arbiscan\.io\/tx\/0x[0-9a-f]{64}$/);
+    }
+    await expectNoHorizontalOverflow(page);
+  });
+
+  test("table headers are ink, not the faded theme default", async ({ page }) => {
+    await page.goto("/judge");
+    const color = await page
+      .getByTestId("receipts")
+      .locator("th")
+      .first()
+      .evaluate(el => getComputedStyle(el).color);
+    expect(color).toBe("rgb(26, 34, 56)");
+  });
+
+  test("the Reproduce block is keyboard-focusable and labelled", async ({ page }) => {
+    await page.goto("/judge");
+    const pre = page.getByRole("region", { name: /Reproduce commands/ });
+    await expect(pre).toHaveAttribute("tabindex", "0");
+    await pre.focus();
+    await expect(pre).toBeFocused();
+  });
+});
+
+test.describe("404", () => {
+  test("an unknown route gets the Mabrur not-found page with links to /app and /judge", async ({ page }) => {
+    const res = await page.goto("/no-such-page");
+    expect(res?.status()).toBe(404);
+    await expect(page).toHaveTitle(/Halaman tidak ditemukan · Page not found \| Mabrur/);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Halaman ini tidak ada.");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("This page does not exist.");
+    const main = page.getByRole("main");
+    await expect(main.getByRole("link", { name: /Open the app/ })).toHaveAttribute("href", "/app");
+    await expect(main.getByRole("link", { name: /For judges/ })).toHaveAttribute("href", "/judge");
+    await main.getByRole("link", { name: /For judges/ }).click();
     await expect(page).toHaveURL(/\/judge$/);
   });
 });

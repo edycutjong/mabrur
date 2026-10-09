@@ -15,12 +15,45 @@ import {
   idHex,
   parseBookingId,
   parseRp,
+  shortHex,
   toLocalInput,
 } from "~~/utils/mabrur/format";
-import { INVOICE_TYPES, SignedInvoice, invoiceToJson, pbmDomain, refToBytes32 } from "~~/utils/mabrur/invoice";
+import {
+  INVOICE_TYPES,
+  InvoiceParseError,
+  SignedInvoice,
+  invoiceToJson,
+  pbmDomain,
+  refToBytes32,
+  utf8Length,
+} from "~~/utils/mabrur/invoice";
 
 // The vendor's OWN key: a burner kept only in this browser's storage, or an injected wallet.
 const PK_KEY = "mabrur.vendor.burnerPk";
+
+/** secp256k1 group order: a private key must be in [1, N). */
+const SECP256K1_N = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n;
+
+/** The account for a key, or undefined for anything that is not a valid secp256k1 private key. Never throws. */
+const accountFor = (pk: string | null | undefined) => {
+  if (!pk || !isHex(pk) || pk.length !== 66) return undefined;
+  const n = BigInt(pk);
+  if (n === 0n || n >= SECP256K1_N) return undefined;
+  try {
+    return privateKeyToAccount(pk);
+  } catch {
+    return undefined;
+  }
+};
+
+const storeSet = (v: string | undefined) => {
+  try {
+    if (v) window.localStorage.setItem(PK_KEY, v);
+    else window.localStorage.removeItem(PK_KEY);
+  } catch {
+    /* storage blocked: the burner is ephemeral */
+  }
+};
 
 const VendorInner = () => {
   const { pbm, chainId } = useMabrurContracts();
@@ -37,6 +70,9 @@ const VendorInner = () => {
   const [expiry, setExpiry] = useState(0);
   const [signed, setSigned] = useState<SignedInvoice | undefined>();
   const [err, setErr] = useState("");
+  const [keyNote, setKeyNote] = useState("");
+  // a destructive key action waiting for confirmation (the old key is gone for good once replaced or cleared)
+  const [pending, setPending] = useState<"new" | "clear" | undefined>();
 
   useEffect(() => {
     let stored: string | null = null;
@@ -45,20 +81,20 @@ const VendorInner = () => {
     } catch {
       /* storage blocked */
     }
-    if (stored && isHex(stored) && stored.length === 66) setPk(stored);
+    if (stored && accountFor(stored)) setPk(stored as Hex);
     else {
+      if (stored)
+        setKeyNote(
+          "Kunci burner tersimpan tidak sah dan sudah dihapus; burner baru dibuat. · The stored burner key was invalid and has been cleared; a new burner was created.",
+        );
       const fresh = generatePrivateKey();
       setPk(fresh);
-      try {
-        window.localStorage.setItem(PK_KEY, fresh);
-      } catch {
-        /* ephemeral burner */
-      }
+      storeSet(fresh);
     }
     setExpiry(Math.floor(Date.now() / 1000) + 2 * 86400);
   }, []);
 
-  const burner = useMemo(() => (pk ? privateKeyToAccount(pk) : undefined), [pk]);
+  const burner = useMemo(() => accountFor(pk), [pk]);
   const signerAddr = mode === "burner" ? burner?.address : walletAddr;
 
   const id = parseBookingId(bookingId);
@@ -67,46 +103,50 @@ const VendorInner = () => {
   const doImport = () => {
     const v = importPk.trim();
     const hex = (v.startsWith("0x") ? v : `0x${v}`) as Hex;
-    if (!isHex(hex) || hex.length !== 66) {
-      setErr("Kunci tidak sah (32 byte hex)");
+    if (!accountFor(hex)) {
+      setKeyNote(
+        "Kunci tidak sah: harus 32 byte hex, bukan nol, di bawah orde kurva secp256k1. · Invalid key: 32-byte hex, non-zero, below the secp256k1 curve order.",
+      );
       return;
     }
     setPk(hex);
-    try {
-      window.localStorage.setItem(PK_KEY, hex);
-    } catch {
-      /* ephemeral */
-    }
+    storeSet(hex);
     setImportPk("");
+    setKeyNote("");
     setErr("");
+    setPending(undefined);
     setSigned(undefined);
   };
 
-  const newBurner = () => {
-    const fresh = generatePrivateKey();
+  const replaceBurner = (next: "new" | "clear") => {
+    const fresh = next === "new" ? generatePrivateKey() : undefined;
     setPk(fresh);
+    storeSet(fresh);
     // the old output was signed by the old key: never leave it on screen under the new signer
     setSigned(undefined);
     setErr("");
-    try {
-      window.localStorage.setItem(PK_KEY, fresh);
-    } catch {
-      /* ephemeral */
-    }
+    setKeyNote(next === "clear" ? "Burner dihapus dari browser ini. · Burner cleared from this browser." : "");
+    setPending(undefined);
   };
+
+  const refBytes = utf8Length(ref);
+  const refErr =
+    refBytes > 32 && !(isHex(ref) && ref.length === 66)
+      ? `No. faktur ${refBytes} byte (UTF-8), maks. 32 · ref is ${refBytes} bytes, at most 32 fit`
+      : "";
 
   const sign = async () => {
     setErr("");
     setSigned(undefined);
     if (!pbm || id === undefined || amt === undefined) return;
-    const invoice = { bookingId: id, line, amount: amt, ref: refToBytes32(ref), expiry: BigInt(expiry) };
-    const args = {
-      domain: pbmDomain(chainId, pbm.address),
-      types: INVOICE_TYPES,
-      primaryType: "Invoice" as const,
-      message: invoice,
-    };
     try {
+      const invoice = { bookingId: id, line, amount: amt, ref: refToBytes32(ref), expiry: BigInt(expiry) };
+      const args = {
+        domain: pbmDomain(chainId, pbm.address),
+        types: INVOICE_TYPES,
+        primaryType: "Invoice" as const,
+        message: invoice,
+      };
       let signature: Hex;
       if (mode === "burner") {
         if (!burner) return;
@@ -117,7 +157,7 @@ const VendorInner = () => {
       }
       setSigned({ invoice, signature, refLabel: ref, signer: signerAddr });
     } catch (e) {
-      setErr(decodeRevert(e).id);
+      setErr(e instanceof InvoiceParseError ? e.message : decodeRevert(e).id);
     }
   };
 
@@ -161,7 +201,13 @@ const VendorInner = () => {
           </div>
           <div>
             <Label>Alamat penanda tangan · signer</Label>
-            {signerAddr ? <AddressChip address={signerAddr} /> : <span className="mb-muted">Hubungkan dompet</span>}
+            {signerAddr ? (
+              <AddressChip address={signerAddr} />
+            ) : (
+              <span className="mb-muted">
+                {mode === "burner" ? "Belum ada burner · no burner key" : "Hubungkan dompet"}
+              </span>
+            )}
             {signerAddr && (
               <div className="flex flex-wrap gap-2 mt-2">
                 <ClaimBadge address={signerAddr} topic={2} />
@@ -190,10 +236,46 @@ const VendorInner = () => {
                   Impor
                 </button>
               </div>
-              <button className="mb-link text-sm mt-2" onClick={newBurner}>
-                Buat burner baru
-              </button>
+              {!pending ? (
+                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2">
+                  <button
+                    className="mb-link text-sm"
+                    onClick={() => (burner ? setPending("new") : replaceBurner("new"))}
+                  >
+                    Buat burner baru
+                  </button>
+                  {burner && (
+                    <button className="mb-link text-sm" onClick={() => setPending("clear")}>
+                      Hapus burner
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="mt-2 flex flex-col gap-2 rounded-[10px] p-3 mb-wash-before" role="alertdialog">
+                  <p className="mb-p text-sm font-bold">
+                    {pending === "new" ? "Ganti kunci burner?" : "Hapus kunci burner?"} Kunci lama hilang selamanya dari
+                    browser ini — salin dulu jika masih perlu.
+                    <span className="mb-en">
+                      The current key is gone for good from this browser — copy it first if you still need it.
+                    </span>
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {pk && <CopyButton text={pk} label="Salin kunci lama" />}
+                    <button className="mb-btn mb-btn-sm" onClick={() => replaceBurner(pending)}>
+                      {pending === "new" ? "Ya, buat burner baru" : "Ya, hapus burner"}
+                    </button>
+                    <button className="mb-btn mb-btn-ghost mb-btn-sm" onClick={() => setPending(undefined)}>
+                      Batal
+                    </button>
+                  </div>
+                </div>
+              )}
             </details>
+          )}
+          {keyNote && (
+            <p className="mb-p text-sm mb-refused-text" role="status">
+              {keyNote}
+            </p>
           )}
 
           <div className="mb-perforation" />
@@ -246,10 +328,17 @@ const VendorInner = () => {
               <input
                 className="mb-input mb-data"
                 value={ref}
-                maxLength={32}
+                maxLength={66}
                 onChange={e => setRef(e.target.value)}
                 aria-label="Nomor faktur"
+                aria-invalid={refErr ? true : undefined}
+                aria-describedby={refErr ? "ref-err" : undefined}
               />
+              {refErr && (
+                <p id="ref-err" className="mb-p text-sm mb-refused-text mt-1">
+                  {refErr}
+                </p>
+              )}
             </div>
             <div>
               <Label>Berlaku s.d. · expiry</Label>
@@ -271,7 +360,7 @@ const VendorInner = () => {
           </p>
           <button
             className="mb-btn"
-            disabled={id === undefined || amt === undefined || !signerAddr || !expiry}
+            disabled={id === undefined || amt === undefined || !signerAddr || !expiry || Boolean(refErr)}
             onClick={sign}
           >
             Tanda tangani faktur
@@ -287,11 +376,16 @@ const VendorInner = () => {
             </p>
           ) : (
             <>
-              <div className="grid grid-cols-[120px_1fr] gap-x-3 gap-y-1">
+              <div className="grid grid-cols-[120px_minmax(0,1fr)] gap-x-3 gap-y-1">
                 <span className="mb-label">No. faktur</span>
                 <span className="mb-data">{signed.refLabel}</span>
                 <span className="mb-label">Booking</span>
-                <span className="mb-data text-sm">{idHex(signed.invoice.bookingId).slice(0, 18)}…</span>
+                <span
+                  className="mb-data text-sm whitespace-nowrap overflow-hidden text-ellipsis [word-break:normal] min-w-0"
+                  title={idHex(signed.invoice.bookingId)}
+                >
+                  {shortHex(idHex(signed.invoice.bookingId), 8, 6)}
+                </span>
                 <span className="mb-label">Pos</span>
                 <span>{L.id}</span>
                 <span className="mb-label">Jumlah</span>
