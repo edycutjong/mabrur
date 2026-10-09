@@ -132,9 +132,9 @@ describe("app/app/vendor/page", () => {
       ).toBeInTheDocument();
     });
 
-    it("displays vendor label at top", () => {
+    it("displays the sign-an-invoice heading at top", () => {
       render(<VendorPage />);
-      expect(screen.getByText("Vendor berlisensi")).toBeInTheDocument();
+      expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Tanda tangani faktur");
     });
 
     it("renders grid layout with two columns", () => {

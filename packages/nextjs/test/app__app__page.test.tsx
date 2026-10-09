@@ -43,9 +43,9 @@ describe("app/app/page", () => {
       expect(screen.getByText("umrah Anda.")).toHaveClass("mb-swash");
     });
 
-    it("renders the component label", () => {
-      render(<AppHome />);
-      expect(screen.getByText(/Mabrur · purpose-bound umrah prepayment/)).toBeInTheDocument();
+    it("has no kicker label above the heading", () => {
+      const { container } = render(<AppHome />);
+      expect(container.querySelector(".mb-runhead")).toBeNull();
     });
 
     it("renders the description paragraph with Indonesian text", () => {
@@ -209,7 +209,6 @@ describe("app/app/page", () => {
       expect(screen.getAllByText("Open")[0]).toBeVisible();
       expect(screen.getByText(/tIDR is a test token with no value/)).toBeVisible();
       expect(screen.getByText(/tIDR adalah token uji tanpa nilai/)).not.toBeVisible();
-      expect(screen.getByText("Mabrur · purpose-bound umrah prepayment")).toBeVisible();
     });
   });
 });

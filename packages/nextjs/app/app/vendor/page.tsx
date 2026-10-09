@@ -185,9 +185,6 @@ const VendorInner = () => {
   return (
     <PageShell>
       <header className="mb-8 lg:mb-10">
-        <Label className="mb-runhead">
-          <T id="Vendor berlisensi" en="Licensed vendor" />
-        </Label>
         <h1 className="mb-title">
           <T id="Tanda tangani faktur" en="Sign an invoice" />
         </h1>

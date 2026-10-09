@@ -77,9 +77,6 @@ const ROLES = [
 
 const AppHome: NextPage = () => (
   <div className="w-full max-w-6xl mx-auto px-4 lg:px-8 py-10 lg:py-16">
-    <div className="mb-label mb-runhead">
-      <T id="Mabrur · uang muka umrah yang terikat tujuan" en="Mabrur · purpose-bound umrah prepayment" />
-    </div>
     <h1 className="mb-title max-w-4xl">
       <T
         id={

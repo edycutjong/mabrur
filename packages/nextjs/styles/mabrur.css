@@ -402,7 +402,7 @@ html.lang-en .t-id {
 .mb-btn-ghost:disabled {
   background: var(--paper);
   border-color: var(--rule);
-  color: #737a82;
+  color: var(--muted);
 }
 .mb-btn-sm {
   min-height: 36px;
@@ -413,7 +413,7 @@ html.lang-en .t-id {
 .mb-btn-nav {
   min-height: 38px;
   padding: 8px 16px;
-  font: 500 11.5px/1 var(--font-body);
+  font: 500 12px/1 var(--font-body);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   background: transparent;
@@ -485,7 +485,7 @@ html.lang-en .t-id {
 }
 .mb-input::placeholder,
 .mb-textarea::placeholder {
-  color: #737a82;
+  color: var(--muted);
 }
 .mb-input:hover,
 .mb-select:hover,
@@ -742,7 +742,7 @@ a.mb-ext:hover::after {
 .mb-lang {
   display: inline-flex;
   gap: 2px;
-  font: 500 11.5px/1 var(--font-body);
+  font: 500 12px/1 var(--font-body);
   letter-spacing: 0.12em;
   border: 1px solid var(--rule);
   background: var(--paper);
@@ -820,7 +820,7 @@ html.lang-en .mb-lang [data-l="en"] {
 }
 .mb-ledger th {
   background: var(--surface);
-  font: 500 11.5px/1.3 var(--font-body);
+  font: 500 12px/1.3 var(--font-body);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
@@ -963,7 +963,7 @@ html.lang-en .mb-lang [data-l="en"] {
 .mb-footer a {
   color: #dde6e1;
   text-decoration: none;
-  font: 500 11.5px/1.4 var(--font-body);
+  font: 500 12px/1.4 var(--font-body);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   transition: color 0.2s;
@@ -984,7 +984,7 @@ html.lang-en .mb-lang [data-l="en"] {
 .mb-receipts th {
   background: var(--surface);
   color: var(--muted);
-  font: 500 11.5px/1.3 var(--font-body);
+  font: 500 12px/1.3 var(--font-body);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   text-align: left;
@@ -1034,7 +1034,7 @@ html.lang-en .mb-lang [data-l="en"] {
   .mb-receipts td[data-label-id]::before {
     content: attr(data-label-id) " · ";
     color: var(--muted);
-    font: 500 11.5px var(--font-body);
+    font: 500 12px var(--font-body);
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
@@ -1216,4 +1216,135 @@ html.lang-en .mb-lang [data-l="en"] {
    streams in (CLS). */
 .mb-shell {
   min-height: 100svh;
+}
+
+/* ── /judge: projector-first. Claim left, on-chain proof right, both in the first 1920×1080 screen ── */
+.mb-judge-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+@media (min-width: 1100px) {
+  .mb-judge-row {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    gap: 56px;
+  }
+}
+.mb-judge-title {
+  font-size: clamp(38px, 2.6vw + 14px, 64px);
+  line-height: 1.03;
+  letter-spacing: -0.018em;
+}
+.mb-judge-head .mb-lede {
+  max-width: 52ch;
+}
+/* The four contract rules: hairline-ruled, each led by a short emerald rule (the kuitansi's ruled lines). */
+.mb-rules {
+  list-style: none;
+  margin: 26px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+  max-width: 60ch;
+}
+.mb-rules > li {
+  position: relative;
+  padding: 11px 0 11px 30px;
+  border-bottom: 1px solid var(--rule);
+  font-weight: 500;
+  line-height: 1.45;
+}
+.mb-rules > li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: calc(11px + 0.72em);
+  width: 16px;
+  height: 1.5px;
+  background: var(--paid);
+}
+@media (min-width: 640px) {
+  .mb-judge-proof .mb-receipts td {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+}
+.mb-judge-fine {
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+.mb-judge-contracts {
+  display: grid;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--rule);
+}
+.mb-judge-chip {
+  text-decoration: none;
+  font-weight: 600;
+  padding: 6px 13px;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    transform 0.2s var(--ease);
+}
+.mb-judge-chip .mb-data {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.mb-judge-chip:hover {
+  border-color: var(--returned);
+  background: var(--returned-wash);
+}
+.mb-judge-chip:active {
+  transform: scale(0.985);
+}
+.mb-judge-step-link {
+  font-weight: 600;
+}
+.mb-steps .mb-chip {
+  margin-left: 6px;
+  vertical-align: 2px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+}
+/* Projector (≥ 1600px wide): proof type grows so the back row can read error names and hashes. */
+@media (min-width: 1600px) {
+  .mb-judge .mb-h2 {
+    font-size: 38px;
+  }
+  .mb-judge .mb-rules > li,
+  .mb-judge .mb-steps {
+    font-size: 18px;
+  }
+  .mb-judge .mb-receipts {
+    font-size: 17px;
+  }
+  .mb-judge .mb-receipts th {
+    font-size: 13px;
+  }
+  .mb-judge .mb-stamp-sm .mb-stamp-word {
+    font-size: 16px;
+  }
+  .mb-judge .mb-receipt-err {
+    font-size: 15px;
+  }
+  .mb-judge .mb-receipt-tx {
+    font-size: 15px;
+  }
+  .mb-judge-fine {
+    font-size: 16px;
+  }
+}
+
+/* Tap targets ≥ 24px for the stand-alone links (WCAG 2.5.8): footer nav and the receipts' tx hashes. */
+.mb-footer nav a {
+  display: inline-block;
+  padding: 6px 0;
+}
+.mb-receipt-tx {
+  display: inline-block;
+  padding: 5px 0;
 }

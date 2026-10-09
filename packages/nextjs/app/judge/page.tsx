@@ -49,253 +49,299 @@ const REPRO = `git clone --recursive https://github.com/edycutjong/mabrur.git
 cd mabrur/packages/foundry && forge test
 `;
 
+const RULES = [
+  [
+    "Agen hanya bisa membayar faktur bertanda tangan dari vendor yang klaimnya terverifikasi.",
+    "The agency can pay only a claim-verified vendor's signed invoice.",
+  ],
+  ["Penerima uangnya selalu si penanda tangan.", "The payee is always that signer."],
+  ["Ujrah baru terbuka setelah keberangkatan.", "The fee unlocks only after departure."],
+  [
+    "Siapa pun bisa mengembalikan sisa dana begitu batas tiket lewat tanpa tiket dibeli.",
+    "Anyone can refund the rest once the ticket-by date passes with no ticket bought.",
+  ],
+] as const;
+
+const CONTRACTS = [
+  ["MabrurPBM", PBM],
+  ["ClaimRegistry", REGISTRY],
+  ["TIDR", TIDR],
+] as const;
+
+// Projector-first: on a wide screen the claim (left) and the on-chain proof (right) share the first screen; the click
+// path, the reproduce block and the honest limits follow. On a phone everything stacks in reading order.
 const JudgePage: NextPage = () => (
-  <div className="w-full max-w-4xl mx-auto px-4 lg:px-8 py-10 lg:py-16 flex flex-col gap-8">
-    <header className="mb-2">
-      <div className="mb-label mb-runhead">
-        <T id="Untuk juri · 30 detik" en="For judges · 30 seconds" />
-      </div>
-      <h1 className="mb-title">
-        <T
-          id="Uang muka jamaah hanya bisa dipakai untuk perjalanannya sendiri."
-          en="A pilgrim's prepayment can only be spent on her own trip."
-        />
-      </h1>
-      <p className="mb-p mb-lede mt-5">
-        <T
-          id="Mabrur mengunci rupiah setiap jamaah per pos (tiket pesawat, hotel, visa, ujrah agen) di dalam token yang tidak bisa dipindahtangankan di Arbitrum One. Agen hanya bisa membayar faktur bertanda tangan dari vendor yang klaimnya terverifikasi, penerima uangnya selalu si penanda tangan, ujrah baru terbuka setelah keberangkatan, dan siapa pun bisa mengembalikan sisa dana begitu batas tiket lewat tanpa tiket dibeli."
-          en="Mabrur earmarks each pilgrim's rupiah per line (flight, hotel, visa, agency fee) inside a non-transferable token on Arbitrum One. The agency can pay only a claim-verified vendor's signed invoice, the payee is always that signer, the fee unlocks only after departure, and anyone can refund the rest once the ticket-by date passes with no ticket bought."
-        />
-      </p>
-    </header>
-
-    <section className="mb-sheet flex flex-col gap-3">
-      <h2 className="mb-h2">
-        <T id="Jalur 30 detik (tanpa dompet, tanpa instal)" en="The 30-second path (no wallet, no install)" />
-      </h2>
-      <ol className="mb-steps mb-p mt-2">
-        <li>
-          <T id="Buka booking Pak Ahmad:" en="Open Pak Ahmad's booking:" />{" "}
-          <Link className="mb-link" href={`/app/jamaah?id=${AHMAD_ID}`}>
-            /app/jamaah
-          </Link>{" "}
-          —{" "}
+  <div className="mb-judge w-full max-w-[1600px] mx-auto px-4 lg:px-8 py-8 lg:py-12">
+    <div className="mb-judge-row">
+      <header className="mb-judge-head">
+        <h1 className="mb-title mb-judge-title">
           <T
-            id="tiket, hotel, dan visa dibayar ke penanda tangannya masing-masing; ujrah dibuka setelah ia menandatangani keberangkatan."
-            en="flight, hotel and visa paid to their signers, fee released after his departure signature."
+            id="Uang muka jamaah hanya bisa dipakai untuk perjalanannya sendiri."
+            en="A pilgrim's prepayment can only be spent on her own trip."
           />
-        </li>
-        <li>
-          <T id="Buka booking Ibu Siti:" en="Open Ibu Siti's booking:" />{" "}
-          <Link className="mb-link" href={`/app/jamaah?id=${SITI_ID}`}>
-            /app/jamaah
-          </Link>{" "}
-          —{" "}
+        </h1>
+        <p className="mb-p mb-lede mt-5">
           <T
-            id="tiketnya tidak dibeli sampai batas tiket, jadi pihak ketiga mengembalikan setiap rupiah yang belum terpakai."
-            en="no ticket bought by her ticket-by date, so a third party refunded every unspent rupiah."
+            id="Mabrur mengunci rupiah setiap jamaah per pos (tiket pesawat, hotel, visa, ujrah agen) di dalam token yang tidak bisa dipindahtangankan di Arbitrum One."
+            en="Mabrur earmarks each pilgrim's rupiah per line (flight, hotel, visa, agency fee) inside a non-transferable token on Arbitrum One."
           />
-        </li>
-        <li>
-          <T
-            id="Buka empat percobaan yang ditolak di bawah ini di Arbiscan: masing-masing adalah transaksi gagal yang tertambang, lengkap dengan nama error-nya."
-            en="Open the four rejected attempts below on Arbiscan: each is a mined, failed transaction with a named error."
-          />
-        </li>
-        <li>
-          <T
-            id={
-              <>
-                Minta keputusan kontrak atas faktur Anda sendiri: tanda tangani satu di{" "}
-                <Link className="mb-link" href="/app/vendor">
-                  halaman vendor
-                </Link>
-                , tempel JSON-nya di{" "}
-                <Link className="mb-link" href="/app/agen">
-                  konsol agen
-                </Link>{" "}
-                (<em>Tempel faktur</em> → <em>Baca faktur</em>), lalu tekan <em>Simulasi saja</em> di sana. Konsol yang
-                sama menampilkan panel regulator secara langsung.
-              </>
-            }
-            en={
-              <>
-                Get the contract&apos;s verdict on your own invoice: sign one on the{" "}
-                <Link className="mb-link" href="/app/vendor">
-                  vendor page
-                </Link>
-                , paste its JSON into the{" "}
-                <Link className="mb-link" href="/app/agen">
-                  agency console
-                </Link>{" "}
-                (<em>Paste invoice</em> → <em>Read invoice</em>), then press <em>Simulate only</em> there. The same
-                console shows the live regulator panel.
-              </>
-            }
-          />
-        </li>
-      </ol>
-    </section>
-
-    <section className="mb-sheet mb-slip flex flex-col gap-4">
-      <h2 className="mb-h2">
-        <T id="Bukti on-chain" en="Receipts" />
-      </h2>
-      {/* A table on wide screens; below 640px each row stacks into a card (see .mb-receipts in mabrur.css). */}
-      <table className="mb-receipts" data-testid="receipts">
-        <thead>
-          <tr>
-            <th scope="col">
-              <T id="Percobaan yang ditolak" en="Rejected attempt" />
-            </th>
-            <th scope="col">
-              <T id="Yang dicoba agen" en="What the agency tried" />
-            </th>
-            <th scope="col">
-              <T id="Tx tertambang" en="Mined tx" />
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {REVERTS.map(([err, whatId, whatEn, tx]) => (
-            <tr key={tx}>
-              <td>
-                <span className="mb-stamp mb-stamp-sm">
-                  <span className="mb-stamp-word">Ditolak</span>
-                  <span className="mb-stamp-error mb-receipt-err">{err}</span>
-                </span>
-              </td>
-              <td>
-                <T id={whatId} en={whatEn} />
-              </td>
-              <td data-label-id="Tx tertambang" data-label-en="Mined tx">
-                <a
-                  className="mb-link mb-ext mb-receipt-tx"
-                  href={`${SCAN}/tx/${tx}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  title={tx}
-                >
-                  <span className="sr-only">
-                    <T id={`Transaksi ${err} di Arbiscan:`} en={`${err} transaction on Arbiscan:`} />{" "}
-                  </span>
-                  {short(tx)}
-                </a>
-              </td>
-            </tr>
+        </p>
+        <ul className="mb-rules">
+          {RULES.map(([id, en]) => (
+            <li key={en}>
+              <T id={id} en={en} />
+            </li>
           ))}
-        </tbody>
-      </table>
-      <ul className="mb-ticks mb-p text-[15px] mt-2">
-        <li>
-          <T
-            id={
-              <>
-                <strong>87 pengujian</strong> dengan cakupan baris, cabang, dan fungsi 100% pada kontrak, termasuk suite
-                invarian: 7 invarian × 256 run × kedalaman 100 (Σ pos == suplai token; rupiah yang ditahan ≥ suplai;
-                tidak ada pembayaran yang pernah sampai ke alamat tanpa klaim).
-              </>
-            }
-            en={
-              <>
-                <strong>87 tests</strong> with 100% line, branch and function coverage of the contracts, including an
-                invariant suite of 7 invariants × 256 runs × depth 100 (Σ earmarks == token supply; rupiah held ≥
-                supply; no payment ever reaches an unclaimed address).
-              </>
-            }
-          />
-        </li>
-        <li>
-          <T
-            id="Biaya dari tanda terima nyata: satu siklus jamaah yang berangkat 907.185 gas ≈ Rp 809; yang dikembalikan 582.938 gas ≈ Rp 520 (ETH/IDR 44.563.294, CoinGecko, 9 Okt 2026)."
-            en="Cost from the real receipts: a departed pilgrim's lifecycle is 907,185 gas ≈ Rp 809; a refunded one is 582,938 gas ≈ Rp 520 (ETH/IDR 44,563,294, CoinGecko, 9 Oct 2026)."
-          />
-        </li>
-        <li>
-          <T id="Kontrak terverifikasi di Arbiscan:" en="Contracts verified on Arbiscan:" />{" "}
-          <a className="mb-link" href={`${SCAN}/address/${PBM}#code`} target="_blank" rel="noreferrer">
-            MabrurPBM
+        </ul>
+        <div className="flex flex-wrap gap-3 mt-8">
+          <Link className="mb-btn mb-go" href="/app">
+            <T id="Buka aplikasi" en="Open the app" />
+          </Link>
+          <a
+            className="mb-btn mb-btn-ghost mb-ext"
+            href="https://github.com/edycutjong/mabrur"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <T id="Repo GitHub" en="GitHub repo" />
           </a>
-          ,{" "}
-          <a className="mb-link" href={`${SCAN}/address/${REGISTRY}#code`} target="_blank" rel="noreferrer">
-            ClaimRegistry
+          <a
+            className="mb-btn mb-btn-ghost mb-ext"
+            href="https://github.com/edycutjong/mabrur/blob/main/DEMO.md"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <T id="Buku besar DEMO.md" en="DEMO.md ledger" />
           </a>
-          ,{" "}
-          <a className="mb-link" href={`${SCAN}/address/${TIDR}#code`} target="_blank" rel="noreferrer">
-            TIDR
-          </a>
-          .
-        </li>
-      </ul>
-    </section>
+        </div>
+      </header>
 
-    <section className="mb-sheet flex flex-col gap-3">
-      <h2 className="mb-h2">
-        <T id="Reproduksi" en="Reproduce" />
-      </h2>
-      <span id="repro-label" className="sr-only">
-        <T
-          id="Perintah reproduksi: clone, jalankan tes Foundry, putar ulang transaksi"
-          en="Reproduce commands: clone, run the Foundry tests, replay a transaction"
-        />
-      </span>
-      <pre className="mb-pre" tabIndex={0} role="region" aria-labelledby="repro-label">
-        {REPRO}
-        <T
-          id="cast run <tx mana pun di atas> --rpc-url https://arb1.arbitrum.io/rpc --quick"
-          en="cast run <any tx above> --rpc-url https://arb1.arbitrum.io/rpc --quick"
-        />
-      </pre>
-      <p className="mb-p text-sm mb-muted">
-        <T
-          id="Setiap skrip demo mengirim transaksi ke Arbitrum One; tidak ada mode mock, offline, atau dry-run."
-          en="Every demo script broadcasts to Arbitrum One; there is no mock, offline or dry-run mode."
-        />
-      </p>
-    </section>
+      <section className="mb-sheet mb-slip mb-judge-proof flex flex-col gap-4" aria-labelledby="judge-proof">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+          <h2 className="mb-h2" id="judge-proof">
+            <T id="Bukti on-chain" en="Receipts" />
+          </h2>
+          <span className="mb-p text-sm mb-muted">
+            <T id="Arbitrum One · 4 transaksi gagal yang tertambang" en="Arbitrum One · 4 mined, failed transactions" />
+          </span>
+        </div>
+        {/* A table on wide screens; below 640px each row stacks into a card (see .mb-receipts in mabrur.css). */}
+        <table className="mb-receipts" data-testid="receipts">
+          <thead>
+            <tr>
+              <th scope="col">
+                <T id="Percobaan yang ditolak" en="Rejected attempt" />
+              </th>
+              <th scope="col">
+                <T id="Yang dicoba agen" en="What the agency tried" />
+              </th>
+              <th scope="col">
+                <T id="Tx tertambang" en="Mined tx" />
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {REVERTS.map(([err, whatId, whatEn, tx]) => (
+              <tr key={tx}>
+                <td>
+                  <span className="mb-stamp mb-stamp-sm">
+                    <span className="mb-stamp-word">Ditolak</span>
+                    <span className="mb-stamp-error mb-receipt-err">{err}</span>
+                  </span>
+                </td>
+                <td>
+                  <T id={whatId} en={whatEn} />
+                </td>
+                <td data-label-id="Tx tertambang" data-label-en="Mined tx">
+                  <a
+                    className="mb-link mb-ext mb-receipt-tx"
+                    href={`${SCAN}/tx/${tx}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={tx}
+                  >
+                    <span className="sr-only">
+                      <T id={`Transaksi ${err} di Arbiscan:`} en={`${err} transaction on Arbiscan:`} />{" "}
+                    </span>
+                    {short(tx)}
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <ul className="mb-ticks mb-p mb-judge-fine mt-1">
+          <li>
+            <T
+              id={
+                <>
+                  <strong>87 pengujian</strong> dengan cakupan baris, cabang, dan fungsi 100% pada kontrak, termasuk
+                  suite invarian: 7 invarian × 256 run × kedalaman 100 (Σ pos == suplai token; rupiah yang ditahan ≥
+                  suplai; tidak ada pembayaran yang pernah sampai ke alamat tanpa klaim).
+                </>
+              }
+              en={
+                <>
+                  <strong>87 tests</strong> with 100% line, branch and function coverage of the contracts, including an
+                  invariant suite of 7 invariants × 256 runs × depth 100 (Σ earmarks == token supply; rupiah held ≥
+                  supply; no payment ever reaches an unclaimed address).
+                </>
+              }
+            />
+          </li>
+          <li>
+            <T
+              id="Biaya dari tanda terima nyata: satu siklus jamaah yang berangkat 907.185 gas ≈ Rp 809; yang dikembalikan 582.938 gas ≈ Rp 520 (ETH/IDR 44.563.294, CoinGecko, 9 Okt 2026)."
+              en="Cost from the real receipts: a departed pilgrim's lifecycle is 907,185 gas ≈ Rp 809; a refunded one is 582,938 gas ≈ Rp 520 (ETH/IDR 44,563,294, CoinGecko, 9 Oct 2026)."
+            />
+          </li>
+        </ul>
+        <div className="mb-judge-contracts">
+          <span className="mb-label">
+            <T id="Kontrak terverifikasi di Arbiscan" en="Contracts verified on Arbiscan" />
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {CONTRACTS.map(([name, addr]) => (
+              <a
+                key={name}
+                className="mb-chip mb-chip-ink mb-ext mb-judge-chip"
+                href={`${SCAN}/address/${addr}#code`}
+                target="_blank"
+                rel="noreferrer"
+                title={addr}
+              >
+                {name} <span className="mb-data">{short(addr)}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
 
-    <section className="mb-sheet flex flex-col gap-3">
-      <h2 className="mb-h2">
-        <T id="Batasan yang jujur" en="Honest limits" />
-      </h2>
-      <ul className="mb-ticks mb-p text-[15px]">
-        <li>
-          <T
-            id="tIDR adalah token uji tanpa nilai: belum ada token rupiah berizin yang bisa dipakai di Arbitrum One. Pembungkusnya menerima ERC-20 biasa apa pun."
-            en="tIDR is a test token with no value: no licensed rupiah token is usable on Arbitrum One. The wrapper takes any plain ERC-20."
-          />
-        </li>
-        <li>
-          <T
-            id="Penerbit klaim adalah kunci demo yang menggantikan Kemenag / IATA. Penerbit yang dibobol bisa mensertifikasi vendor palsu; kerugiannya terbatas pada pos tiket, hotel, dan visa yang belum kedaluwarsa, dan itu sudah diuji."
-            en="The claim issuer is a demo key standing in for Kemenag / IATA. A captured issuer could certify a fake vendor; the damage is bounded to unexpired flight, hotel and visa lines and tested."
-          />
-        </li>
-        <li>
-          <T
-            id="Mabrur tidak bisa menjamin kursi: yang dijamin adalah tiket yang sudah dibayar, atau setiap rupiah yang belum terpakai kembali."
-            en="Mabrur cannot guarantee a seat: it guarantees a paid ticket, or every unspent rupiah back."
-          />
-        </li>
-      </ul>
-    </section>
+    <div className="mb-judge-row mt-10 lg:mt-14">
+      <section className="mb-sheet flex flex-col gap-3" aria-labelledby="judge-path">
+        <h2 className="mb-h2" id="judge-path">
+          <T id="Jalur 30 detik (tanpa dompet, tanpa instal)" en="The 30-second path (no wallet, no install)" />
+        </h2>
+        <ol className="mb-steps mb-p mt-2">
+          <li>
+            <Link className="mb-link mb-judge-step-link" href={`/app/jamaah?id=${AHMAD_ID}`}>
+              <T id="Buka booking Pak Ahmad" en="Open Pak Ahmad's booking" />
+            </Link>{" "}
+            <span className="mb-chip mb-chip-paid">LUNAS</span>
+            <span className="block mt-1">
+              <T
+                id="Tiket, hotel, dan visa dibayar ke penanda tangannya masing-masing; ujrah dibuka setelah ia menandatangani keberangkatan."
+                en="Flight, hotel and visa paid to their signers, fee released after his departure signature."
+              />
+            </span>
+          </li>
+          <li>
+            <Link className="mb-link mb-judge-step-link" href={`/app/jamaah?id=${SITI_ID}`}>
+              <T id="Buka booking Ibu Siti" en="Open Ibu Siti's booking" />
+            </Link>{" "}
+            <span className="mb-chip mb-chip-returned">DIKEMBALIKAN</span>
+            <span className="block mt-1">
+              <T
+                id="Tiketnya tidak dibeli sampai batas tiket, jadi pihak ketiga mengembalikan setiap rupiah yang belum terpakai."
+                en="No ticket bought by her ticket-by date, so a third party refunded every unspent rupiah."
+              />
+            </span>
+          </li>
+          <li>
+            <T
+              id="Buka empat percobaan yang ditolak di atas di Arbiscan: masing-masing adalah transaksi gagal yang tertambang, lengkap dengan nama error-nya."
+              en="Open the four rejected attempts above on Arbiscan: each is a mined, failed transaction with a named error."
+            />
+          </li>
+          <li>
+            <T
+              id={
+                <>
+                  Minta keputusan kontrak atas faktur Anda sendiri: tanda tangani satu di{" "}
+                  <Link className="mb-link" href="/app/vendor">
+                    halaman vendor
+                  </Link>
+                  , tempel JSON-nya di{" "}
+                  <Link className="mb-link" href="/app/agen">
+                    konsol agen
+                  </Link>{" "}
+                  (<em>Tempel faktur</em> → <em>Baca faktur</em>), lalu tekan <em>Simulasi saja</em> di sana. Konsol
+                  yang sama menampilkan panel regulator secara langsung.
+                </>
+              }
+              en={
+                <>
+                  Get the contract&apos;s verdict on your own invoice: sign one on the{" "}
+                  <Link className="mb-link" href="/app/vendor">
+                    vendor page
+                  </Link>
+                  , paste its JSON into the{" "}
+                  <Link className="mb-link" href="/app/agen">
+                    agency console
+                  </Link>{" "}
+                  (<em>Paste invoice</em> → <em>Read invoice</em>), then press <em>Simulate only</em> there. The same
+                  console shows the live regulator panel.
+                </>
+              }
+            />
+          </li>
+        </ol>
+      </section>
 
-    <section className="flex flex-wrap gap-3">
-      <a className="mb-btn mb-ext" href="https://github.com/edycutjong/mabrur" target="_blank" rel="noreferrer">
-        <T id="Repo GitHub" en="GitHub repo" />
-      </a>
-      <a
-        className="mb-btn mb-btn-ghost mb-ext"
-        href="https://github.com/edycutjong/mabrur/blob/main/DEMO.md"
-        target="_blank"
-        rel="noreferrer"
-      >
-        <T id="Buku besar DEMO.md" en="DEMO.md ledger" />
-      </a>
-      <Link className="mb-btn mb-btn-ghost mb-go" href="/app">
-        <T id="Buka aplikasi" en="Open the app" />
-      </Link>
-    </section>
+      <div className="flex flex-col gap-8 min-w-0">
+        <section className="mb-sheet flex flex-col gap-3" aria-labelledby="judge-repro">
+          <h2 className="mb-h2" id="judge-repro">
+            <T id="Reproduksi" en="Reproduce" />
+          </h2>
+          <span id="repro-label" className="sr-only">
+            <T
+              id="Perintah reproduksi: clone, jalankan tes Foundry, putar ulang transaksi"
+              en="Reproduce commands: clone, run the Foundry tests, replay a transaction"
+            />
+          </span>
+          <pre className="mb-pre" tabIndex={0} role="region" aria-labelledby="repro-label">
+            {REPRO}
+            <T
+              id="cast run <tx mana pun di atas> --rpc-url https://arb1.arbitrum.io/rpc --quick"
+              en="cast run <any tx above> --rpc-url https://arb1.arbitrum.io/rpc --quick"
+            />
+          </pre>
+          <p className="mb-p text-sm mb-muted">
+            <T
+              id="Setiap skrip demo mengirim transaksi ke Arbitrum One; tidak ada mode mock, offline, atau dry-run."
+              en="Every demo script broadcasts to Arbitrum One; there is no mock, offline or dry-run mode."
+            />
+          </p>
+        </section>
+
+        <section className="mb-sheet flex flex-col gap-3" aria-labelledby="judge-limits">
+          <h2 className="mb-h2" id="judge-limits">
+            <T id="Batasan yang jujur" en="Honest limits" />
+          </h2>
+          <ul className="mb-ticks mb-p mb-judge-fine">
+            <li>
+              <T
+                id="tIDR adalah token uji tanpa nilai: belum ada token rupiah berizin yang bisa dipakai di Arbitrum One. Pembungkusnya menerima ERC-20 biasa apa pun."
+                en="tIDR is a test token with no value: no licensed rupiah token is usable on Arbitrum One. The wrapper takes any plain ERC-20."
+              />
+            </li>
+            <li>
+              <T
+                id="Penerbit klaim adalah kunci demo yang menggantikan Kemenag / IATA. Penerbit yang dibobol bisa mensertifikasi vendor palsu; kerugiannya terbatas pada pos tiket, hotel, dan visa yang belum kedaluwarsa, dan itu sudah diuji."
+                en="The claim issuer is a demo key standing in for Kemenag / IATA. A captured issuer could certify a fake vendor; the damage is bounded to unexpired flight, hotel and visa lines and tested."
+              />
+            </li>
+            <li>
+              <T
+                id="Mabrur tidak bisa menjamin kursi: yang dijamin adalah tiket yang sudah dibayar, atau setiap rupiah yang belum terpakai kembali."
+                en="Mabrur cannot guarantee a seat: it guarantees a paid ticket, or every unspent rupiah back."
+              />
+            </li>
+          </ul>
+        </section>
+      </div>
+    </div>
   </div>
 );
 

@@ -473,9 +473,6 @@ const JamaahInner = ({ params }: { params: Params }) => {
   return (
     <PageShell>
       <header className="mb-8 lg:mb-10">
-        <Label className="mb-runhead">
-          <T id="Jamaah" en="Pilgrim" />
-        </Label>
         <h1 className="mb-title">
           {name ? (
             <T id={`Buku Amanah ${name}`} en={`${name}'s passbook`} />

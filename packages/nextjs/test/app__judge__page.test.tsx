@@ -34,7 +34,10 @@ describe("app/judge/page", () => {
       expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName(
         "Uang muka jamaah hanya bisa dipakai untuk perjalanannya sendiri.",
       );
-      expect(screen.getByText("Untuk juri · 30 detik")).toBeVisible();
+      const rules = screen.getAllByRole("list")[0];
+      expect(rules).toHaveClass("mb-rules");
+      expect(within(rules).getAllByRole("listitem")).toHaveLength(4);
+      expect(within(rules).getByText("Penerima uangnya selalu si penanda tangan.")).toBeVisible();
       expect(screen.getByText(/^Mabrur mengunci rupiah setiap jamaah per pos/)).toBeVisible();
       expect(screen.getByText(/^Mabrur earmarks each pilgrim/)).not.toBeVisible();
     });
@@ -54,11 +57,18 @@ describe("app/judge/page", () => {
 
     it("walks the 30-second path with working links", () => {
       render(<JudgePage />);
-      const list = screen.getAllByRole("list")[0];
+      const list = screen.getAllByRole("list").find(l => l.tagName === "OL")!;
       expect(within(list).getAllByRole("listitem")).toHaveLength(4);
-      const jamaah = within(list).getAllByRole("link", { name: "/app/jamaah" });
-      expect(jamaah[0]).toHaveAttribute("href", expect.stringContaining("/app/jamaah?id=9307128895"));
-      expect(jamaah[1]).toHaveAttribute("href", expect.stringContaining("/app/jamaah?id=3830303331"));
+      expect(within(list).getByRole("link", { name: "Buka booking Pak Ahmad" })).toHaveAttribute(
+        "href",
+        expect.stringContaining("/app/jamaah?id=9307128895"),
+      );
+      expect(within(list).getByRole("link", { name: "Buka booking Ibu Siti" })).toHaveAttribute(
+        "href",
+        expect.stringContaining("/app/jamaah?id=3830303331"),
+      );
+      expect(within(list).getByText("LUNAS")).toHaveClass("mb-chip-paid");
+      expect(within(list).getByText("DIKEMBALIKAN")).toHaveClass("mb-chip-returned");
       expect(screen.getByRole("link", { name: "halaman vendor" })).toHaveAttribute("href", "/app/vendor");
       expect(screen.getByRole("link", { name: "konsol agen" })).toHaveAttribute("href", "/app/agen");
       const step4 = within(list).getAllByRole("listitem")[3];
@@ -106,7 +116,10 @@ describe("app/judge/page", () => {
         ["ClaimRegistry", "0xd5B731CD0f2c91D5D64b59d9E4a2A4E4b6315ADb"],
         ["TIDR", "0x66F838be32A624f4C797483a151C7f6209A43448"],
       ])
-        expect(screen.getByRole("link", { name })).toHaveAttribute("href", `https://arbiscan.io/address/${addr}#code`);
+        expect(screen.getByRole("link", { name: new RegExp(`^${name} 0x`) })).toHaveAttribute(
+          "href",
+          `https://arbiscan.io/address/${addr}#code`,
+        );
     });
 
     it("labels the keyboard-scrollable reproduce block", () => {
@@ -142,7 +155,7 @@ describe("app/judge/page", () => {
       expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName(
         "A pilgrim's prepayment can only be spent on her own trip.",
       );
-      expect(screen.getByText("For judges · 30 seconds")).toBeVisible();
+      expect(screen.getByText("The payee is always that signer.")).toBeVisible();
       expect(screen.getByText(/^Mabrur earmarks each pilgrim/)).toBeVisible();
       expect(screen.getByText(/^Mabrur mengunci rupiah/)).not.toBeVisible();
     });
@@ -154,7 +167,8 @@ describe("app/judge/page", () => {
         expect(screen.getByRole("heading", { level: 2, name: h })).toBeInTheDocument();
       expect(screen.getByRole("link", { name: "vendor page" })).toHaveAttribute("href", "/app/vendor");
       expect(screen.getByRole("link", { name: "agency console" })).toHaveAttribute("href", "/app/agen");
-      const step4 = screen.getAllByRole("listitem")[3];
+      const ol = screen.getAllByRole("list").find(l => l.tagName === "OL")!;
+      const step4 = within(ol).getAllByRole("listitem")[3];
       expect(step4.querySelector(".t-en")).toHaveTextContent(
         "(Paste invoice → Read invoice), then press Simulate only there.",
       );

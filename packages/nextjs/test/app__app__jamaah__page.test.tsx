@@ -295,10 +295,10 @@ describe("app/app/jamaah/page.tsx", () => {
     render(<JamaahPage />);
     expect(screen.getByText(/Your prepayment/)).toBeTruthy();
   });
-  it("pilgrim label", () => {
+  it("pilgrim heading", () => {
     s();
     render(<JamaahPage />);
-    expect(screen.getByText("Jamaah")).toBeTruthy();
+    expect(screen.getByText("Buku Amanah Jamaah")).toBeTruthy();
   });
   it("total", () => {
     s();

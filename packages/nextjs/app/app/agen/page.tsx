@@ -716,9 +716,6 @@ const ConsoleInner = () => {
     <PageShell>
       <header className="mb-8 lg:mb-10 flex flex-wrap justify-between gap-4 items-end">
         <div className="w-full">
-          <Label className="mb-runhead">
-            <T id="Agen" en="Agency" />
-          </Label>
           <h1 className="mb-title">
             <T id="Konsol Agen" en="Agency console" />
           </h1>
