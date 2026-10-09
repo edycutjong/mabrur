@@ -1,0 +1,385 @@
+/* Mabrur — kuitansi-and-passbook. Light only: printed paper under a lit projector. Colour means state only. */
+:root {
+  --bg: #f4efe3;
+  --paper: #fffdf7;
+  --ink: #1a2238;
+  --muted: #5a6070;
+  --before: #8a5a0f;
+  --after: #2b3a9e;
+  --refused: #bf1f2f;
+  --rule: #d8cfba;
+  --before-wash: #f3e6cc;
+  --after-wash: #e6e8f5;
+  --refused-wash: #f8e1de;
+  --radius: 14px;
+  --font-display: var(--font-zilla), "Zilla Slab", "Roboto Slab", Georgia, serif;
+  --font-body: var(--font-jakarta), "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-data: var(--font-courier), "Courier Prime", "Courier New", monospace;
+}
+
+html,
+body,
+:root,
+[data-theme] {
+  background: var(--bg);
+  color: var(--ink);
+}
+body.mabrur {
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 500;
+}
+@media (min-width: 1024px) {
+  body.mabrur {
+    font-size: 19px;
+  }
+}
+::selection {
+  background: var(--before-wash);
+}
+.mabrur :focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* ── Type roles ─────────────────────────────────────────── */
+.mb-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 13px;
+  color: var(--muted);
+}
+@media (min-width: 1024px) {
+  .mb-label {
+    font-size: 15px;
+  }
+}
+.mb-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.1;
+  margin: 0;
+}
+@media (min-width: 1024px) {
+  .mb-title {
+    font-size: 40px;
+  }
+}
+.mb-h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.15;
+  margin: 0;
+}
+.mb-en {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.8em;
+  display: block;
+  margin-top: 2px;
+}
+.mb-data {
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: 15px;
+  word-break: break-all;
+}
+@media (min-width: 1024px) {
+  .mb-data {
+    font-size: 17px;
+  }
+}
+.mb-amount {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  font-size: 22px;
+  white-space: nowrap;
+}
+@media (min-width: 1024px) {
+  .mb-amount {
+    font-size: 30px;
+  }
+}
+.mb-terbilang {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 14px;
+}
+@media (min-width: 1024px) {
+  .mb-terbilang {
+    font-size: 16px;
+  }
+}
+.mb-num {
+  font-variant-numeric: tabular-nums;
+}
+.mb-big-date {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 56px;
+  line-height: 1;
+}
+@media (min-width: 1024px) {
+  .mb-big-date {
+    font-size: 88px;
+  }
+}
+.mb-p {
+  margin: 0;
+}
+
+/* ── Surfaces ───────────────────────────────────────────── */
+.mb-sheet {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative;
+}
+@media (min-width: 1024px) {
+  .mb-sheet {
+    padding: 28px;
+  }
+}
+.mb-perforation {
+  border-top: 2px dashed var(--rule);
+  margin: 20px -20px;
+}
+.mb-row {
+  border-bottom: 1px solid var(--rule);
+  padding: 12px 0;
+}
+.mb-row:last-child {
+  border-bottom: 0;
+}
+.mb-wash-before {
+  background: var(--before-wash);
+}
+.mb-wash-after {
+  background: var(--after-wash);
+}
+.mb-wash-refused {
+  background: var(--refused-wash);
+}
+
+.mb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 3px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  border: 1.5px solid currentColor;
+  white-space: nowrap;
+}
+.mb-chip-before {
+  color: var(--before);
+  background: var(--before-wash);
+}
+.mb-chip-after {
+  color: var(--after);
+  background: var(--after-wash);
+}
+.mb-chip-refused {
+  color: var(--refused);
+  background: var(--refused-wash);
+}
+.mb-chip-ink {
+  color: var(--ink);
+  background: var(--paper);
+}
+.mb-chip-muted {
+  color: var(--muted);
+  background: transparent;
+}
+
+/* ── Buttons: ink on paper or paper on ink, never a state colour ── */
+.mb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 17px;
+  background: var(--ink);
+  color: var(--paper);
+  border: 2px solid var(--ink);
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    background 120ms ease,
+    opacity 120ms ease;
+  text-align: center;
+}
+.mb-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.mb-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.mb-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.mb-btn-ghost {
+  background: var(--paper);
+  color: var(--ink);
+}
+.mb-btn-ghost:hover:not(:disabled) {
+  background: var(--bg);
+}
+.mb-btn-sm {
+  min-height: 36px;
+  padding: 4px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+}
+
+.mb-input,
+.mb-select,
+.mb-textarea {
+  width: 100%;
+  background: var(--paper);
+  border: 1.5px solid var(--rule);
+  border-bottom: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: var(--ink);
+  font: inherit;
+  min-height: 48px;
+}
+.mb-input.mb-data,
+.mb-textarea.mb-data {
+  font-family: var(--font-data);
+}
+.mb-textarea {
+  min-height: 120px;
+  font-family: var(--font-data);
+  font-size: 14px;
+}
+.mb-input:focus,
+.mb-select:focus,
+.mb-textarea:focus {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.mb-link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.mb-link:hover {
+  opacity: 0.75;
+}
+
+/* ── The cap stempel ────────────────────────────────────── */
+.mb-stamp {
+  --stamp-color: var(--refused);
+  --stamp-rot: -5deg;
+  display: inline-block;
+  color: var(--stamp-color);
+  border: 3px solid var(--stamp-color);
+  outline: 1.5px solid var(--stamp-color);
+  outline-offset: 3px;
+  border-radius: 6px;
+  padding: 6px 14px 8px;
+  transform: rotate(var(--stamp-rot));
+  mix-blend-mode: multiply;
+  background: transparent;
+  max-width: 100%;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.6 1.45'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.6 1.45'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>");
+  animation: mb-stamp-land 180ms cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+.mb-stamp-after {
+  --stamp-color: var(--after);
+  --stamp-rot: -4deg;
+}
+.mb-stamp-word {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 32px;
+  line-height: 1;
+}
+@media (min-width: 1024px) {
+  .mb-stamp-word {
+    font-size: 44px;
+  }
+}
+.mb-stamp-sm .mb-stamp-word {
+  font-size: 22px;
+}
+.mb-stamp-error {
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: 15px;
+  word-break: break-all;
+}
+@keyframes mb-stamp-land {
+  0% {
+    transform: rotate(var(--stamp-rot)) scale(1.35);
+    opacity: 0;
+  }
+  70% {
+    transform: rotate(var(--stamp-rot)) scale(0.97);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(var(--stamp-rot)) scale(1);
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mb-stamp {
+    animation: none;
+  }
+}
+
+.mb-strike {
+  text-decoration: line-through;
+  text-decoration-color: var(--refused);
+  text-decoration-thickness: 3px;
+}
+.mb-refused-text {
+  color: var(--refused);
+}
+.mb-after-text {
+  color: var(--after);
+}
+.mb-before-text {
+  color: var(--before);
+}
+.mb-muted {
+  color: var(--muted);
+}
+
+.mb-countdown {
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.mb-nav a {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+.mb-nav a[aria-current="page"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.mb-nav a:not([aria-current="page"]):hover {
+  background: var(--paper);
+}
