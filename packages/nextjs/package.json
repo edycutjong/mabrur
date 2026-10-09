@@ -15,7 +15,9 @@
     "vercel:login": "vercel login",
     "vercel:yolo": "vercel --build-env YARN_ENABLE_IMMUTABLE_INSTALLS=false --build-env ENABLE_EXPERIMENTAL_COREPACK=1 --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true --build-env VERCEL_TELEMETRY_DISABLED=1",
     "e2e": "playwright test",
-    "e2e:ui": "playwright test --ui"
+    "e2e:ui": "playwright test --ui",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@heroicons/react": "~2.2.0",
@@ -44,21 +46,31 @@
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "4.2.4",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "@trivago/prettier-plugin-sort-imports": "~6.0.2",
+    "@types/jsdom": "^30",
     "@types/node": "~18.19.130",
     "@types/react": "~19.2.14",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitest/coverage-v8": "^5.0.3",
     "abitype": "1.2.4",
     "bgipfs": "~0.0.18",
     "eslint": "~9.39.0",
     "eslint-config-next": "~16.2.4",
     "eslint-config-prettier": "~10.1.8",
     "eslint-plugin-prettier": "~5.5.5",
+    "jsdom": "^30.1.1",
     "postcss": "~8.5.10",
     "prettier": "~3.8.3",
     "tailwindcss": "4.2.4",
     "type-fest": "~5.6.0",
     "typescript": "~5.8.2",
-    "vercel": "~52.0.0"
+    "vercel": "~52.0.0",
+    "vite": "^8.3.2",
+    "vitest": "^5.0.3"
   },
   "packageManager": "yarn@4.13.0"
 }
