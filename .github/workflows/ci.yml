@@ -1,0 +1,104 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ── STAGE 1: Contracts (parallel with frontend + security) ──────────────
+  contracts:
+    name: "Stage 1 · Contracts (fmt, build, unit + fuzz + invariant, coverage)"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/foundry
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+      - name: Format check
+        run: forge fmt --check contracts test script
+      - name: Build (with contract sizes)
+        run: forge build --sizes
+      - name: Tests (unit, fuzz, invariant 256 runs x depth 100)
+        run: forge test -vv
+      - name: Coverage
+        run: forge coverage --report summary --report lcov --no-match-coverage "script|test"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: contracts-coverage
+          path: packages/foundry/lcov.info
+          retention-days: 7
+
+  frontend-quality:
+    name: "Stage 1 · Frontend quality (lint, types)"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ${{ github.event_name == 'push' && fromJSON('[20, 22]') || fromJSON('[22]') }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+      - run: yarn install --immutable
+      - name: Lint
+        run: yarn next:lint --max-warnings=0
+      - name: Type check
+        run: yarn next:check-types
+
+  # ── STAGE 2: Security (parallel) ─────────────────────────────────────────
+  dependency-audit:
+    name: "Stage 2 · Dependency audit"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+      - run: yarn install --immutable
+      - name: yarn npm audit (high + critical, production deps)
+        run: yarn npm audit --all --recursive --severity high --environment production
+        continue-on-error: true # advisory: transitive web3 deps; Dependabot tracks fixes
+
+  # ── STAGE 3: Build verification ─────────────────────────────────────────
+  build:
+    name: "Stage 3 · Next.js production build"
+    needs: [frontend-quality]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+      - run: yarn install --immutable
+      - run: yarn next:build
+      - name: Bundle size report
+        run: |
+          TOTAL=$(du -sk packages/nextjs/.next/static | cut -f1)
+          echo "Static assets: ${TOTAL}KB"
+          if [ "$TOTAL" -gt 8000 ]; then echo "::warning::static bundle ${TOTAL}KB exceeds 8000KB"; fi
+
+  # ── STAGE 6: Gate ───────────────────────────────────────────────────────
+  deploy-gate:
+    name: "Stage 6 · All gates passed"
+    needs: [contracts, build, dependency-audit]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - run: echo "Contracts, frontend, security and build gates passed."

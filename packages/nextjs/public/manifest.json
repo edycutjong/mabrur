@@ -1,5 +1,5 @@
 {
-  "name": "Scaffold-ETH 2 DApp",
-  "description": "A DApp built with Scaffold-ETH",
-  "iconPath": "logo.svg"
+  "name": "Mabrur",
+  "description": "Purpose-bound umrah prepayment: each pilgrim's rupiah earmarked onchain, payable only to claim-verified vendors, refundable by anyone.",
+  "iconPath": "icon.svg"
 }

@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 
-const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : `http://localhost:${process.env.PORT || 3000}`;
+// Canonical public URL: the custom domain (never the protected *.vercel.app alias).
+const baseUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_ENV === "production"
+    ? "https://mabrur.edycu.dev"
+    : `http://localhost:${process.env.PORT || 3000}`);
 const titleTemplate = "%s | Mabrur";
 
 export const getMetadata = ({
   title,
   description,
-  imageRelativePath = "/thumbnail.jpg",
+  imageRelativePath = "/og-image.png",
 }: {
   title: string;
   description: string;
@@ -29,13 +32,19 @@ export const getMetadata = ({
         template: titleTemplate,
       },
       description: description,
+      siteName: "Mabrur",
+      type: "website",
       images: [
         {
           url: imageUrl,
+          width: 2400,
+          height: 1260,
+          alt: "Mabrur — purpose-bound umrah prepayment on Arbitrum One",
         },
       ],
     },
     twitter: {
+      card: "summary_large_image",
       title: {
         default: title,
         template: titleTemplate,
@@ -46,9 +55,8 @@ export const getMetadata = ({
     icons: {
       icon: [
         {
-          url: "/favicon.png",
-          sizes: "32x32",
-          type: "image/png",
+          url: "/icon.svg",
+          type: "image/svg+xml",
         },
       ],
     },

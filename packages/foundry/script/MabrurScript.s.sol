@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Script, console} from "forge-std/Script.sol";
-import {TIDR} from "../contracts/TIDR.sol";
-import {ClaimRegistry} from "../contracts/ClaimRegistry.sol";
-import {MabrurPBM} from "../contracts/MabrurPBM.sol";
+import { Script, console } from "forge-std/Script.sol";
+import { TIDR } from "../contracts/TIDR.sol";
+import { ClaimRegistry } from "../contracts/ClaimRegistry.sol";
+import { MabrurPBM } from "../contracts/MabrurPBM.sol";
 
 /// @notice Shared plumbing for the demo scripts. Keys come from the environment (~/.config/mabrur/keys.env,
 ///         loaded by script/run.sh) and never live in this repo. Addresses come from TIDR_ADDR / REGISTRY_ADDR / PBM_ADDR.
