@@ -17,7 +17,9 @@
 <meta name="twitter:image" content="https://mabrur.edycu.dev/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Courier+Prime:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Courier+Prime:wght@400;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Courier+Prime:wght@400;700&display=swap"></noscript>
 <style>
 :root {
   --bg:      #F4EFE3;
@@ -73,7 +75,7 @@ h2 em, h1 em { font-style: normal; color: var(--before); background: linear-grad
 .chip.warn { border-color: var(--before); color: var(--before); }
 
 /* stamp — signature element, same as the landing */
-.stamp { position: absolute; z-index: 3; display: inline-block; padding: 10px 20px 11px; border: 6px double currentColor; border-radius: 8px; font: 700 40px/1 var(--font-display); letter-spacing: .14em; text-transform: uppercase; transform: rotate(var(--rot, -6deg)); mix-blend-mode: multiply; white-space: nowrap; pointer-events: none;
+.stamp { position: absolute; z-index: 3; display: inline-block; padding: 12px 24px 13px; border: 7px double currentColor; border-radius: 8px; font: 700 50px/1 var(--font-display); letter-spacing: .14em; text-transform: uppercase; transform: rotate(var(--rot, -6deg)); mix-blend-mode: multiply; white-space: nowrap; pointer-events: none;
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.75'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.75'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E"); }
 .stamp small { display: block; font: 700 22px/1.2 var(--font-data); letter-spacing: 0; text-transform: none; margin-top: 6px; }
@@ -94,7 +96,7 @@ h2 em, h1 em { font-style: normal; color: var(--before); background: linear-grad
 .line.held { background: linear-gradient(90deg, var(--before-wash), transparent 70%); }
 .line.paid .amt { color: var(--after); }
 .line.refused { background: linear-gradient(90deg, var(--refused-wash), transparent 80%); }
-.line .stamp { left: 29%; top: 50%; margin-top: -40px; }
+.line .stamp { left: 27%; top: 50%; margin-top: -46px; }
 .total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 18px; }
 .total strong { font: 700 44px var(--font-display); }
 .terbilang { font: italic 500 22px var(--font-display); color: var(--muted); }
@@ -160,6 +162,8 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
 .notes.on { display: block; }
 .notes .label { color: #E9C891; font-size: 13px; }
 .slide aside.note { display: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.on-dark .hint, .on-dark .hud, .on-dark .ver { color: #C9CEDC !important; }
 @media print {
   @page { size: 1920px 1080px; margin: 0; }
   html, body { overflow: visible; height: auto; background: none; }
@@ -167,7 +171,7 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
   .stage { transform: none !important; position: static; width: 1920px; height: auto; }
   .slide { display: flex !important; flex-direction: column; position: relative; width: 1920px; height: 1080px; break-after: page; page-break-after: always; }
   .slide .up, .slide .stamp.anim { animation: none !important; opacity: 1 !important; }
-  .hud, .hint, .notes { display: none !important; }
+  .hud, .hint, .notes, .ver { display: none !important; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 @media (prefers-reduced-motion: reduce) { .slide.on .up, .slide.on .stamp.anim { animation: none !important; } }
@@ -204,16 +208,16 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
 <!-- 2 · MASALAH -->
 <section class="slide" data-title="Masalah">
   <div class="label kicker">01 · Masalah</div>
-  <h2>Uang jamaah baru membayar keberangkatan <em>jamaah lama.</em></h2>
-  <div class="cols c2 mid" style="gap:28px">
-    <div style="display:grid;gap:22px">
-      <div class="paper clip up"><div class="big">63.310<small>jamaah</small></div><div class="what"><b>First Travel</b> · Rp 905 miliar hilang</div><div class="src">Kompas, 5 Jan 2023</div></div>
-      <div class="paper clip up" style="--u:.1s"><div class="big">86.720<small>jamaah</small></div><div class="what"><b>Abu Tours</b> · ±Rp 1,8 triliun</div><div class="src">Kompas, 29 Jan 2019</div></div>
-    </div>
-    <div style="display:grid;gap:22px;align-content:start">
-      <div class="paper clip scale up" style="--u:.2s"><div class="big">±1,4<small>juta jamaah</small></div><div class="what">umrah lewat PPIU, 2024</div><div class="src">HIMPUH, 18 Feb 2025 (sekunder)</div></div>
-      <div class="up" style="--u:.3s;font:600 38px/1.3 var(--font-display);padding:18px 8px">Rekening bank tidak bisa menolak perintah transfer dari agen.</div>
-    </div>
+  <div class="mid" style="text-align:center;display:grid;justify-items:center;gap:6px">
+    <div class="up" style="font:700 300px/.9 var(--font-display);letter-spacing:-.04em;color:var(--refused)">63.310</div>
+    <div class="up" style="--u:.1s;font:700 54px/1.15 var(--font-display)">jamaah First Travel gagal berangkat · <span style="color:var(--refused)">Rp 905 miliar</span></div>
+    <div class="up mono" style="--u:.15s;font-size:22px;color:var(--muted);margin-top:8px">Kompas, 5 Jan 2023</div>
+    <div class="up" style="--u:.25s;font:italic 500 40px/1.35 var(--font-display);color:var(--muted);margin-top:30px;max-width:1300px">Uang jamaah baru membayar keberangkatan jamaah lama, sampai semuanya runtuh.</div>
+  </div>
+  <div class="up" style="--u:.35s;display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:22px;margin-bottom:10px">
+    <div class="paper" style="padding:22px 28px;border-left:8px solid var(--refused);border-radius:6px var(--radius) var(--radius) 6px"><b style="font:700 48px var(--font-display)">86.720</b> <span style="font-size:24px;display:block">jamaah Abu Tours · ±Rp 1,8 triliun</span><div class="mono" style="font-size:18px;color:var(--muted)">Kompas, 29 Jan 2019</div></div>
+    <div class="paper" style="padding:22px 28px;border-left:8px solid var(--before);border-radius:6px var(--radius) var(--radius) 6px"><b style="font:700 48px var(--font-display)">±1,4 juta</b> <span style="font-size:24px;display:block">jamaah lewat PPIU, 2024</span><div class="mono" style="font-size:18px;color:var(--muted)">HIMPUH, 18 Feb 2025 (sekunder)</div></div>
+    <div style="font:600 34px/1.3 var(--font-display);align-self:center;padding-left:12px">Rekening bank tidak bisa menolak perintah transfer dari agen.</div>
   </div>
   <aside class="note">Tahun 2017, First Travel membuat 63.310 jamaah gagal umrah, Rp 905 miliar. Abu Tours: 86.720 jamaah. Polanya sama: uang jamaah baru membiayai keberangkatan jamaah lama. Setiap tahun sekitar 1,4 juta jamaah berangkat lewat PPIU, dan uangnya masih masuk ke satu rekening agen. Rekening bank tidak bisa menolak perintah agen.</aside>
 </section>
@@ -253,23 +257,38 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
   <aside class="note">Aset dunia nyatanya bukan token spekulatif: ini hak jamaah atas layanan berizin. Lima pelaku nyata: jamaah memesan dengan satu tanda tangan, penerbit klaim (di demo: kunci pengganti Kemenag / IATA) mengakui vendor, vendor menandatangani faktur, agen hanya meneruskan, dan siapa pun bisa mengembalikan dana. mUMRAH tidak bisa dipindahtangankan.</aside>
 </section>
 
-<!-- 5 · ONCHAIN: DEMO -->
-<section class="slide" data-title="Implementasi onchain · demo">
-  <div class="label kicker">04 · Implementasi onchain</div>
-  <h2 style="font-size:72px">Agen mencoba. <em>Kontrak menolak.</em></h2>
-  <div class="cols c64 mid" style="gap:40px;align-items:start">
+<!-- 5 · ONCHAIN: PROOF MOMENT -->
+<section class="slide" data-title="Implementasi onchain · bukti">
+  <div class="label kicker">04 · Implementasi onchain · bukti</div>
+  <div class="mid" style="display:grid;justify-items:center;text-align:center;gap:26px">
+    <div class="up" style="font:600 40px/1.3 var(--font-display);color:var(--muted);max-width:1400px">Agen membayar hotel Ibu Siti dari dana Pak Ahmad.</div>
+    <div style="position:relative;height:380px;width:1100px">
+      <span class="stamp no anim" style="--rot:-6deg;--d:.5s;font-size:140px;left:50%;top:50%;translate:-50% -50%;border-width:12px;padding:18px 44px 22px">Ditolak<small style="font-size:46px;margin-top:10px">EarmarkMismatch</small></span>
+    </div>
+    <a class="up mono" style="--u:.9s;font-size:31px;color:var(--ink);text-decoration:none;border-bottom:3px solid var(--rule);padding-bottom:6px" href="https://arbiscan.io/tx/0x9ed30e3802f988fb2219a08c9d184ab779da13d2afbc7f9314d0ab3fa0bbc316">0x9ed30e3802f988fb2219a08c9d184ab779da13d2afbc7f9314d0ab3fa0bbc316</a>
+    <div class="up" style="--u:1s;font-size:26px;color:var(--muted)">transaksi gagal yang <b style="color:var(--ink)">ditambang</b> di Arbitrum One · buka di Arbiscan, nama error-nya ada di sana</div>
+  </div>
+  <div class="up" style="--u:1.1s;display:flex;justify-content:center;gap:56px;margin-bottom:6px">
+    <span class="mono" style="font-size:22px;color:var(--muted)"><b style="color:var(--refused);font-size:26px">VendorClaimMissing</b> 0x887d6b86…</span>
+    <span class="mono" style="font-size:22px;color:var(--muted)"><b style="color:var(--refused);font-size:26px">InvoiceReplayed</b> 0x952f30ad…</span>
+    <span class="mono" style="font-size:22px;color:var(--muted)"><b style="color:var(--refused);font-size:26px">NotDeparted</b> 0xe4855ebd…</span>
+  </div>
+  <aside class="note">Ini momen intinya. Agen mencoba membayar hotel Ibu Siti dari dana Pak Ahmad. Kontrak menolak: EarmarkMismatch. Ini bukan simulasi di layar: transaksi gagal ini ditambang di Arbitrum One, hash-nya di sini, bisa dibuka siapa pun. Tiga kecurangan lain juga ditambang dan ditolak: faktur direktur sendiri, faktur ganda, dan ujrah sebelum berangkat.</aside>
+</section>
+
+<!-- 6 · ONCHAIN: DEMO -->
+<section class="slide" data-title="Implementasi onchain · aplikasi">
+  <div class="label kicker">04 · Implementasi onchain · aplikasi</div>
+  <h2 style="font-size:72px">Di aplikasi, capnya mendarat <em>di baris yang tepat.</em></h2>
+  <div class="cols c64 mid" style="gap:44px;align-items:center">
     <div class="paper shot up"><div class="bar"><i></i><i></i><i></i>mabrur.edycu.dev/app/agen</div><img src="/pitch/assets/ditolak-earmark.webp" width="1280" height="870" alt="Konsol agen: cap DITOLAK EarmarkMismatch pada faktur hotel Ibu Siti yang dicoba di booking Pak Ahmad."></div>
-    <div class="ledger up" style="--u:.15s">
-      <div class="label">4 revert ditambang · Arbiscan</div>
-      <ol style="margin-top:12px">
-        <li><span>Faktur Siti di booking Ahmad</span><span class="res">EarmarkMismatch</span><span class="tx">0x9ed30e38…</span></li>
-        <li><span>Faktur ditandatangani direktur</span><span class="res">VendorClaimMissing</span><span class="tx">0x887d6b86…</span></li>
-        <li><span>Faktur dikirim ulang</span><span class="res">InvoiceReplayed</span><span class="tx">0x952f30ad…</span></li>
-        <li><span>Ujrah sebelum berangkat</span><span class="res">NotDeparted</span><span class="tx">0xe4855ebd…</span></li>
-      </ol>
+    <div class="rules up" style="--u:.15s">
+      <div class="paper rule"><span class="n" style="font-size:40px">→</span><div><h3 style="font-size:32px">Simulasi saja</h3><p>keputusan kontrak dari Arbitrum One, tanpa dompet, tanpa transaksi</p></div></div>
+      <div class="paper rule"><span class="n" style="font-size:40px">→</span><div><h3 style="font-size:32px">Penerima = penanda tangan</h3><p>tidak ada kolom alamat yang bisa diisi agen</p></div></div>
+      <div class="paper rule"><span class="n" style="font-size:40px">→</span><div><h3 style="font-size:32px">Coba sendiri</h3><p class="mono">mabrur.edycu.dev/app/agen</p></div></div>
     </div>
   </div>
-  <aside class="note">Ini aplikasinya, live di Arbitrum One. Agen memuat faktur hotel Ibu Siti dan mencoba membayarnya dari dana Pak Ahmad: kontrak menolak, EarmarkMismatch, capnya mendarat di baris itu. Empat kecurangan ini juga sudah kami tambang sebagai transaksi gagal di mainnet: faktur orang lain, faktur direktur sendiri, faktur ganda, dan ujrah sebelum berangkat. Semuanya bisa dibuka di Arbiscan.</aside>
+  <aside class="note">Di aplikasinya sama: konsol agen memuat faktur, tombol Simulasi saja meminta keputusan kontrak dari Arbitrum One tanpa dompet, dan capnya mendarat di baris faktur itu. Penerimanya selalu penanda tangan faktur; tidak ada kolom alamat. Silakan coba sendiri.</aside>
 </section>
 
 <!-- 6 · ONCHAIN: CONTRACTS -->
@@ -296,19 +315,19 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
 <!-- 7 · DAMPAK -->
 <section class="slide" data-title="Dampak">
   <div class="label kicker">05 · Dampak</div>
-  <h2>Mengunci uang satu jamaah: <em>Rp 809.</em></h2>
-  <div class="cols mid" style="grid-template-columns:.9fr 1.1fr;gap:40px;align-items:center">
-    <div class="paper up" style="padding:34px 38px;display:grid;gap:8px">
-      <div class="label">Biaya gas dari receipt asli</div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px dashed var(--rule);padding:16px 0"><span style="font-size:28px">Jamaah berangkat</span><span class="big" style="color:var(--after);font-size:110px">Rp 809</span></div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px dashed var(--rule);padding:16px 0"><span style="font-size:28px">Jamaah di-refund</span><span class="big" style="color:var(--after);font-size:110px">Rp 520</span></div>
-      <div style="font-size:26px;padding-top:12px">≈ <b>0,0025 %</b> dari paket Rp 32.000.000</div>
-      <div class="mono" style="font-size:17px;color:var(--muted)">907.185 gas · ETH/IDR 44.563.294 · CoinGecko 9 Okt 2026</div>
+  <div class="mid" style="display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center">
+    <div class="up" style="display:grid;gap:10px">
+      <div class="label">Mengunci uang satu jamaah, dari pesan sampai berangkat</div>
+      <div style="font:700 250px/.9 var(--font-display);letter-spacing:-.04em;color:var(--after)">Rp 809</div>
+      <div class="terbilang" style="font-size:34px;margin-top:22px">Terbilang: delapan ratus sembilan rupiah</div>
+      <div style="font-size:28px;margin-top:14px">≈ <b>0,0025 %</b> dari paket Rp 32.000.000 · refund: <b>Rp 520</b></div>
+      <div class="mono" style="font-size:19px;color:var(--muted)">907.185 gas · ETH/IDR 44.563.294 · CoinGecko 9 Okt 2026 · receipt asli</div>
     </div>
-    <div class="up" style="--u:.15s;background:var(--after-wash);border-radius:var(--radius);padding:34px 38px;display:grid;gap:16px">
+    <div class="up" style="--u:.15s;background:var(--after-wash);border-radius:var(--radius);padding:38px 40px;display:grid;gap:18px">
       <div class="label" style="color:var(--after)">Ibu Siti · tiket tidak dibeli</div>
-      <div style="font:700 64px/1.05 var(--font-display)">Rp 23.000.000 kembali, ditekan pihak ketiga.</div>
+      <div style="font:700 60px/1.05 var(--font-display)">Rp 23.000.000 kembali, ditekan pihak ketiga.</div>
       <img src="/pitch/assets/dikembalikan-siti.webp" width="1590" height="390" alt="Cap DIKEMBALIKAN Rp 23.000.000 ke Ibu Siti." style="width:100%;height:auto;border-radius:10px;border:1.5px solid #cdd2ec">
+      <div style="font-size:24px;color:var(--ink)">Tanpa izin agen, tanpa pengadilan.</div>
     </div>
   </div>
   <aside class="note">Dampaknya: mengunci uang satu jamaah dari pesan sampai berangkat butuh gas sekitar Rp 809, kira-kira 0,0025 persen dari paket. Dan saat batas tiket Ibu Siti lewat tanpa tiket dibeli, pihak ketiga menekan refund dan Rp 23.000.000 kembali kepadanya, tanpa izin agen. Untuk agen jujur tidak ada yang berubah: vendor tetap bisa dibayar kapan saja; hanya ujrah yang menunggu keberangkatan.</aside>
@@ -400,7 +419,7 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
   <div class="label kicker"><span class="app-tag">Lampiran A6</span> Pembanding</div>
   <h2 style="font-size:72px">Bank menjawab <em>di mana.</em> Mabrur menjawab <em>untuk apa.</em></h2>
   <table class="cmp up mid" style="font-size:30px">
-    <thead><tr><th></th><th>Rekening penampungan</th><th>Escrow bertahap</th><th>Mabrur</th></tr></thead>
+    <thead><tr><th><span class="sr-only">Aspek</span></th><th>Rekening penampungan</th><th>Escrow bertahap</th><th>Mabrur</th></tr></thead>
     <tbody>
       <tr><td><b>Pemisahan per jamaah</b></td><td>rekening gabungan</td><td>satu kolam</td><td>per booking, di token</td></tr>
       <tr><td><b>Penerima dipilih oleh</b></td><td>agen</td><td>agen</td><td>penanda tangan faktur</td></tr>
@@ -413,14 +432,14 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
 
 </main>
 </div>
-<div class="hint">← → navigasi · N catatan pembicara · ⌘P → PDF</div>
-<div class="hud"><span id="count">01 / 08</span><button type="button" id="prev" aria-label="Slide sebelumnya">←</button><button type="button" id="next" aria-label="Slide berikutnya">→</button><button type="button" id="notesBtn" aria-label="Catatan pembicara">N</button></div>
-<div class="notes" id="notes" aria-live="polite"><div class="label">Catatan pembicara · <span id="ntitle"></span></div><p id="ntext"></p></div>
-<div style="position:fixed;top:12px;right:18px;font:400 12px var(--font-data);color:var(--muted);z-index:10">v1 · 9 Okt 2026</div>
+<nav aria-label="Navigasi deck"><div class="hint">← → navigasi · N catatan pembicara · ⌘P → PDF</div>
+<div class="hud"><span id="count">01 / 09</span><button type="button" id="prev" aria-label="Slide sebelumnya">←</button><button type="button" id="next" aria-label="Slide berikutnya">→</button><button type="button" id="notesBtn" aria-label="Catatan pembicara">N</button></div>
+<div class="ver" style="position:fixed;top:12px;right:18px;font:400 12px var(--font-data);color:var(--muted);z-index:10">v2 · 9 Okt 2026</div></nav>
+<aside class="notes" id="notes" aria-live="polite" aria-label="Catatan pembicara"><div class="label">Catatan pembicara · <span id="ntitle"></span></div><p id="ntext"></p></aside>
 <script>
 (function () {
   var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
-  var MAIN = 8, i = 0, stage = document.getElementById("stage");
+  var MAIN = 9, i = 0, stage = document.getElementById("stage");
   function label(k) { return k < MAIN ? String(k + 1).padStart(2, "0") + " / " + String(MAIN).padStart(2, "0") : "A" + (k - MAIN + 1) + " · lampiran"; }
   function fit() {
     var w = document.documentElement.clientWidth, h = document.documentElement.clientHeight;
@@ -431,6 +450,7 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
     i = Math.max(0, Math.min(slides.length - 1, k));
     slides.forEach(function (s, j) { s.classList.toggle("on", j === i); s.setAttribute("aria-hidden", j === i ? "false" : "true"); });
     document.getElementById("count").textContent = label(i);
+    document.body.classList.toggle("on-dark", slides[i].classList.contains("dark"));
     var n = slides[i].querySelector("aside.note");
     document.getElementById("ntitle").textContent = slides[i].dataset.title;
     document.getElementById("ntext").textContent = n ? n.textContent : "";

@@ -23,7 +23,9 @@
 <meta name="twitter:image" content="https://mabrur.edycu.dev/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Courier+Prime:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Courier+Prime:wght@400;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Courier+Prime:wght@400;700&display=swap"></noscript>
 <style>
 :root {
   --bg:      #F4EFE3;
@@ -62,6 +64,7 @@ img { max-width: 100%; height: auto; display: block; }
 .wrap { width: min(1240px, 100% - 40px); margin-inline: auto; }
 .label { font: 700 12.5px/1.3 var(--font-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .mono { font-family: var(--font-data); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .en-line { color: var(--muted); font-size: .82em; display: block; font-weight: 500; }
 .t-en { display: none; }
 html.lang-en .t-en { display: revert; } html.lang-en .t-id { display: none; }
@@ -142,13 +145,23 @@ section { padding: 104px 0; position: relative; }
 .stamp.no { color: var(--refused); }
 .stamp.ok { color: var(--after); }
 .line .stamp { left: 34%; top: 50%; margin-top: -28px; font-size: 25px; }
-.js .slip .stamp { animation: land .26s cubic-bezier(.3, 1.5, .55, 1) both; animation-delay: var(--d, 1s); }
-.js .slip .line { animation: wash .01s linear both; animation-delay: var(--d, 1s); }
+.js .slip:not(.go) .stamp { opacity: 0; }
+.js .slip:not(.go) .line { background: transparent; }
+.js .slip.go .stamp, .js .mini-slip .stamp { animation: land .26s cubic-bezier(.3, 1.5, .55, 1) both; animation-delay: var(--d, 1s); }
+.js .slip.go .line { animation: wash .01s linear both; animation-delay: var(--d, 1s); }
 @keyframes land { 0% { opacity: 0; transform: rotate(var(--rot, -6deg)) scale(1.45); filter: blur(2px); } 70% { opacity: 1; transform: rotate(var(--rot, -6deg)) scale(.96); filter: none; } 100% { opacity: 1; transform: rotate(var(--rot, -6deg)) scale(1); } }
 @keyframes wash { from { background: transparent; } }
 .slip-caption { margin-top: 30px; font-size: 13.5px; color: var(--muted); max-width: 52ch; }
 .slip-caption a { font-weight: 700; color: var(--ink); }
 
+.mini-slip { display: none; }
+@media (max-width: 640px) {
+  .mini-slip { display: block; position: relative; background: var(--paper); border-radius: 12px 12px 0 0; box-shadow: var(--shadow); padding: 8px 14px 6px; margin: 4px 0 26px; transform: rotate(-.8deg); }
+  .mini-slip:after { content: ""; position: absolute; left: 0; right: 0; bottom: -11px; height: 12px; background: linear-gradient(-45deg, transparent 8px, var(--paper) 8px) 0 0 / 16px 12px repeat-x, linear-gradient(45deg, transparent 8px, var(--paper) 8px) 0 0 / 16px 12px repeat-x; }
+  .mini-slip .label { font-size: 10.5px; }
+  .mini-slip .line { margin: 0 -6px; padding: 10px 6px; border-bottom: 0; }
+  .mini-slip .stamp { position: absolute; left: 30%; top: 50%; margin-top: -26px; font-size: 20px; }
+}
 /* ---------- receipts ---------- */
 .receipts { padding: 0; }
 .receipt-band { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 3px double var(--ink); border-bottom: 1px solid var(--ink); background: var(--paper); box-shadow: var(--shadow); }
@@ -195,11 +208,12 @@ section { padding: 104px 0; position: relative; }
 .ledger h3 { font-size: 22px; margin: 6px 0 4px; }
 .ledger ol { list-style: none; margin: 14px 0 0; padding: 0; }
 .ledger li { display: grid; grid-template-columns: 1fr; gap: 3px; padding: 11px 0; border-top: 1px dashed var(--rule); font-size: 14px; line-height: 1.4; }
-.ledger .res { font: 700 14px var(--font-data); }
+.ledger .res { justify-self: start; font: 700 13px/1.25 var(--font-data); border: 3px double currentColor; border-radius: 5px; padding: 3px 9px; margin: 4px 0 2px; transform: rotate(var(--rot, -2.5deg)); }
+.ledger li:nth-child(even) .res { --rot: 1.5deg; }
 .ledger .res.no { color: var(--refused); } .ledger .res.ok { color: var(--after); }
 .ledger .tx { font: 400 12.5px var(--font-data); color: var(--muted); }
-.js .ledger li.pending { opacity: .18; }
-.ledger li { transition: opacity .5s var(--ease); }
+.js .ledger li.pending .res { visibility: hidden; }
+.ledger li.landed .res { animation: land .26s cubic-bezier(.3, 1.5, .55, 1) both; }
 .ledger .foot { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
 
 /* ---------- mechanism bento ---------- */
@@ -306,6 +320,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; font-weight: 600; }
 @media (prefers-reduced-motion: reduce) {
   *, *:before, *:after { animation: none !important; transition: none !important; }
   .js .rise { opacity: 1; transform: none; }
+  .js .slip:not(.go) .stamp { opacity: 1; }
   html { scroll-behavior: auto; }
 }
 @media (max-width: 1020px) {
@@ -327,7 +342,8 @@ footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; font-weight: 600; }
   section { padding: 72px 0; }
   .wrap { width: calc(100% - 32px); }
   .hero { padding: 36px 0 64px; }
-  .hero .en-line { font-size: 17px; }
+  .hero .en-line { font-size: 16px; margin-bottom: 14px; }
+  .hero h1 { margin: 16px 0 10px; }
   .lede { font-size: 17px; }
   .slip { padding: 20px 16px 18px; transform: none; }
   .line .amt { font-size: 16px; }
@@ -354,6 +370,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; font-weight: 600; }
   .panel { display: block !important; break-inside: avoid; }
   body { background: #fff; }
   .js .rise { opacity: 1; transform: none; }
+  .js .slip .stamp { opacity: 1 !important; }
   .faq details { display: block; } .faq .ans { display: grid; }
 }
 </style>
@@ -372,7 +389,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; font-weight: 600; }
       <a href="#faq">FAQ</a>
       <a href="/pitch">Pitch deck</a>
     </nav>
-    <button class="lang" type="button" id="lang" aria-label="Ganti bahasa / switch language"><span aria-current="true" data-l="id">ID</span> <span data-l="en">EN</span></button>
+    <button class="lang" type="button" id="lang" aria-label="ID EN · Ganti bahasa / switch language"><span aria-current="true" data-l="id">ID</span> <span data-l="en">EN</span></button>
     <a class="btn small primary" href="/app/jamaah">Buka aplikasi</a>
   </div>
 </header>
@@ -385,6 +402,10 @@ footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; font-weight: 600; }
       <div class="label eyebrow">ETHJKT × HackQuest 2026 · Track Build the Real World Onchain</div>
       <h1>Uang umrah Pak Ahmad hanya mau <em>berangkat bersamanya.</em></h1>
       <span class="en-line">Pak Ahmad’s umrah money only departs with him.</span>
+      <div class="mini-slip" aria-hidden="true">
+        <div class="label">Kuitansi amanah · Pak Ahmad</div>
+        <div class="line refused"><div class="what"><b>Hotel</b><small class="mono">faktur Ibu Siti</small></div><div class="amt">Rp 9.000.000</div><span class="stamp no" style="--rot:-7deg;--d:.9s">Ditolak<small>EarmarkMismatch</small></span></div>
+      </div>
       <p class="lede t-id">First Travel memakai uang <b>63.310 jamaah</b> untuk memberangkatkan jamaah lain: kerugian <b>Rp 905 miliar</b>. Mabrur mengunci setiap rupiah setoran <b>per jamaah, per pos</b> di Arbitrum One. Agen hanya bisa membayar faktur vendor berizin untuk jamaah itu sendiri, dan kalau tiket tidak dibeli, <b>siapa pun</b> bisa mengembalikan sisa dananya.</p>
       <p class="lede t-en">First Travel spent the money of <b>63,310 pilgrims</b> to fly other pilgrims: <b>Rp 905 billion</b> lost. Mabrur locks every prepaid rupiah <b>per pilgrim, per line</b> on Arbitrum One. The agency can only pay a licensed vendor’s invoice for that same pilgrim, and if no ticket is bought, <b>anyone</b> can return the unspent money.</p>
       <div class="ctas">
@@ -706,10 +727,10 @@ footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; font-weight: 600; }
       <div class="step"><span class="n">4 · AGEN</span><h3>Bayar</h3><p class="t-id">Agen hanya meneruskan faktur; uang mengalir ke penanda tangan.</p><p class="t-en">The agency only forwards the invoice; money flows to the signer.</p><span class="code">spend()</span></div>
       <div class="step"><span class="n">5 · SIAPA PUN</span><h3>Kembalikan</h3><p class="t-id">Lewat batas tiket tanpa tiket lunas: sisa dana kembali ke jamaah.</p><p class="t-en">Ticket-by passes unpaid: the remainder returns to the pilgrim.</p><span class="code">refund()</span></div>
     </div>
-    <div class="compare rise">
+    <div class="compare rise" tabindex="0" role="region" aria-label="Tabel pembanding: rekening penampungan bank, escrow bertahap, Mabrur (geser ke samping di layar kecil)">
       <table>
         <caption class="label" style="text-align:left;padding:16px 18px 0">Mengapa bukan rekening penampungan bank atau escrow bertahap?</caption>
-        <thead><tr><th scope="col"></th><th scope="col">Rekening penampungan bank</th><th scope="col">Escrow bertahap</th><th scope="col">Mabrur</th></tr></thead>
+        <thead><tr><th scope="col"><span class="sr-only">Aspek</span></th><th scope="col">Rekening penampungan bank</th><th scope="col">Escrow bertahap</th><th scope="col">Mabrur</th></tr></thead>
         <tbody>
           <tr><th scope="row">Pemisahan per jamaah</th><td>satu rekening gabungan</td><td>satu kolam atau per transaksi</td><td>dana per booking, ditegakkan di token</td></tr>
           <tr><th scope="row">Siapa memilih penerima</th><td>agen memberi instruksi ke bank</td><td>agen menulis alamat</td><td>tidak ada: penanda tangan faktur terverifikasi</td></tr>
@@ -937,7 +958,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; font-weight: 600; }
   var ledger = document.getElementById("ledger");
   var rows = ledger ? Array.prototype.slice.call(ledger.children) : [];
   if (!reduce) rows.forEach(function (r) { r.classList.add("pending"); });
-  function replay() { rows.forEach(function (r, i) { setTimeout(function () { r.classList.remove("pending"); }, 220 + i * 420); }); }
+  function replay() { rows.forEach(function (r, i) { setTimeout(function () { r.classList.remove("pending"); r.classList.add("landed"); }, 220 + i * 380); }); }
 
   if ("IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (entries) {
@@ -946,19 +967,22 @@ footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; font-weight: 600; }
         var el = en.target;
         if (el.dataset.count) countUp(el);
         else if (el === ledger) replay();
+        else if (el.classList.contains("slip")) el.classList.add("go");
         else el.classList.add("in");
         io.unobserve(el);
       });
     }, { threshold: 0.18, rootMargin: "0px 0px -6% 0px" });
-    document.querySelectorAll("[data-count], .rise").forEach(function (el) { io.observe(el); });
+    document.querySelectorAll("[data-count], .rise, .slip").forEach(function (el) { io.observe(el); });
     if (ledger) io.observe(ledger);
   } else {
     document.querySelectorAll(".rise").forEach(function (el) { el.classList.add("in"); });
+    document.querySelectorAll(".slip").forEach(function (el) { el.classList.add("go"); });
     rows.forEach(function (r) { r.classList.remove("pending"); });
   }
   // safety net: never leave content hidden (print, screenshots, slow observers)
   window.addEventListener("beforeprint", function () {
     document.querySelectorAll(".rise").forEach(function (el) { el.classList.add("in"); });
+    document.querySelectorAll(".slip").forEach(function (el) { el.classList.add("go"); });
     rows.forEach(function (r) { r.classList.remove("pending"); });
   });
 })();
