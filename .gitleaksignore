@@ -1,0 +1,7 @@
+# Scaffold-ETH 2 public defaults (shared Alchemy/Etherscan demo keys, WETH/MATIC token addresses) — not project secrets.
+6837308bb01596d4996e3b7174e7eaaa0e615c9e:packages/foundry/.env.example:generic-api-key:15
+6837308bb01596d4996e3b7174e7eaaa0e615c9e:packages/foundry/.env.example:generic-api-key:17
+6837308bb01596d4996e3b7174e7eaaa0e615c9e:packages/nextjs/scaffold.config.ts:generic-api-key:14
+6837308bb01596d4996e3b7174e7eaaa0e615c9e:packages/nextjs/utils/scaffold-eth/fetchPriceFromUniswap.ts:generic-api-key:32
+6837308bb01596d4996e3b7174e7eaaa0e615c9e:packages/nextjs/utils/scaffold-eth/networks.ts:generic-api-key:60
+6837308bb01596d4996e3b7174e7eaaa0e615c9e:packages/nextjs/utils/scaffold-eth/networks.ts:generic-api-key:64

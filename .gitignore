@@ -26,3 +26,5 @@ dist
 packages/foundry/script/out/
 .env
 .env.local
+.env.*
+!.env.example
