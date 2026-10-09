@@ -1,16 +1,16 @@
 <div align="center">
-  <img src="packages/nextjs/public/icon.svg" alt="Ikon Mabrur" width="88">
+  <img src="docs/icon-animated.svg" alt="Ikon Mabrur" width="144" height="144">
   <h1>Mabrur 🕋</h1>
   <p><strong>Bahasa Indonesia</strong> · <a href="README.en.md">English</a></p>
   <p><em>Dana jamaah adalah amanah, bukan modal kerja agen.<br/>Setiap rupiah uang muka jamaah dikunci onchain per pos, hanya bisa dibayarkan ke vendor terverifikasi, dan bisa dikembalikan oleh siapa pun.</em></p>
-  <img src="docs/readme-hero.png" alt="Mabrur: empat percobaan agen pada booking Pak Ahmad, tiga ditolak, satu dibayar; dana Ibu Siti dikembalikan" width="100%">
+  <img src="docs/readme-hero-animated.svg" alt="Mabrur: empat percobaan agen pada booking Pak Ahmad, tiga ditolak, satu dibayar; dana Ibu Siti dikembalikan" width="100%">
 
   <br/>
 
-  [![Aplikasi](https://img.shields.io/badge/🚀_Live-mabrur.edycu.dev-06b6d4?style=for-the-badge)](https://mabrur.edycu.dev)
-  [![Bukti](https://img.shields.io/badge/🧾_Setiap_langkah-DEMO.md-ef4444?style=for-the-badge)](DEMO.md)
-  [![Arbitrum One](https://img.shields.io/badge/Arbitrum_One-42161_terverifikasi-f59e0b?style=for-the-badge)](https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code)
-  [![ETHJKT 2026](https://img.shields.io/badge/HackQuest-Ethereum_Jakarta_2026-8b5cf6?style=for-the-badge)](https://www.hackquest.io/hackathons/Ethereum-Jakarta-Hackathon-2026)
+  [![Aplikasi](https://img.shields.io/badge/🚀_Live-mabrur.edycu.dev-0F3D30?style=for-the-badge)](https://mabrur.edycu.dev)
+  [![Bukti](https://img.shields.io/badge/🧾_Setiap_langkah-DEMO.md-0E8A5F?style=for-the-badge)](DEMO.md)
+  [![Arbitrum One](https://img.shields.io/badge/Arbitrum_One-42161_terverifikasi-85672A?style=for-the-badge)](https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code)
+  [![ETHJKT 2026](https://img.shields.io/badge/HackQuest-Ethereum_Jakarta_2026-14181C?style=for-the-badge)](https://www.hackquest.io/hackathons/Ethereum-Jakarta-Hackathon-2026)
 
   <br/>
 

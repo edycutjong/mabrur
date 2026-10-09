@@ -1,16 +1,16 @@
 <div align="center">
-  <img src="packages/nextjs/public/icon.svg" alt="Mabrur icon" width="88">
+  <img src="docs/icon-animated.svg" alt="Mabrur icon" width="144" height="144">
   <h1>Mabrur 🕋</h1>
   <p><a href="README.md">Bahasa Indonesia</a> · <strong>English</strong></p>
   <p><em>Dana jamaah adalah amanah, bukan modal kerja agen.<br/>Each pilgrim's prepaid rupiah is earmarked onchain, line by line, payable only to verified vendors, and refundable by anyone.</em></p>
-  <img src="docs/readme-hero.png" alt="Mabrur: the agency's four attempts on Pak Ahmad's booking, three rejected, one paid; Ibu Siti refunded" width="100%">
+  <img src="docs/readme-hero-animated.svg" alt="Mabrur: the agency's four attempts on Pak Ahmad's booking, three rejected, one paid; Ibu Siti refunded" width="100%">
 
   <br/>
 
-  [![Live App](https://img.shields.io/badge/🚀_Live-mabrur.edycu.dev-06b6d4?style=for-the-badge)](https://mabrur.edycu.dev)
-  [![Proof](https://img.shields.io/badge/🧾_Every_step-DEMO.md-ef4444?style=for-the-badge)](DEMO.md)
-  [![Arbitrum One](https://img.shields.io/badge/Arbitrum_One-42161_verified-f59e0b?style=for-the-badge)](https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code)
-  [![ETHJKT 2026](https://img.shields.io/badge/HackQuest-Ethereum_Jakarta_2026-8b5cf6?style=for-the-badge)](https://www.hackquest.io/hackathons/Ethereum-Jakarta-Hackathon-2026)
+  [![Live App](https://img.shields.io/badge/🚀_Live-mabrur.edycu.dev-0F3D30?style=for-the-badge)](https://mabrur.edycu.dev)
+  [![Proof](https://img.shields.io/badge/🧾_Every_step-DEMO.md-0E8A5F?style=for-the-badge)](DEMO.md)
+  [![Arbitrum One](https://img.shields.io/badge/Arbitrum_One-42161_verified-85672A?style=for-the-badge)](https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code)
+  [![ETHJKT 2026](https://img.shields.io/badge/HackQuest-Ethereum_Jakarta_2026-14181C?style=for-the-badge)](https://www.hackquest.io/hackathons/Ethereum-Jakarta-Hackathon-2026)
 
   <br/>
 
