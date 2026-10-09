@@ -31,3 +31,4 @@ packages/foundry/script/out/
 .agents/
 .opencode/
 .mcp.json
+.vercel
