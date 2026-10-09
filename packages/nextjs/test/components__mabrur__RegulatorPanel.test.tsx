@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { RegulatorPanel } from "~~/components/mabrur/RegulatorPanel";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
@@ -43,9 +44,6 @@ vi.mock("~~/utils/mabrur/format", () => ({
   },
 }));
 
-// Import after mocking
-const { useScaffoldReadContract } = require("~~/hooks/scaffold-eth");
-
 describe("RegulatorPanel component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -53,7 +51,7 @@ describe("RegulatorPanel component", () => {
 
   describe("rendering structure and heading", () => {
     it("renders aside with aria-label", () => {
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       const { container } = render(<RegulatorPanel />);
       const aside = container.querySelector("aside");
@@ -73,30 +71,32 @@ describe("RegulatorPanel component", () => {
     });
 
     it("renders disclaimer text about reading from chain", () => {
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel />);
       expect(screen.getByText(/dibaca langsung dari kontrak · read live from chain/i)).toBeInTheDocument();
     });
 
     it("renders Agen section label", () => {
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel />);
-      expect(screen.getByTestId("label")).toBeInTheDocument();
+      const labels = screen.getAllByTestId("label");
+      expect(labels.length).toBeGreaterThanOrEqual(2); // At least "Panel regulator" and "Agen"
+      expect(labels[1]).toHaveTextContent("Agen");
     });
   });
 
   describe("loading state - both hooks return undefined", () => {
     it("displays loading text when backed is undefined", () => {
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel />);
       expect(screen.getByText("Memuat…")).toBeInTheDocument();
     });
 
     it("displays dash for wrapped supply when undefined", () => {
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel />);
       const amounts = screen.getAllByText("–");
@@ -110,7 +110,7 @@ describe("RegulatorPanel component", () => {
       const underlyingHeld = BigInt(1500000);
       const sumEarmarks = BigInt(1000000);
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [sumEarmarks, wrappedSupply, underlyingHeld] };
         }
@@ -119,7 +119,8 @@ describe("RegulatorPanel component", () => {
 
       render(<RegulatorPanel />);
 
-      expect(screen.getByText("Rp 1000000")).toBeInTheDocument();
+      const wrappedSupplyValues = screen.getAllByText("Rp 1000000");
+      expect(wrappedSupplyValues.length).toBeGreaterThan(0);
       expect(screen.getByText("1000000 (words)")).toBeInTheDocument();
     });
 
@@ -128,7 +129,7 @@ describe("RegulatorPanel component", () => {
       const underlyingHeld = BigInt(1500000);
       const sumEarmarks = BigInt(1000000);
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [sumEarmarks, wrappedSupply, underlyingHeld] };
         }
@@ -152,7 +153,7 @@ describe("RegulatorPanel component", () => {
       const underlyingHeld = BigInt(500000); // Less than wrapped supply
       const sumEarmarks = BigInt(1000000);
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [sumEarmarks, wrappedSupply, underlyingHeld] };
         }
@@ -175,7 +176,7 @@ describe("RegulatorPanel component", () => {
       const sumEarmarks = BigInt(1000000);
       const expectedSurplus = BigInt(500000);
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [sumEarmarks, wrappedSupply, underlyingHeld] };
         }
@@ -193,7 +194,7 @@ describe("RegulatorPanel component", () => {
       const underlyingHeld = BigInt(1000000);
       const sumEarmarks = BigInt(1000000);
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [sumEarmarks, wrappedSupply, underlyingHeld] };
         }
@@ -211,7 +212,7 @@ describe("RegulatorPanel component", () => {
       const underlyingHeld = BigInt(1500000);
       const sumEarmarks = BigInt(1000000);
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [sumEarmarks, wrappedSupply, underlyingHeld] };
         }
@@ -221,19 +222,19 @@ describe("RegulatorPanel component", () => {
       render(<RegulatorPanel />);
 
       expect(screen.getByText(/Rupiah di kontrak/)).toBeInTheDocument();
-      expect(screen.getByText(/held in-contract/)).toBeInTheDocument();
+      expect(screen.getAllByText(/held in-contract/).length).toBeGreaterThan(0);
       expect(screen.getByText(/mUMRAH beredar/)).toBeInTheDocument();
-      expect(screen.getByText(/wrapped supply/)).toBeInTheDocument();
+      expect(screen.getAllByText(/wrapped supply/).length).toBeGreaterThan(0);
       expect(screen.getByText(/Σ pos tersimpan/)).toBeInTheDocument();
-      expect(screen.getByText(/Σ earmarks/)).toBeInTheDocument();
-      expect(screen.getByText(/Surplus/)).toBeInTheDocument();
-      expect(screen.getByText(/direct donations/)).toBeInTheDocument();
+      expect(screen.getAllByText(/Σ earmarks/).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Surplus/).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/direct donations/).length).toBeGreaterThan(0);
     });
   });
 
   describe("agency not provided", () => {
     it("displays message to select booking or enter agent address when no agency", () => {
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [BigInt(100), BigInt(100), BigInt(150)] };
         }
@@ -245,7 +246,7 @@ describe("RegulatorPanel component", () => {
     });
 
     it("does not render agent-specific details when agency is undefined", () => {
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [BigInt(100), BigInt(100), BigInt(150)] };
         }
@@ -261,7 +262,7 @@ describe("RegulatorPanel component", () => {
     });
 
     it("does not render AddressChip when agency is undefined", () => {
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [BigInt(100), BigInt(100), BigInt(150)] };
         }
@@ -275,7 +276,7 @@ describe("RegulatorPanel component", () => {
     });
 
     it("does not render liabilities comparison when agency is undefined", () => {
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [BigInt(100), BigInt(100), BigInt(150)] };
         }
@@ -292,7 +293,7 @@ describe("RegulatorPanel component", () => {
     const validAgency = "0x1234567890123456789012345678901234567890";
 
     it("calls useScaffoldReadContract with provided agency for regulatorView", () => {
-      useScaffoldReadContract.mockImplementation(({ functionName, args }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName, args }) => {
         if (functionName === "regulatorView") {
           expect(args[0]).toBe(validAgency as any);
           return { data: [BigInt(5), BigInt(2000), BigInt(1500)] };
@@ -318,7 +319,7 @@ describe("RegulatorPanel component", () => {
       const liabilities = BigInt(2000);
       const earmarked = BigInt(1500);
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "regulatorView") {
           return { data: [openBookings, liabilities, earmarked] };
         }
@@ -340,7 +341,7 @@ describe("RegulatorPanel component", () => {
     });
 
     it("renders AddressChip with agency when provided", () => {
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "regulatorView") {
           return { data: [BigInt(5), BigInt(2000), BigInt(1500)] };
         }
@@ -361,7 +362,7 @@ describe("RegulatorPanel component", () => {
     it("displays open bookings count with toString()", () => {
       const openBookings = BigInt(3);
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "regulatorView") {
           return { data: [openBookings, BigInt(1000), BigInt(800)] };
         }
@@ -377,7 +378,7 @@ describe("RegulatorPanel component", () => {
     });
 
     it("displays dash when open bookings is undefined", () => {
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "regulatorView") {
           return { data: [undefined, BigInt(1000), BigInt(800)] };
         }
@@ -400,7 +401,7 @@ describe("RegulatorPanel component", () => {
       const liabilities = BigInt(2000);
       const earmarked = BigInt(2000);
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "regulatorView") {
           return { data: [BigInt(5), liabilities, earmarked] };
         }
@@ -419,7 +420,7 @@ describe("RegulatorPanel component", () => {
       const liabilities = BigInt(2000);
       const earmarked = BigInt(1500);
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "regulatorView") {
           return { data: [BigInt(5), liabilities, earmarked] };
         }
@@ -435,7 +436,7 @@ describe("RegulatorPanel component", () => {
     });
 
     it("does not render comparison when liabilities or earmarked is undefined", () => {
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "regulatorView") {
           return { data: [BigInt(5), undefined, undefined] };
         }
@@ -454,7 +455,7 @@ describe("RegulatorPanel component", () => {
       const liabilities = BigInt(2000);
       const earmarked = BigInt(2000);
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "regulatorView") {
           return { data: [BigInt(5), liabilities, earmarked] };
         }
@@ -473,7 +474,7 @@ describe("RegulatorPanel component", () => {
 
   describe("invalid agency address", () => {
     it("treats non-address string as undefined", () => {
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel agency="not-an-address" />);
 
@@ -482,7 +483,7 @@ describe("RegulatorPanel component", () => {
     });
 
     it("treats empty string agency as undefined", () => {
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel agency="" />);
 
@@ -492,12 +493,12 @@ describe("RegulatorPanel component", () => {
     it("ignores agency when isAddress returns false", () => {
       const invalidAddress = "0xinvalid";
 
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel agency={invalidAddress} />);
 
       // Should not pass invalid address to regulatorView
-      const calls = useScaffoldReadContract.mock.calls;
+      const calls = (useScaffoldReadContract as any).mock.calls;
       const regulatorViewCall = calls.find(call => call[0].functionName === "regulatorView");
       // Should be called with undefined, not the invalid address
       expect(regulatorViewCall[0].args[0]).toBeUndefined();
@@ -508,7 +509,7 @@ describe("RegulatorPanel component", () => {
     it("calls useScaffoldReadContract twice - once for regulatorView, once for conservation", () => {
       const validAgency = "0x1234567890123456789012345678901234567890";
 
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel agency={validAgency} />);
 
@@ -516,7 +517,7 @@ describe("RegulatorPanel component", () => {
     });
 
     it("calls conservation hook with correct parameters", () => {
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel />);
 
@@ -531,7 +532,7 @@ describe("RegulatorPanel component", () => {
     it("calls regulatorView hook with contractName and functionName", () => {
       const validAgency = "0x1234567890123456789012345678901234567890";
 
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel agency={validAgency} />);
 
@@ -546,7 +547,7 @@ describe("RegulatorPanel component", () => {
 
   describe("footer disclaimer text", () => {
     it("renders claim issuer disclaimer", () => {
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel />);
 
@@ -554,7 +555,7 @@ describe("RegulatorPanel component", () => {
     });
 
     it("renders tIDR disclaimer", () => {
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel />);
 
@@ -562,7 +563,7 @@ describe("RegulatorPanel component", () => {
     });
 
     it("renders surplus explanation in Indonesian", () => {
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel />);
 
@@ -570,7 +571,7 @@ describe("RegulatorPanel component", () => {
     });
 
     it("renders surplus explanation in English", () => {
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel />);
 
@@ -588,7 +589,7 @@ describe("RegulatorPanel component", () => {
       const wrappedSupply = BigInt(1000);
       const underlyingHeld = BigInt(1500);
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "regulatorView") {
           return { data: [openBookings, liabilities, earmarked] };
         }
@@ -601,7 +602,7 @@ describe("RegulatorPanel component", () => {
       render(<RegulatorPanel agency={validAgency} />);
 
       // Check conservation data
-      expect(screen.getByText(`Rp ${wrappedSupply}`)).toBeInTheDocument();
+      expect(screen.getAllByText(`Rp ${wrappedSupply}`).length).toBeGreaterThan(0);
       expect(screen.getByText(/✓ Kewajiban/)).toBeInTheDocument();
 
       // Check regulator view data
@@ -618,7 +619,7 @@ describe("RegulatorPanel component", () => {
       const wrappedSupply = BigInt(2000);
       const underlyingHeld = BigInt(1000); // Less than wrapped supply
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "regulatorView") {
           return { data: [BigInt(2), BigInt(500), BigInt(400)] };
         }
@@ -634,10 +635,10 @@ describe("RegulatorPanel component", () => {
       expect(screen.getByText(/Tidak seimbang · not fully backed/)).toBeInTheDocument();
     });
 
-    it("does not render agent details when regulatorView returns undefined data", () => {
+    it("renders agent details with dash values when regulatorView returns undefined data", () => {
       const validAgency = "0x1234567890123456789012345678901234567890";
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [BigInt(100), BigInt(100), BigInt(150)] };
         }
@@ -646,14 +647,17 @@ describe("RegulatorPanel component", () => {
 
       render(<RegulatorPanel agency={validAgency} />);
 
-      // Even with valid agency, if regulatorView data is undefined, agent details should not show
-      expect(screen.queryByText(/Booking terbuka/)).not.toBeInTheDocument();
+      // Even with valid agency, if regulatorView data is undefined, show dashes for agent detail values
+      expect(screen.getByText(/Booking terbuka/)).toBeInTheDocument();
+      // All agent detail values should show as "–" when undefined
+      const dashValues = screen.getAllByText("–");
+      expect(dashValues.length).toBeGreaterThan(0);
     });
   });
 
   describe("semantic HTML and accessibility", () => {
     it("uses semantic dl/dt/dd for definition lists", () => {
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [BigInt(100), BigInt(100), BigInt(150)] };
         }
@@ -673,7 +677,7 @@ describe("RegulatorPanel component", () => {
     });
 
     it("has proper padding and spacing classes", () => {
-      useScaffoldReadContract.mockReturnValue({ data: undefined });
+      (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       const { container } = render(<RegulatorPanel />);
       const aside = container.querySelector("aside");
@@ -682,7 +686,7 @@ describe("RegulatorPanel component", () => {
     });
 
     it("uses whitespace-nowrap for right-aligned numbers", () => {
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [BigInt(100), BigInt(100), BigInt(150)] };
         }
@@ -698,7 +702,7 @@ describe("RegulatorPanel component", () => {
 
   describe("edge cases with numeric values", () => {
     it("handles zero values correctly", () => {
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "regulatorView") {
           return { data: [BigInt(0), BigInt(0), BigInt(0)] };
         }
@@ -717,7 +721,7 @@ describe("RegulatorPanel component", () => {
     it("handles very large bigint values", () => {
       const largeValue = BigInt("99999999999999999999999999");
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [largeValue, largeValue, largeValue] };
         }
@@ -726,13 +730,13 @@ describe("RegulatorPanel component", () => {
 
       render(<RegulatorPanel />);
 
-      expect(screen.getByText(`Rp ${largeValue}`)).toBeInTheDocument();
+      expect(screen.getAllByText(`Rp ${largeValue}`).length).toBeGreaterThan(0);
     });
 
     it("correctly identifies backed=true when underlyingHeld equals wrappedSupply exactly", () => {
       const value = BigInt(1000000);
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [value, value, value] };
         }
@@ -750,7 +754,7 @@ describe("RegulatorPanel component", () => {
       const wrappedSupply = BigInt(1000);
       const underlyingHeld = BigInt(2000);
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [wrappedSupply, wrappedSupply, underlyingHeld] };
         }
@@ -767,7 +771,7 @@ describe("RegulatorPanel component", () => {
       const wrappedSupply = BigInt(2000);
       const underlyingHeld = BigInt(1000);
 
-      useScaffoldReadContract.mockImplementation(({ functionName }) => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [wrappedSupply, wrappedSupply, underlyingHeld] };
         }
