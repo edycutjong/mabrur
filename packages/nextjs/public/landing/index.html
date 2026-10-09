@@ -24,11 +24,15 @@
 <meta name="twitter:description" content="Setoran umrah dikunci per jamaah, per pos, di Arbitrum One. Pembayaran ke booking yang salah ditolak oleh kontrak.">
 <meta name="twitter:image:alt" content="Kuitansi Mabrur: segel merah DITOLAK di baris hotel Pak Ahmad, dan ajakan Coba demo di mabrur.edycu.dev">
 <meta name="twitter:image" content="https://mabrur.edycu.dev/og-image.png?v=2">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
+<link rel="preload" href="/landing/assets/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/landing/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Self-hosted (SIL OFL fonts, latin subset): no third-party origin before the headline can paint. */
+@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 500 600; font-display: swap; src: url("/landing/assets/fonts/cormorant.woff2") format("woff2"); }
+@font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 500; font-display: swap; src: url("/landing/assets/fonts/cormorant-italic.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-style: normal; font-weight: 300 600; font-display: optional; src: url("/landing/assets/fonts/inter.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 400 500; font-display: optional; src: url("/landing/assets/fonts/jetbrains-mono.woff2") format("woff2"); }
+</style>
 <style>
 :root {
   /* Mabrur v2 · slim + old green (specs/design.md "Direction v2") */
@@ -370,10 +374,6 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
 /* reveal: content is visible by default; JS only adds a gentle lift */
 .js .rise { opacity: 0; transform: translateY(16px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
 .js .rise.in { opacity: 1; transform: none; }
-.js .hero .stagger > * { animation: up .9s var(--ease) both; }
-.js .hero .stagger > *:nth-child(2) { animation-delay: .07s; } .js .hero .stagger > *:nth-child(3) { animation-delay: .14s; }
-.js .hero .stagger > *:nth-child(4) { animation-delay: .21s; } .js .hero .stagger > *:nth-child(5) { animation-delay: .28s; }
-.js .hero .stagger > *:nth-child(6) { animation-delay: .35s; } .js .hero .stagger > *:nth-child(7) { animation-delay: .42s; }
 @keyframes up { from { opacity: 0; transform: translateY(14px); } }
 
 @media (prefers-reduced-motion: reduce) {
@@ -962,7 +962,7 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
     <nav aria-label="Tautan">
       <a href="https://github.com/edycutjong/mabrur">GitHub</a>
       <a href="https://github.com/edycutjong/mabrur/blob/main/DEMO.md">DEMO.md</a>
-      <a href="https://github.com/edycutjong/mabrur/blob/main/README.en.md">README (EN)</a>
+      <a class="t-id" href="https://github.com/edycutjong/mabrur/blob/main/README.md">README (ID)</a><a class="t-en" href="https://github.com/edycutjong/mabrur/blob/main/README.en.md">README (EN)</a>
       <a href="/pitch">Pitch deck</a>
       <a href="/judge">Untuk juri</a>
       <a href="/app">Aplikasi</a>
