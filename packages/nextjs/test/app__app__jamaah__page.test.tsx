@@ -149,6 +149,14 @@ describe("app/app/jamaah/page.tsx", () => {
     const { container } = render(<JamaahPage />);
     expect(container).toBeInTheDocument();
   });
+  it("renders the full page without query params while useSearchParams suspends (static HTML fallback)", () => {
+    s();
+    (useSearchParams as any).mockImplementation(() => {
+      throw new Promise(() => {});
+    });
+    render(<JamaahPage />);
+    expect(screen.getByText("Buku Amanah Jamaah")).toBeInTheDocument();
+  });
   it("L1", () => {
     s();
     render(<JamaahPage />);

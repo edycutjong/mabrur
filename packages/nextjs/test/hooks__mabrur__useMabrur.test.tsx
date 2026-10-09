@@ -121,8 +121,22 @@ describe("useMabrur.ts", () => {
       expect(result.current.ready).toBe(true);
     });
 
-    it("returns isLoading true when any contract is loading", () => {
-      const mockTargetNetwork = { id: 31337, name: "hardhat" };
+    it("uses the static deployment record while the bytecode check is still loading", () => {
+      (useTargetNetwork as any).mockReturnValue({ targetNetwork: { id: 42161, name: "Arbitrum One" } });
+      (useDeployedContractInfo as any).mockReturnValue({ data: undefined, isLoading: true });
+      (usePublicClient as any).mockReturnValue({} as PublicClient);
+
+      const { result } = renderHook(() => useMabrurContracts());
+
+      expect(result.current.pbm?.address.toLowerCase()).toBe("0x36f1d899d9d4411b2ddfb60dbbe989220336d2d5");
+      expect(result.current.tidr?.address.toLowerCase()).toBe("0x66f838be32a624f4c797483a151c7f6209a43448");
+      expect(result.current.registry?.address.toLowerCase()).toBe("0xd5b731cd0f2c91d5d64b59d9e4a2a4e4b6315adb");
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.ready).toBe(true);
+    });
+
+    it("returns isLoading true when any contract is loading on a chain without a deployment record", () => {
+      const mockTargetNetwork = { id: 1, name: "Ethereum" };
       const mockPbm = { address: "0x111" as Address, abi: [] };
       const mockPublicClient = {} as PublicClient;
 

@@ -16,6 +16,7 @@ import {
 import { useAccount, useBlock, usePublicClient, useWalletClient } from "wagmi";
 import { useDeployedContractInfo, useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { DecodedRevert, decodeRevert } from "~~/utils/mabrur/errors";
+import { contracts } from "~~/utils/scaffold-eth/contract";
 
 export type Booking = {
   id: bigint;
@@ -37,10 +38,19 @@ export const ZERO = "0x0000000000000000000000000000000000000000";
 /** Contracts for the chain the app is pointed at (the connected wallet's chain, else the first target network). */
 export const useMabrurContracts = () => {
   const { targetNetwork } = useTargetNetwork();
-  const { data: pbm, isLoading: l1 } = useDeployedContractInfo({ contractName: "MabrurPBM" });
-  const { data: tidr, isLoading: l2 } = useDeployedContractInfo({ contractName: "TIDR" });
-  const { data: registry, isLoading: l3 } = useDeployedContractInfo({ contractName: "ClaimRegistry" });
+  const pbmInfo = useDeployedContractInfo({ contractName: "MabrurPBM" });
+  const tidrInfo = useDeployedContractInfo({ contractName: "TIDR" });
+  const registryInfo = useDeployedContractInfo({ contractName: "ClaimRegistry" });
   const publicClient = usePublicClient({ chainId: targetNetwork.id });
+  // While the on-chain bytecode check is still running, trust the static deployment record (deployedContracts.ts)
+  // so the page renders on the server and on first paint instead of after an RPC round trip (LCP / CLS). If the check
+  // then finds no code, `data` stays undefined with isLoading false and the page falls back to the network notice.
+  const known = contracts?.[targetNetwork.id];
+  const pick = <T>(info: { data: T | undefined; isLoading: boolean }, name: string) =>
+    info.data ?? (info.isLoading ? (known?.[name] as T | undefined) : undefined);
+  const pbm = pick(pbmInfo, "MabrurPBM");
+  const tidr = pick(tidrInfo, "TIDR");
+  const registry = pick(registryInfo, "ClaimRegistry");
   return {
     chainId: targetNetwork.id,
     chainName: targetNetwork.name,
@@ -48,7 +58,7 @@ export const useMabrurContracts = () => {
     tidr,
     registry,
     publicClient,
-    isLoading: l1 || l2 || l3,
+    isLoading: (pbmInfo.isLoading && !pbm) || (tidrInfo.isLoading && !tidr) || (registryInfo.isLoading && !registry),
     ready: Boolean(pbm && tidr && registry && publicClient),
   };
 };

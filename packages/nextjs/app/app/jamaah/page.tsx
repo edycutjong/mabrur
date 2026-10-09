@@ -426,11 +426,13 @@ const BookingTab = ({ b, active, onClick }: { b: Booking; active: boolean; onCli
   );
 };
 
-const JamaahInner = () => {
+type Params = { get: (key: string) => string | null };
+const NO_PARAMS: Params = { get: () => null };
+
+const JamaahInner = ({ params }: { params: Params }) => {
   const { address } = useAccount();
   const { chainId } = useMabrurContracts();
   const router = useRouter();
-  const params = useSearchParams();
   const t = useT();
   const idParam = params.get("id") ?? "";
   const pilgrimParam = params.get("pilgrim") ?? "";
@@ -554,11 +556,15 @@ const JamaahInner = () => {
   );
 };
 
+const JamaahWithParams = () => <JamaahInner params={useSearchParams()} />;
+
+// useSearchParams() makes its Suspense boundary client-only at build time. The fallback is the same page without
+// query params, so the static HTML already carries the full page (LCP on first paint, no layout jump on hydrate).
 export default function JamaahPage() {
   return (
     <ContractsGuard>
-      <Suspense>
-        <JamaahInner />
+      <Suspense fallback={<JamaahInner params={NO_PARAMS} />}>
+        <JamaahWithParams />
       </Suspense>
     </ContractsGuard>
   );
