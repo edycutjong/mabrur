@@ -149,8 +149,8 @@ const VendorInner = () => {
       };
       let signature: Hex;
       if (mode === "burner") {
-        if (!burner) return;
-        signature = await burner.signTypedData(args);
+        // the sign button is disabled without a burner; a race surfaces through the catch below
+        signature = await burner!.signTypedData(args);
       } else {
         if (!walletClient) return;
         signature = await walletClient.signTypedData(args);

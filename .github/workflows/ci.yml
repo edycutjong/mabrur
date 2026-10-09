@@ -59,6 +59,8 @@ jobs:
         run: yarn next:lint --max-warnings=0
       - name: Type check
         run: yarn next:check-types
+      - name: Unit tests + 100% per-file coverage gate (Vitest)
+        run: yarn workspace @se-2/nextjs test:coverage
 
   # ── STAGE 2: Security (parallel) ─────────────────────────────────────────
   dependency-audit:
