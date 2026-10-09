@@ -8,17 +8,18 @@ import "~~/styles/mabrur.css";
 import { LANG_BOOT_SCRIPT } from "~~/utils/mabrur/i18n";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
-// Direction v2 "slim + old green": Cormorant Garamond headings, Inter body, JetBrains Mono for amounts/hashes/errors.
+// Direction v2 + Amendment v2.1 (projector type): Cormorant Garamond 600/700 headings, Inter 400–600 body,
+// JetBrains Mono for amounts/hashes/errors. No 300 weights: they wash out on a Demo Day projector.
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["500", "600"],
+  weight: ["600", "700"],
   style: ["normal", "italic"],
   variable: "--font-cormorant",
   display: "swap",
 });
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["400", "500", "600"],
   variable: "--font-inter",
   display: "swap",
 });

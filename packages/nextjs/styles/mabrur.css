@@ -7,6 +7,7 @@
   --surface: #f5f6f8;
   --ink: #14181c;
   --muted: #5d646d;
+  --ink-soft: #3e454d; /* v2.1: ledes, 9.3:1 on --bg */
   --rule: #e4e6ea;
 
   /* the four states */
@@ -48,7 +49,7 @@ html {
 }
 body.mabrur {
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: 16.5px;
   font-weight: 400;
   line-height: 1.6;
   font-feature-settings: "cv11", "ss01";
@@ -56,7 +57,7 @@ body.mabrur {
 }
 @media (min-width: 1024px) {
   body.mabrur {
-    font-size: 16.5px;
+    font-size: 17px;
   }
 }
 .mabrur b,
@@ -86,43 +87,44 @@ html.lang-en .t-id {
 
 /* ── Type roles ─────────────────────────────────────────── */
 .mb-label {
-  font: 500 12px/1.4 var(--font-body);
+  font: 600 12.5px/1.4 var(--font-body);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
 }
+/* v2.1 projector type (specs/design.md Amendment v2.1): Cormorant 600/700, larger, no Inter 300. */
 .mb-title {
   font-family: var(--font-display);
-  font-weight: 500;
-  font-size: clamp(34px, 4.1vw, 52px);
-  line-height: 1.06;
-  letter-spacing: -0.025em;
+  font-weight: 600;
+  font-size: clamp(36px, 4.4vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
   font-variant-numeric: lining-nums;
   text-wrap: balance;
 }
 .mb-h2 {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 26px;
+  font-weight: 700;
+  font-size: 28px;
   line-height: 1.12;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.005em;
   font-variant-numeric: lining-nums;
 }
 @media (min-width: 1024px) {
   .mb-h2 {
-    font-size: 30px;
+    font-size: 32px;
   }
 }
 .mb-lede {
-  font-weight: 300;
-  font-size: 17px;
-  line-height: 1.65;
-  color: var(--muted);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--ink-soft);
   max-width: 68ch;
 }
 @media (min-width: 1024px) {
   .mb-lede {
-    font-size: 18.5px;
+    font-size: 19.5px;
   }
 }
 .mb-data {
@@ -136,8 +138,8 @@ html.lang-en .t-id {
 /* Big money: Cormorant with lining figures (the shorthand above it never resets this one). */
 .mb-amount {
   font-family: var(--font-display);
-  font-weight: 500;
-  font-size: 32px;
+  font-weight: 600;
+  font-size: 34px;
   line-height: 1.05;
   letter-spacing: -0.02em;
   font-variant-numeric: lining-nums;
@@ -145,7 +147,7 @@ html.lang-en .t-id {
 }
 @media (min-width: 1024px) {
   .mb-amount {
-    font-size: 38px;
+    font-size: 42px;
   }
 }
 /* Row money: JetBrains Mono, right-aligned by its cell, coloured by state where the row has one. */
@@ -159,8 +161,8 @@ html.lang-en .t-id {
 .mb-terbilang {
   font-family: var(--font-display);
   font-style: italic;
-  font-weight: 500;
-  font-size: 16px;
+  font-weight: 600;
+  font-size: 16.5px;
   line-height: 1.35;
   color: var(--muted);
   font-variant-numeric: lining-nums;
@@ -170,7 +172,7 @@ html.lang-en .t-id {
 }
 .mb-big-date {
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 50px;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -276,7 +278,7 @@ html.lang-en .t-id {
   background: var(--returned-wash);
 }
 .mb-line-name {
-  font: 600 22px/1.15 var(--font-display);
+  font: 700 23px/1.15 var(--font-display);
   letter-spacing: -0.01em;
 }
 /* A seal row: words on the left, the seal in its own column, so it never covers text. */
@@ -689,7 +691,7 @@ a.mb-ext:hover::after {
   }
 }
 .mb-wordmark {
-  font: 600 27px/1 var(--font-display);
+  font: 700 28px/1 var(--font-display);
   letter-spacing: -0.01em;
   color: var(--ink);
 }
@@ -926,7 +928,7 @@ html.lang-en .mb-lang [data-l="en"] {
 
 /* ── KPI / reconciliation (regulator panel) ── */
 .mb-kpi {
-  font: 500 44px/1 var(--font-display);
+  font: 600 48px/1 var(--font-display);
   letter-spacing: -0.03em;
   font-variant-numeric: lining-nums;
   color: var(--returned);
@@ -1060,7 +1062,7 @@ html.lang-en .mb-lang [data-l="en"] {
   position: absolute;
   left: 4px;
   top: 17px;
-  font: 500 30px/0.9 var(--font-display);
+  font: 600 32px/0.9 var(--font-display);
   font-variant-numeric: lining-nums;
   color: var(--paid-ink);
 }
@@ -1208,4 +1210,10 @@ html.lang-en .mb-lang [data-l="en"] {
     font-size: 12.5px;
     line-height: 1.25;
   }
+}
+
+/* App pages reserve one screen of height, so the footer starts below the fold and never jumps while chain data
+   streams in (CLS). */
+.mb-shell {
+  min-height: 100svh;
 }
