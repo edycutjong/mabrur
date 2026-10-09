@@ -133,7 +133,8 @@ a.arr-ext:hover:after { transform: translate(2px, -2px); } a.arr-go:hover:after 
 
 /* ---------- hero ---------- */
 .hero { padding: 88px 0 104px; }
-.hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 72px; align-items: center; }
+.hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 72px; align-items: start; }
+.hero-grid > .stagger { padding-top: 26px; }
 .hero h1 { font-size: clamp(42px, 4.6vw, 64px); line-height: 1.04; letter-spacing: -.034em; margin: 0 0 18px; }
 .hero h1 em { font-style: normal; color: var(--paid); padding-bottom: .04em;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 24' preserveAspectRatio='none'%3E%3Cpath d='M2 15C70 7 150 5 220 8s120 6 176 2' fill='none' stroke='%230E8A5F' stroke-opacity='.22' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E") 0 94% / 100% .3em no-repeat;
@@ -372,7 +373,7 @@ a.arr-ext:hover:after { transform: translate(2px, -2px); } a.arr-go:hover:after 
 footer { padding: 0 0 56px; font-size: 13px; color: var(--on-dark-muted); background: var(--returned); }
 footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 28px; justify-content: space-between; border-top: 1px solid rgba(249, 246, 240, .14); padding-top: 26px; }
 footer nav { display: flex; flex-wrap: wrap; gap: 8px 22px; font: 500 11.5px var(--font-body); letter-spacing: .12em; text-transform: uppercase; }
-footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { color: var(--earmarked); }
+footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a.rel { display: inline-flex; align-items: center; } footer nav a.rel img { display: block; } footer nav a:hover { color: var(--earmarked); }
 
 /* reveal: content is visible by default; JS only adds a gentle lift */
 .js .rise { opacity: 0; transform: translateY(16px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
@@ -387,6 +388,7 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
 }
 @media (max-width: 1180px) { .nav-links { display: none; } .lang { margin-left: auto; } }
 @media (max-width: 1020px) {
+  .hero-grid > .stagger { padding-top: 0; }
   .hero-grid, .problem-grid, .demo-grid, .impact-grid, .final-card { grid-template-columns: 1fr; }
   .hero-grid { gap: 56px; }
   .ledger { position: static; }
@@ -499,6 +501,7 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
         <a href="https://github.com/edycutjong/mabrur/blob/main/DEMO.md"><span class="t-id">DEMO.md · setiap langkah di Arbiscan</span><span class="t-en">DEMO.md · every step on Arbiscan</span></a>
         <a href="https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code" class="arr-ext"><span class="t-id">Kontrak terverifikasi</span><span class="t-en">Verified contract</span></a>
         <a href="/pitch">Pitch deck</a>
+        <a href="https://github.com/edycutjong/mabrur/releases/latest"><span class="t-id">Rilis terbaru</span><span class="t-en">Latest release</span></a>
       </div>
     </div>
 
@@ -967,8 +970,9 @@ footer nav a { color: #DDE6E1; text-decoration: none; } footer nav a:hover { col
       <a href="https://github.com/edycutjong/mabrur/blob/main/DEMO.md">DEMO.md</a>
       <a class="t-id" href="https://github.com/edycutjong/mabrur/blob/main/README.md">README (ID)</a><a class="t-en" href="https://github.com/edycutjong/mabrur/blob/main/README.en.md">README (EN)</a>
       <a href="/pitch">Pitch deck</a>
-      <a href="/judge">Untuk juri</a>
-      <a href="/app">Aplikasi</a>
+      <a href="/judge"><span class="t-id">Untuk juri</span><span class="t-en">For judges</span></a>
+      <a href="/app"><span class="t-id">Aplikasi</span><span class="t-en">App</span></a>
+      <a class="rel" href="https://github.com/edycutjong/mabrur/releases/latest"><img src="https://img.shields.io/github/v/release/edycutjong/mabrur?style=flat&amp;color=0E8A5F&amp;label=release" alt="Latest release" height="20" loading="lazy" decoding="async"></a>
     </nav>
     <span>MIT © 2026 Edy Cu · ETHJKT × HackQuest 2026 · tIDR = token uji tanpa nilai · nama agen &amp; vendor fiktif</span>
   </div>

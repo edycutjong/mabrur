@@ -20,6 +20,7 @@
   ![Next.js](https://img.shields.io/badge/Next.js-black?style=flat&logo=next.js)
   ![viem](https://img.shields.io/badge/viem_+_wagmi-1E1E20?style=flat)
   [![CI](https://github.com/edycutjong/mabrur/actions/workflows/ci.yml/badge.svg)](https://github.com/edycutjong/mabrur/actions/workflows/ci.yml)
+  [![Release](https://img.shields.io/github/v/release/edycutjong/mabrur?style=flat&color=0E8A5F&label=release)](https://github.com/edycutjong/mabrur/releases/latest)
 
 </div>
 
