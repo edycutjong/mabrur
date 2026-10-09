@@ -25,7 +25,10 @@ export const applyLang = (lang: Lang) => {
 };
 
 /** Runs in <head> before first paint (app/layout.tsx): only "en" is stored as a non-default, as on the landing. */
-export const LANG_BOOT_SCRIPT = `(function(){try{if(localStorage.getItem(${JSON.stringify(LANG_KEY)})==="en"){var r=document.documentElement;r.classList.add(${JSON.stringify(LANG_CLASS)});r.setAttribute("lang","en")}}catch(e){}})();`;
+// A plain literal (no interpolation): nothing dynamic ever reaches this inline script. Kept in sync with LANG_KEY and
+// LANG_CLASS by a unit test.
+export const LANG_BOOT_SCRIPT =
+  '(function(){try{if(localStorage.getItem("mabrur-lang")==="en"){var r=document.documentElement;r.classList.add("lang-en");r.setAttribute("lang","en")}}catch(e){}})();';
 
 /** A string in both languages: used where markup cannot carry both variants (attributes, <option>, document text). */
 export type Bilingual = { id: string; en: string };

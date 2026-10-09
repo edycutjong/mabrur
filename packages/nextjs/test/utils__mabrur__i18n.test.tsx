@@ -59,6 +59,11 @@ describe("utils/mabrur/i18n — shared with the landing", () => {
     expect(root().getAttribute("lang")).toBe("en");
   });
 
+  it("the boot script literal stays in sync with LANG_KEY and LANG_CLASS", () => {
+    expect(LANG_BOOT_SCRIPT).toContain(`localStorage.getItem("${LANG_KEY}")`);
+    expect(LANG_BOOT_SCRIPT).toContain(`classList.add("${LANG_CLASS}")`);
+  });
+
   it("the boot script never throws when storage is blocked", () => {
     vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
       throw new Error("blocked");
