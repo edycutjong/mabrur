@@ -1193,6 +1193,14 @@ describe("useMabrur.ts", () => {
     });
   });
 
+  describe("explorerAddr input validation", () => {
+    it("never builds a link from a non-address string (e.g. injected markup or a javascript: URL)", () => {
+      expect(explorerAddr(42161, "javascript:alert(1)", "https://arbiscan.io")).toBe("");
+      expect(explorerAddr(31337, "<img src=x onerror=alert(1)>")).toBe("");
+      expect(explorerAddr(42161, "0x1234", "https://arbiscan.io")).toBe("");
+    });
+  });
+
   describe("ZERO constant", () => {
     it("is the zero address", () => {
       expect(ZERO).toBe("0x0000000000000000000000000000000000000000");

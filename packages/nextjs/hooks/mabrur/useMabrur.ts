@@ -10,6 +10,7 @@ import {
   TransactionReceipt,
   decodeEventLog,
   encodeAbiParameters,
+  isAddress,
   keccak256,
 } from "viem";
 import { useAccount, useBlock, usePublicClient, useWalletClient } from "wagmi";
@@ -231,5 +232,12 @@ export const eventsFrom = (receipt: TransactionReceipt, abi: Abi, address: Addre
 export const explorerTx = (chainId: number, hash: string, base?: string) =>
   chainId === 31337 ? `/blockexplorer/transaction/${hash}` : base ? `${base}/tx/${hash}` : "";
 
+// Only a well-formed address ever reaches an href (addresses can come from pasted invoice JSON).
 export const explorerAddr = (chainId: number, addr: string, base?: string) =>
-  chainId === 31337 ? `/blockexplorer/address/${addr}` : base ? `${base}/address/${addr}` : "";
+  !isAddress(addr, { strict: false })
+    ? ""
+    : chainId === 31337
+      ? `/blockexplorer/address/${addr}`
+      : base
+        ? `${base}/address/${addr}`
+        : "";

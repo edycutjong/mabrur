@@ -1,5 +1,5 @@
 import { listKeystores } from "./listKeystores.js";
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import dotenv from "dotenv";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -74,11 +74,11 @@ async function checkAccountBalance() {
 
     // Step 2: Get the address of the selected account
     console.log(`\n🔍 Getting address for keystore: ${selectedKeystore}`);
-    const addressCommand = `cast wallet address --account ${selectedKeystore}`;
 
     let address;
     try {
-      address = execSync(addressCommand).toString().trim();
+      // argv array, no shell: a keystore name can never be interpreted as a command
+      address = execFileSync("cast", ["wallet", "address", "--account", selectedKeystore]).toString().trim();
       console.log("\n💰 Checking balances across networks...");
       console.log("\n");
       await getBalanceForEachNetwork(address);
