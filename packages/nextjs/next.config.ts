@@ -6,6 +6,18 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
   },
+  // `/` is the judge-facing landing page and `/pitch` the deck: static single-file HTML in public/ (see public/landing,
+  // public/pitch). beforeFiles so they win over app/page.tsx, which stays only as a fallback redirect.
+  async rewrites() {
+    return {
+      beforeFiles: [
+        { source: "/", destination: "/landing/index.html" },
+        { source: "/pitch", destination: "/pitch/index.html" },
+      ],
+      afterFiles: [],
+      fallback: [],
+    };
+  },
   // The vendor page keeps a burner key in localStorage: no framing, no plugins, no foreign <base>, no sniffing.
   async headers() {
     return [

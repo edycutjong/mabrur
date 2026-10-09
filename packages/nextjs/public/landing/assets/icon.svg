@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Mabrur — a red DITOLAK stamp lands on the earmarked line of a kuitansi, so the pilgrim's money stays held">
+  <!-- Mabrur mark. Three masses (Legibility Matrix, 16px):
+       1 the kuitansi slip, torn zigzag foot (self-plated: cream paper + ink rule, so it holds on #ffffff AND #0d1117);
+         two typed rows on it are hairline detail that dissolves below 32px by design
+       2 the earmarked line (map coklat brown = state: earmarked)
+       3 the cap stempel (red = state: refused), double-ruled, rotated -9deg, landing ON that line and
+         overhanging the slip's edge the way a hand-held stamp does
+       Colours: CSS var(token, #hex) fallback pattern (v8). The hex applies when rasterized standalone;
+       the design tokens win inside the app. -->
+
+  <defs>
+    <linearGradient id="mb-sheet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="var(--paper, #FFFDF7)"/>
+      <stop offset="100%" stop-color="var(--bg, #F4EFE3)"/>
+    </linearGradient>
+  </defs>
+  <!-- 1 · kuitansi slip -->
+  <path d="M96 66Q96 36 126 36H386Q416 36 416 66V430L393.1 456L370.3 430L347.4 456L324.6 430L301.7 456L278.9 430L256 456L233.1 430L210.3 456L187.4 430L164.6 456L141.7 430L118.9 456L96 430Z"
+        fill="url(#mb-sheet)" stroke="var(--ink, #1A2238)" stroke-width="20" stroke-linejoin="round"/>
+  <rect x="146" y="98" width="150" height="20" rx="10" fill="var(--ink, #1A2238)" fill-opacity=".85"/>
+  <rect x="146" y="146" width="220" height="20" rx="10" fill="var(--ink, #1A2238)" fill-opacity=".3"/>
+  <!-- 2 · the earmarked line -->
+  <rect x="132" y="234" width="248" height="62" rx="10" fill="var(--primary, #8A5A0F)"/>
+  <!-- 3 · the stamp -->
+  <g transform="rotate(-9 286 300)" fill="none" stroke="var(--accent, #BF1F2F)" stroke-linejoin="round">
+    <rect x="148" y="216" width="296" height="168" rx="14" stroke-width="38"/>
+    <rect x="190" y="257" width="212" height="86" rx="5" stroke-width="11"/>
+  </g>
+</svg>

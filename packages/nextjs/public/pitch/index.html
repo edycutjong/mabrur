@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mabrur · Pitch deck · ETHJKT 2026</title>
+<meta name="description" content="Pitch deck Mabrur: setoran umrah dikunci per jamaah, per pos, di Arbitrum One. Masalah, solusi, use case RWA, implementasi onchain, dampak.">
+<meta name="theme-color" content="#F4EFE3">
+<link rel="icon" href="/pitch/assets/icon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Mabrur">
+<meta property="og:title" content="Mabrur · Pitch deck">
+<meta property="og:description" content="Uang umrah Pak Ahmad hanya mau berangkat bersamanya. Setoran dikunci per jamaah, per pos, di Arbitrum One.">
+<meta property="og:url" content="https://mabrur.edycu.dev/pitch">
+<meta property="og:image" content="https://mabrur.edycu.dev/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mabrur.edycu.dev/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #F4EFE3;
+  --paper:   #FFFDF7;
+  --ink:     #1A2238;
+  --muted:   #5A6070;
+  --before:  #8A5A0F;
+  --after:   #2B3A9E;
+  --refused: #BF1F2F;
+  --rule:    #D8CFBA;
+  --before-wash:  #F3E6CC;
+  --after-wash:   #E6E8F5;
+  --refused-wash: #F8E1DE;
+  --radius: 14px;
+  --font-display: "Zilla Slab", "Roboto Slab", Georgia, serif;
+  --font-body:    "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-data:    "Courier Prime", "Courier New", monospace;
+  --shadow: 0 1px 0 var(--rule), 0 26px 50px -28px rgba(26, 34, 56, .4);
+  --ease: cubic-bezier(.16, 1, .3, 1);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #E9E2D2; }
+body { font-family: var(--font-body); color: var(--ink); font-variant-numeric: tabular-nums; }
+::selection { background: var(--before-wash); }
+:focus-visible { outline: 3px solid var(--after); outline-offset: 3px; }
+.viewport { position: fixed; inset: 0; overflow: hidden; }
+.stage { width: 1920px; height: 1080px; position: absolute; left: 50%; top: 50%; transform-origin: center center; transform: translate(-50%, -50%) scale(.5); }
+.slide {
+  position: absolute; inset: 0; padding: 92px 120px 110px; display: none; overflow: hidden;
+  background: var(--bg);
+  background-image:
+    repeating-linear-gradient(180deg, transparent 0 47px, rgba(216, 207, 186, .38) 47px 48px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.slide.on { display: flex; flex-direction: column; }
+.slide > .mid { margin-top: auto !important; margin-bottom: auto; }
+.slide > h2 + .mid { padding-top: 40px; }
+.slide.dark { background: var(--ink); color: var(--paper); }
+.label { font: 700 22px/1.3 var(--font-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.kicker { display: flex; align-items: center; gap: 16px; }
+.kicker:before { content: ""; width: 48px; height: 3px; background: var(--before); }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; margin: 0; line-height: 1.02; letter-spacing: -.015em; text-wrap: balance; }
+h1 { font-size: 104px; }
+h2 { font-size: 84px; margin-top: 22px; max-width: 1500px; }
+h2 em, h1 em { font-style: normal; color: var(--before); background: linear-gradient(transparent 64%, var(--before-wash) 64% 94%, transparent 94%); }
+.en { font: italic 500 32px/1.35 var(--font-display); color: var(--muted); margin-top: 16px; }
+.mono { font-family: var(--font-data); }
+.paper { background: var(--paper); border-radius: var(--radius); box-shadow: var(--shadow); }
+.foot { position: absolute; left: 120px; right: 120px; bottom: 40px; display: flex; justify-content: space-between; align-items: center; font: 400 19px var(--font-data); color: var(--muted); }
+.foot b { font: 700 19px var(--font-display); letter-spacing: .1em; color: var(--ink); text-transform: uppercase; }
+.dark .foot, .dark .foot b { color: #B9BFD0; }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border: 2px solid var(--ink); border-radius: 999px; font-size: 20px; white-space: nowrap; font-weight: 700; background: var(--paper); }
+.chip.warn { border-color: var(--before); color: var(--before); }
+
+/* stamp — signature element, same as the landing */
+.stamp { position: absolute; z-index: 3; display: inline-block; padding: 10px 20px 11px; border: 6px double currentColor; border-radius: 8px; font: 700 40px/1 var(--font-display); letter-spacing: .14em; text-transform: uppercase; transform: rotate(var(--rot, -6deg)); mix-blend-mode: multiply; white-space: nowrap; pointer-events: none;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.75'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.75'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E"); }
+.stamp small { display: block; font: 700 22px/1.2 var(--font-data); letter-spacing: 0; text-transform: none; margin-top: 6px; }
+.stamp.no { color: var(--refused); } .stamp.ok { color: var(--after); }
+.slide.on .stamp.anim { animation: land .28s cubic-bezier(.3, 1.5, .55, 1) both; animation-delay: var(--d, .6s); }
+@keyframes land { 0% { opacity: 0; transform: rotate(var(--rot, -6deg)) scale(1.45); filter: blur(3px); } 70% { opacity: 1; transform: rotate(var(--rot, -6deg)) scale(.96); filter: none; } 100% { opacity: 1; transform: rotate(var(--rot, -6deg)) scale(1); } }
+.slide.on .up { animation: up .7s var(--ease) both; animation-delay: var(--u, 0s); }
+@keyframes up { from { opacity: 0; transform: translateY(18px); } }
+
+/* kuitansi */
+.slip { position: relative; padding: 34px 40px 30px; transform: rotate(.8deg); }
+.slip-top { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 2px dashed var(--rule); }
+.slip-title { font: 700 34px var(--font-display); letter-spacing: .06em; text-transform: uppercase; }
+.who { display: grid; grid-template-columns: auto 1fr; gap: 6px 22px; padding: 16px 0; border-bottom: 1.5px solid var(--rule); font-size: 24px; align-items: baseline; }
+.line { position: relative; display: grid; grid-template-columns: 1fr auto; padding: 16px 14px; margin: 0 -14px; border-bottom: 1.5px dashed var(--rule); border-radius: 10px; align-items: center; }
+.line b { font-size: 27px; display: block; } .line small { font-size: 19px; color: var(--muted); }
+.line .amt { font-weight: 800; font-size: 29px; color: var(--before); }
+.line.held { background: linear-gradient(90deg, var(--before-wash), transparent 70%); }
+.line.paid .amt { color: var(--after); }
+.line.refused { background: linear-gradient(90deg, var(--refused-wash), transparent 80%); }
+.line .stamp { left: 29%; top: 50%; margin-top: -40px; }
+.total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 18px; }
+.total strong { font: 700 44px var(--font-display); }
+.terbilang { font: italic 500 22px var(--font-display); color: var(--muted); }
+
+/* layouts */
+.cols { display: grid; gap: 64px; }
+.c2 { grid-template-columns: 1fr 1fr; } .c55 { grid-template-columns: 1.15fr .85fr; } .c64 { grid-template-columns: 1.3fr .7fr; }
+.big { font: 700 96px/1 var(--font-display); letter-spacing: -.02em; }
+.clip { display: grid; grid-template-columns: 360px 1fr; gap: 10px 30px; align-items: baseline; padding: 44px 40px; border-left: 8px solid var(--refused); border-radius: 6px var(--radius) var(--radius) 6px; }
+.clip .big small { display: block; font: 600 22px var(--font-body); color: var(--muted); letter-spacing: 0; margin-top: 8px; }
+.clip .what { font-size: 34px; } .clip .src { font-size: 22px; color: var(--muted); }
+.clip .big { font-size: 110px; }
+.clip.scale { border-left-color: var(--before); }
+.rules { display: grid; gap: 22px; }
+.rule { display: grid; grid-template-columns: 64px 1fr; gap: 24px; align-items: start; padding: 36px 36px; }
+.rule .n { font: 700 54px/1 var(--font-display); color: var(--after); }
+.rule h3 { font-size: 40px; } .rule p { margin: 8px 0 0; font-size: 24px; color: var(--muted); }
+.rule .code { font: 700 20px var(--font-data); color: var(--ink); }
+.folder { background: var(--before-wash); border-radius: 6px 18px 18px 18px; padding: 28px 30px; position: relative; }
+.folder:before { content: ""; position: absolute; top: -18px; left: 0; width: 40%; height: 20px; background: var(--before-wash); border-radius: 10px 10px 0 0; }
+.folder .row { display: flex; justify-content: space-between; font-size: 36px; padding: 22px 0; border-bottom: 2px dashed rgba(138, 90, 15, .25); }
+.folder .row b { color: var(--before); }
+.flow { display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 64px; }
+.step { padding: 28px 30px; border-right: 2px dashed var(--rule); display: grid; gap: 12px; align-content: start; }
+.step:last-child { border-right: 0; }
+.step .n { font: 700 20px var(--font-display); letter-spacing: .14em; color: var(--before); }
+.step h3 { font-size: 44px; } .step p { margin: 0; font-size: 22px; color: var(--muted); line-height: 1.4; }
+.step .code { font: 700 20px var(--font-data); }
+.shot { overflow: hidden; border: 1.5px solid var(--rule); }
+.shot img { display: block; width: 100%; height: auto; }
+.shot .bar { display: flex; gap: 10px; align-items: center; padding: 12px 18px; border-bottom: 1.5px solid var(--rule); background: var(--bg); font: 400 20px var(--font-data); color: var(--muted); }
+.shot .bar i { width: 13px; height: 13px; border-radius: 50%; background: var(--rule); }
+.ledger li { list-style: none; padding: 22px 0; border-top: 2px dashed var(--rule); display: grid; gap: 6px; font-size: 25px; }
+.ledger ol { margin: 0; padding: 0; }
+.ledger .res { font: 700 29px var(--font-data); color: var(--refused); }
+.ledger .tx { font: 400 19px var(--font-data); color: var(--muted); }
+.k { display: grid; gap: 10px; padding: 38px 36px; }
+.k .big { font-size: 96px; }
+.k p { margin: 0; font-size: 26px; color: var(--muted); line-height: 1.4; }
+.contract { display: grid; grid-template-columns: 300px 1fr; gap: 6px 28px; padding: 30px 0; border-top: 2px dashed var(--rule); font-size: 32px; align-items: baseline; }
+.contract .mono { font-size: 27px; color: var(--muted); }
+.prim { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.prim span { font: 700 25px var(--font-data); padding: 8px 14px; border-radius: 8px; background: var(--paper); border: 1.5px solid var(--rule); }
+.qr { width: 260px; height: 260px; border-radius: 12px; overflow: hidden; background: var(--paper); padding: 8px; }
+.qr svg { width: 100%; height: 100%; display: block; }
+.list { margin: 0; padding: 0 0 0 30px; display: grid; gap: 14px; font-size: 26px; color: var(--muted); line-height: 1.4; }
+.list b { color: var(--ink); }
+.app-tag { display: inline-block; font: 700 18px var(--font-display); letter-spacing: .16em; padding: 6px 14px; border-radius: 999px; background: var(--ink); color: var(--paper); }
+.tcard { padding: 44px 40px; display: grid; gap: 16px; align-content: start; min-height: 440px; }
+.tcard .n { font: 700 64px/1 var(--font-display); color: var(--before); }
+.tcard h3 { font-size: 44px; } .tcard p { margin: 0; font-size: 28px; color: var(--muted); line-height: 1.45; }
+table.cmp { width: 100%; border-collapse: collapse; font-size: 24px; margin-top: 48px; }
+table.cmp th, table.cmp td { text-align: left; padding: 18px 22px; border-bottom: 2px solid var(--rule); }
+table.cmp thead th { font: 700 19px var(--font-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash); font-weight: 700; }
+
+/* chrome */
+.hud { position: fixed; right: 18px; bottom: 14px; display: flex; gap: 8px; align-items: center; font: 400 14px var(--font-data); color: var(--muted); z-index: 10; }
+.hud button { font: 700 14px var(--font-display); letter-spacing: .08em; border: 1.5px solid var(--ink); background: var(--paper); color: var(--ink); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.hud button:hover { background: var(--ink); color: var(--paper); }
+.hint { position: fixed; left: 18px; bottom: 14px; font: 400 13px var(--font-data); color: var(--muted); z-index: 10; }
+.notes { position: fixed; left: 0; right: 0; bottom: 0; max-height: 42vh; overflow: auto; background: var(--ink); color: var(--paper); padding: 18px 26px 54px; font-size: 17px; line-height: 1.55; display: none; z-index: 9; }
+.notes.on { display: block; }
+.notes .label { color: #E9C891; font-size: 13px; }
+.slide aside.note { display: none; }
+@media print {
+  @page { size: 1920px 1080px; margin: 0; }
+  html, body { overflow: visible; height: auto; background: none; }
+  .viewport { position: static; display: block; overflow: visible; }
+  .stage { transform: none !important; position: static; width: 1920px; height: auto; }
+  .slide { display: flex !important; flex-direction: column; position: relative; width: 1920px; height: 1080px; break-after: page; page-break-after: always; }
+  .slide .up, .slide .stamp.anim { animation: none !important; opacity: 1 !important; }
+  .hud, .hint, .notes { display: none !important; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+@media (prefers-reduced-motion: reduce) { .slide.on .up, .slide.on .stamp.anim { animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="viewport">
+<main class="stage" id="stage" aria-live="polite">
+
+<!-- 1 · COVER -->
+<section class="slide" data-title="Sampul">
+  <div class="cols" style="grid-template-columns:.95fr 1.05fr;gap:56px;height:100%;align-items:center">
+    <div>
+      <div class="label kicker up" style="font-size:19px">ETHJKT × HackQuest 2026 · Build the Real World Onchain</div>
+      <div class="up" style="--u:.05s;display:flex;align-items:center;gap:22px;margin:40px 0 30px"><img src="/pitch/assets/icon.svg" alt="" width="92" height="92"><span style="font:700 76px var(--font-display)">Mabrur</span></div>
+      <h1 class="up" style="--u:.12s">Uang umrah Pak Ahmad hanya mau <em>berangkat bersamanya.</em></h1>
+      <div class="en up" style="--u:.2s">Pak Ahmad’s umrah money only departs with him.</div>
+      <div class="up" style="--u:.28s;display:flex;flex-wrap:wrap;gap:12px;margin-top:44px"><span class="chip">Arbitrum One · <span class="mono">42161</span></span><span class="chip">3 kontrak terverifikasi</span><span class="chip warn">tIDR = token uji tanpa nilai</span></div>
+    </div>
+    <div class="paper slip up" style="--u:.1s">
+      <div class="slip-top"><div><div class="slip-title">Kuitansi Amanah</div><div class="label" style="font-size:17px">No. Kuitansi · <span class="mono">mUMRAH · 42161</span></div></div><img src="/pitch/assets/icon.svg" alt="" width="64" height="64"></div>
+      <div class="who"><span class="label" style="font-size:17px">Sudah terima dari</span><b>Pak Ahmad</b><span class="label" style="font-size:17px">Agen</span><span>PT Amanah Contoh Wisata</span></div>
+      <div class="line paid"><div><b>Tiket pesawat</b><small>hanya ke maskapai berizin</small></div><span class="amt">Rp 14.000.000</span><span class="stamp ok anim" style="--rot:-4deg;--d:1.5s">Lunas<small>ke PT Contoh GSA</small></span></div>
+      <div class="line refused"><div><b>Hotel</b><small class="mono">INV-HTL-0001 · faktur Ibu Siti</small></div><span class="amt">Rp 9.000.000</span><span class="stamp no anim" style="--rot:-7deg;--d:.8s">Ditolak<small>EarmarkMismatch</small></span></div>
+      <div class="line held"><div><b>Visa</b><small>hanya ke penyedia visa berizin</small></div><span class="amt">Rp 4.000.000</span></div>
+      <div class="line refused"><div><b>Ujrah agen</b><small>terbuka setelah berangkat</small></div><span class="amt">Rp 5.000.000</span><span class="stamp no anim" style="--rot:-5deg;--d:2.2s">Ditolak<small>NotDeparted</small></span></div>
+      <div class="total"><span class="label" style="font-size:17px">Jumlah</span><strong>Rp 32.000.000</strong></div>
+      <div class="terbilang">Terbilang: tiga puluh dua juta rupiah</div>
+    </div>
+  </div>
+  <aside class="note">Assalamualaikum. Saya Edy, ini Mabrur. Uang umrah Pak Ahmad hanya mau berangkat bersamanya. Di kuitansi ini, setiap cap adalah transaksi nyata di Arbitrum One: agen mencoba membayar hotel Ibu Siti dengan uang Pak Ahmad, dan kontrak menolaknya.</aside>
+</section>
+
+<!-- 2 · MASALAH -->
+<section class="slide" data-title="Masalah">
+  <div class="label kicker">01 · Masalah</div>
+  <h2>Uang jamaah baru membayar keberangkatan <em>jamaah lama.</em></h2>
+  <div class="cols c2 mid" style="gap:28px">
+    <div style="display:grid;gap:22px">
+      <div class="paper clip up"><div class="big">63.310<small>jamaah</small></div><div class="what"><b>First Travel</b> · Rp 905 miliar hilang</div><div class="src">Kompas, 5 Jan 2023</div></div>
+      <div class="paper clip up" style="--u:.1s"><div class="big">86.720<small>jamaah</small></div><div class="what"><b>Abu Tours</b> · ±Rp 1,8 triliun</div><div class="src">Kompas, 29 Jan 2019</div></div>
+    </div>
+    <div style="display:grid;gap:22px;align-content:start">
+      <div class="paper clip scale up" style="--u:.2s"><div class="big">±1,4<small>juta jamaah</small></div><div class="what">umrah lewat PPIU, 2024</div><div class="src">HIMPUH, 18 Feb 2025 (sekunder)</div></div>
+      <div class="up" style="--u:.3s;font:600 38px/1.3 var(--font-display);padding:18px 8px">Rekening bank tidak bisa menolak perintah transfer dari agen.</div>
+    </div>
+  </div>
+  <aside class="note">Tahun 2017, First Travel membuat 63.310 jamaah gagal umrah, Rp 905 miliar. Abu Tours: 86.720 jamaah. Polanya sama: uang jamaah baru membiayai keberangkatan jamaah lama. Setiap tahun sekitar 1,4 juta jamaah berangkat lewat PPIU, dan uangnya masih masuk ke satu rekening agen. Rekening bank tidak bisa menolak perintah agen.</aside>
+</section>
+
+<!-- 3 · SOLUSI -->
+<section class="slide" data-title="Solusi">
+  <div class="label kicker">02 · Solusi</div>
+  <h2>Setiap rupiah dikunci <em>per jamaah, per pos.</em></h2>
+  <div class="cols c55 mid" style="gap:72px;align-items:center">
+    <div class="folder up"><div class="label" style="color:var(--before);margin-bottom:10px">Map amanah · Pak Ahmad</div>
+      <div class="row"><span>Tiket pesawat</span><b>Rp 14.000.000</b></div><div class="row"><span>Hotel</span><b>Rp 9.000.000</b></div><div class="row"><span>Visa</span><b>Rp 4.000.000</b></div><div class="row" style="border:0"><span>Ujrah agen</span><b>Rp 5.000.000</b></div>
+    </div>
+    <div class="rules">
+      <div class="paper rule up" style="--u:.1s"><span class="n">1</span><div><h3>Bayar hanya ke vendor berizin</h3><p>penerima = penanda tangan faktur</p></div></div>
+      <div class="paper rule up" style="--u:.2s"><span class="n">2</span><div><h3>Ujrah setelah berangkat</h3><p>maksimal 20 % paket</p></div></div>
+      <div class="paper rule up" style="--u:.3s"><span class="n">3</span><div><h3>Tiket lunas, atau dana kembali</h3><p>siapa pun bisa menekan refund</p></div></div>
+    </div>
+  </div>
+  <aside class="note">Mabrur mengunci setoran tiap jamaah di smart contract, dipecah per pos: tiket, hotel, visa, ujrah. Tiga aturan: agen hanya bisa membayar faktur vendor berizin, dan uangnya mengalir ke penanda tangan faktur, bukan ke alamat yang ditulis agen. Ujrah agen baru cair setelah jamaah berangkat. Kalau tiket tidak dibeli sampai batasnya, siapa pun bisa memicu refund.</aside>
+</section>
+
+<!-- 4 · USE CASE RWA -->
+<section class="slide" data-title="Use case RWA">
+  <div class="label kicker">03 · Use case RWA</div>
+  <h2>Asetnya: <em>hak jamaah</em> atas layanan berizin.</h2>
+  <div class="paper flow up" style="margin-top:44px">
+    <div class="step"><span class="n">1 · JAMAAH</span><h3>Pesan</h3><p>permit + book</p><span class="code">mUMRAH</span></div>
+    <div class="step"><span class="n">2 · PENERBIT</span><h3>Akui</h3><p>pengganti Kemenag / IATA</p><span class="code">ClaimRegistry</span></div>
+    <div class="step"><span class="n">3 · VENDOR</span><h3>Tagih</h3><p>faktur satu booking, satu pos</p><span class="code">EIP-712</span></div>
+    <div class="step"><span class="n">4 · AGEN</span><h3>Bayar</h3><p>uang ke penanda tangan</p><span class="code">spend()</span></div>
+    <div class="step"><span class="n">5 · SIAPA PUN</span><h3>Kembalikan</h3><p>lewat batas tiket</p><span class="code">refund()</span></div>
+  </div>
+  <div class="cols mid up" style="--u:.2s;grid-template-columns:.8fr 1.2fr;gap:48px;align-items:center;padding-top:36px">
+    <div style="font:600 38px/1.35 var(--font-display)">Uang muka umrah adalah aktivitas ekonomi nyata. Mabrur menjadikannya klaim yang dipegang jamaah sendiri, <span style="color:var(--before)">tidak bisa dipindahtangankan.</span></div>
+    <div class="paper shot"><div class="bar"><i></i><i></i><i></i>Buku tabungan amanah · Pak Ahmad</div><img src="/pitch/assets/passbook-ahmad.webp" width="1597" height="950" style="max-height:440px;object-fit:cover;object-position:top" alt="Buku tabungan amanah Pak Ahmad: pemesanan, tiket, hotel, visa, ujrah, dengan tx hash."></div>
+  </div>
+  <aside class="note">Aset dunia nyatanya bukan token spekulatif: ini hak jamaah atas layanan berizin. Lima pelaku nyata: jamaah memesan dengan satu tanda tangan, penerbit klaim (di demo: kunci pengganti Kemenag / IATA) mengakui vendor, vendor menandatangani faktur, agen hanya meneruskan, dan siapa pun bisa mengembalikan dana. mUMRAH tidak bisa dipindahtangankan.</aside>
+</section>
+
+<!-- 5 · ONCHAIN: DEMO -->
+<section class="slide" data-title="Implementasi onchain · demo">
+  <div class="label kicker">04 · Implementasi onchain</div>
+  <h2 style="font-size:72px">Agen mencoba. <em>Kontrak menolak.</em></h2>
+  <div class="cols c64 mid" style="gap:40px;align-items:start">
+    <div class="paper shot up"><div class="bar"><i></i><i></i><i></i>mabrur.edycu.dev/app/agen</div><img src="/pitch/assets/ditolak-earmark.webp" width="1280" height="870" alt="Konsol agen: cap DITOLAK EarmarkMismatch pada faktur hotel Ibu Siti yang dicoba di booking Pak Ahmad."></div>
+    <div class="ledger up" style="--u:.15s">
+      <div class="label">4 revert ditambang · Arbiscan</div>
+      <ol style="margin-top:12px">
+        <li><span>Faktur Siti di booking Ahmad</span><span class="res">EarmarkMismatch</span><span class="tx">0x9ed30e38…</span></li>
+        <li><span>Faktur ditandatangani direktur</span><span class="res">VendorClaimMissing</span><span class="tx">0x887d6b86…</span></li>
+        <li><span>Faktur dikirim ulang</span><span class="res">InvoiceReplayed</span><span class="tx">0x952f30ad…</span></li>
+        <li><span>Ujrah sebelum berangkat</span><span class="res">NotDeparted</span><span class="tx">0xe4855ebd…</span></li>
+      </ol>
+    </div>
+  </div>
+  <aside class="note">Ini aplikasinya, live di Arbitrum One. Agen memuat faktur hotel Ibu Siti dan mencoba membayarnya dari dana Pak Ahmad: kontrak menolak, EarmarkMismatch, capnya mendarat di baris itu. Empat kecurangan ini juga sudah kami tambang sebagai transaksi gagal di mainnet: faktur orang lain, faktur direktur sendiri, faktur ganda, dan ujrah sebelum berangkat. Semuanya bisa dibuka di Arbiscan.</aside>
+</section>
+
+<!-- 6 · ONCHAIN: CONTRACTS -->
+<section class="slide" data-title="Implementasi onchain · kontrak">
+  <div class="label kicker">04 · Implementasi onchain</div>
+  <h2 style="font-size:72px">Aturan ada di dalam token, <em>bukan di layar.</em></h2>
+  <div class="cols c55 mid" style="gap:56px">
+    <div class="up">
+      <div class="contract"><b>MabrurPBM</b><span class="mono">0x36f1d899…20336d2D5</span></div>
+      <div class="contract"><b>ClaimRegistry</b><span class="mono">0xd5B731CD…E4b6315ADb</span></div>
+      <div class="contract" style="border-bottom:2px dashed var(--rule)"><b>TIDR <small style="font-weight:500;color:var(--before)">uji</small></b><span class="mono">0x66F838be…7f6209A43448</span></div>
+      <div class="prim"><span>ERC20Wrapper · _update</span><span>EIP-712 invoice</span><span>ERC20Permit</span><span>refund()</span><span>regulatorView</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-content:start">
+      <div class="paper k up" style="--u:.1s"><span class="big">87</span><p>tes kontrak, cakupan 100 %</p></div>
+      <div class="paper k up" style="--u:.15s"><span class="big">7<small style="font-size:.45em"> × 256</small></span><p>invariant × run, kedalaman 100</p></div>
+      <div class="paper k up" style="--u:.2s"><span class="big">100 %</span><p>cakupan per file frontend (Vitest) + E2E Playwright</p></div>
+      <div class="paper k up" style="--u:.25s"><span class="big">3</span><p>putaran review kontrak, putaran 3 bersih</p></div>
+    </div>
+  </div>
+  <aside class="note">Tiga kontrak, terverifikasi di Arbiscan. Aturannya ada di jalur transfer token itu sendiri: _update memblokir semua transfer, spend membayar penanda tangan faktur EIP-712 yang memegang klaim, dan tidak ada owner atau pause atas saldo. 87 tes kontrak dengan cakupan 100 persen, tujuh invariant, dan tiga putaran review internal; putaran ketiga bersih.</aside>
+</section>
+
+<!-- 7 · DAMPAK -->
+<section class="slide" data-title="Dampak">
+  <div class="label kicker">05 · Dampak</div>
+  <h2>Mengunci uang satu jamaah: <em>Rp 809.</em></h2>
+  <div class="cols mid" style="grid-template-columns:.9fr 1.1fr;gap:40px;align-items:center">
+    <div class="paper up" style="padding:34px 38px;display:grid;gap:8px">
+      <div class="label">Biaya gas dari receipt asli</div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px dashed var(--rule);padding:16px 0"><span style="font-size:28px">Jamaah berangkat</span><span class="big" style="color:var(--after);font-size:110px">Rp 809</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px dashed var(--rule);padding:16px 0"><span style="font-size:28px">Jamaah di-refund</span><span class="big" style="color:var(--after);font-size:110px">Rp 520</span></div>
+      <div style="font-size:26px;padding-top:12px">≈ <b>0,0025 %</b> dari paket Rp 32.000.000</div>
+      <div class="mono" style="font-size:17px;color:var(--muted)">907.185 gas · ETH/IDR 44.563.294 · CoinGecko 9 Okt 2026</div>
+    </div>
+    <div class="up" style="--u:.15s;background:var(--after-wash);border-radius:var(--radius);padding:34px 38px;display:grid;gap:16px">
+      <div class="label" style="color:var(--after)">Ibu Siti · tiket tidak dibeli</div>
+      <div style="font:700 64px/1.05 var(--font-display)">Rp 23.000.000 kembali, ditekan pihak ketiga.</div>
+      <img src="/pitch/assets/dikembalikan-siti.webp" width="1590" height="390" alt="Cap DIKEMBALIKAN Rp 23.000.000 ke Ibu Siti." style="width:100%;height:auto;border-radius:10px;border:1.5px solid #cdd2ec">
+    </div>
+  </div>
+  <aside class="note">Dampaknya: mengunci uang satu jamaah dari pesan sampai berangkat butuh gas sekitar Rp 809, kira-kira 0,0025 persen dari paket. Dan saat batas tiket Ibu Siti lewat tanpa tiket dibeli, pihak ketiga menekan refund dan Rp 23.000.000 kembali kepadanya, tanpa izin agen. Untuk agen jujur tidak ada yang berubah: vendor tetap bisa dibayar kapan saja; hanya ujrah yang menunggu keberangkatan.</aside>
+</section>
+
+<!-- 8 · PENUTUP -->
+<section class="slide dark" data-title="Coba sekarang">
+  <div class="cols" style="grid-template-columns:1.3fr .7fr;height:100%;align-items:center">
+    <div>
+      <div class="label kicker" style="color:#E9C891">Coba sekarang · tanpa dompet</div>
+      <h2 style="color:var(--paper);font-size:96px">Buka buku Pak Ahmad. <span style="color:#E9C891">Coba bayar hotel orang lain.</span></h2>
+      <div style="margin-top:44px;display:grid;gap:12px;font:400 30px var(--font-data);color:#DCE0EC">
+        <span>mabrur.edycu.dev/app/jamaah</span><span>mabrur.edycu.dev/judge</span><span>github.com/edycutjong/mabrur</span>
+      </div>
+      <div style="margin-top:40px;font-size:24px;color:#B9BFD0">tIDR token uji tanpa nilai · tidak menjamin kursi: tiket lunas, atau sisa dana kembali.</div>
+    </div>
+    <div style="display:grid;justify-items:center;gap:16px">
+      <div class="qr" role="img" aria-label="Kode QR ke https://mabrur.edycu.dev"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 290 290" aria-hidden="true"><g transform="scale(10)"><path fill="#fffdf7" d="M0 0h29v29h-29z"/><path class="qrline" stroke="#1a2238" d="M2 2.5h7m1 0h2m5 0h2m1 0h7m-25 1h1m5 0h1m3 0h1m2 0h2m3 0h1m5 0h1m-25 1h1m1 0h3m1 0h1m2 0h3m2 0h2m2 0h1m1 0h3m1 0h1m-25 1h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h5m1 0h1m1 0h3m1 0h1m-25 1h1m1 0h3m1 0h1m1 0h2m3 0h4m1 0h1m1 0h3m1 0h1m-25 1h1m5 0h1m1 0h1m2 0h2m1 0h1m1 0h1m1 0h1m5 0h1m-25 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-17 1h4m2 0h2m-16 1h1m3 0h1m1 0h3m8 0h5m2 0h1m-23 1h2m1 0h1m1 0h3m3 0h1m1 0h2m3 0h2m1 0h1m-24 1h1m1 0h1m2 0h5m4 0h4m1 0h1m1 0h2m-23 1h1m1 0h2m3 0h1m2 0h3m1 0h1m4 0h2m1 0h2m-22 1h1m2 0h2m2 0h1m1 0h2m1 0h2m1 0h3m1 0h4m-25 1h4m4 0h1m5 0h2m4 0h1m2 0h1m-22 1h7m4 0h5m1 0h4m-19 1h1m3 0h2m2 0h1m3 0h5m1 0h2m-24 1h3m1 0h3m2 0h4m3 0h7m-15 1h3m1 0h5m3 0h1m-21 1h7m1 0h2m1 0h1m2 0h1m1 0h1m1 0h1m1 0h1m-21 1h1m5 0h1m3 0h2m4 0h1m3 0h4m-24 1h1m1 0h3m1 0h1m1 0h1m3 0h1m3 0h7m-23 1h1m1 0h3m1 0h1m2 0h2m1 0h4m1 0h3m2 0h3m-25 1h1m1 0h3m1 0h1m4 0h1m2 0h1m1 0h1m1 0h1m2 0h1m1 0h1m-24 1h1m5 0h1m3 0h1m1 0h1m1 0h1m2 0h1m1 0h5m-24 1h7m1 0h1m1 0h1m4 0h1m6 0h3"/></g></svg>
+</div>
+      <span class="mono" style="color:#DCE0EC;font-size:22px">mabrur.edycu.dev</span>
+    </div>
+  </div>
+  <aside class="note">Silakan coba sendiri, tanpa dompet: buka buku Pak Ahmad dan coba bayar hotel orang lain di konsol agen. Kami jujur soal batasnya: tIDR adalah token uji tanpa nilai, dan Mabrur tidak menjamin kursi; yang dijamin tiket lunas atau sisa dana kembali. Terima kasih.</aside>
+</section>
+
+<!-- A1 · MODEL BISNIS -->
+<section class="slide" data-title="Lampiran · Model bisnis">
+  <div class="label kicker"><span class="app-tag">Lampiran A1</span> Model bisnis</div>
+  <h2 style="font-size:72px">Siapa membayar, dan <em>kapan ujrah cair?</em></h2>
+  <div class="mid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+    <div class="paper tcard up"><span class="n">Biro</span><h3>membayar biaya per jamaah</h3><p>Rencana: biaya kecil per jamaah, sebagai lencana bukti bahwa uang jamaahnya aman.</p></div>
+    <div class="paper tcard up" style="--u:.1s"><span class="n">Ujrah</span><h3>cair setelah berangkat</h3><p>Maksimal 20 % paket, dengan tanda tangan keberangkatan jamaah atau maskapai yang dibayar.</p></div>
+    <div class="paper tcard up" style="--u:.2s"><span class="n">Vendor</span><h3>dibayar kapan saja</h3><p>Tiket, hotel, visa tetap bisa dibayar di muka. Yang tertahan hanya ujrah.</p></div>
+  </div>
+  <aside class="note">Model bisnis yang kami rencanakan: biro membayar biaya kecil per jamaah, sebagai lencana kepercayaan yang bisa diperiksa calon jamaah. Agen jujur tetap bisa membayar vendor kapan saja; yang tertahan hanya ujrah sampai jamaah berangkat. Agen yang tidak bisa jalan tanpa memakai uang jamaah lain memang bukan target kami.</aside>
+</section>
+
+<!-- A2 · SKALABILITAS -->
+<section class="slide" data-title="Lampiran · Skalabilitas">
+  <div class="label kicker"><span class="app-tag">Lampiran A2</span> Skalabilitas</div>
+  <h2 style="font-size:72px">Biaya per jamaah, <em>bukan per agen.</em></h2>
+  <div class="mid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+    <div class="paper tcard up"><span class="n">907.185 gas</span><h3>siklus berangkat ≈ Rp 809</h3><p>book + 3 pembayaran vendor + ujrah, dari receipt Arbitrum One.</p></div>
+    <div class="paper tcard up" style="--u:.1s"><span class="n">O(1)</span><h3>pandangan regulator</h3><p><span class="mono">regulatorView</span> membaca penghitung per agen, tanpa loop atas booking.</p></div>
+    <div class="paper tcard up" style="--u:.2s"><span class="n">ERC-20</span><h3>aset dasar bisa diganti</h3><p>Wrapper menerima ERC-20 standar apa pun: tIDR hari ini, rupiah berizin nanti.</p></div>
+  </div>
+  <aside class="note">Skalabilitas: biaya tumbuh per jamaah, sekitar 907 ribu gas untuk satu siklus lengkap. Pandangan regulator dibaca dari penghitung per agen, jadi tidak melambat saat booking bertambah. Dan aset dasarnya bisa diganti ke token rupiah berizin tanpa mengubah aturan.</aside>
+</section>
+
+<!-- A3 · ASUMSI KEPERCAYAAN -->
+<section class="slide" data-title="Lampiran · Asumsi kepercayaan">
+  <div class="label kicker"><span class="app-tag">Lampiran A3</span> Asumsi kepercayaan</div>
+  <h2 style="font-size:72px">Apa yang masih harus <em>dipercaya.</em></h2>
+  <div class="mid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px">
+    <div class="paper tcard up"><span class="n">T1</span><h3>Registry</h3><p>Penerbit dibajak bisa mengakui vendor palsu; kerugian terbatas dan dites (<span class="mono">test_CaptureIssuer_Bound</span>).</p></div>
+    <div class="paper tcard up" style="--u:.08s"><span class="n">T2</span><h3>Vendor</h3><p>Vendor berizin bisa menagih lebih dari layanan; dibatasi pos booking itu.</p></div>
+    <div class="paper tcard up" style="--u:.16s"><span class="n">T3</span><h3>Keberangkatan</h3><p>Faktur tiket harus melunasi seluruh pos tiket: “tiket Rp 1” tidak mematikan refund.</p></div>
+    <div class="paper tcard up" style="--u:.24s"><span class="n">T4</span><h3>Kunci jamaah</h3><p>Jika agen memegang kunci jamaah, ia bisa menandatangani atas namanya. Jalur: dompet passkey.</p></div>
+  </div>
+  <aside class="note">Kami tulis terbuka di README empat asumsi kepercayaan. T1, registry: penerbit yang dibajak bisa mengakui vendor palsu, tapi kerugiannya terbatas dan dites. T2, vendor bisa menagih lebih, dibatasi pos. T3, maskapai ikut menandatangani keberangkatan, tapi harus melunasi seluruh pos tiket. T4, kunci jamaah tidak boleh dipegang agen.</aside>
+</section>
+
+<!-- A4 · JALUR ADOPSI -->
+<section class="slide" data-title="Lampiran · Jalur adopsi">
+  <div class="label kicker"><span class="app-tag">Lampiran A4</span> Jalur adopsi</div>
+  <h2 style="font-size:72px">Kemenag, PPIU, <em>SISKOPATUH.</em></h2>
+  <div class="mid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+    <div class="paper tcard up"><span class="n">PPIU</span><h3>Keunggulan jual</h3><p>Biro jujur membuktikan uang jamaah aman, melawan biro promo yang murah.</p></div>
+    <div class="paper tcard up" style="--u:.1s"><span class="n">Kemenag</span><h3>Penerbit &amp; mandat</h3><p>Kemenag dan akreditor maskapai/IATA sebagai penerbit klaim; regulator mewajibkan dana PPIU di earmark.</p></div>
+    <div class="paper tcard up" style="--u:.2s"><span class="n">SISKOPATUH</span><h3>Registry booking</h3><p>Rujukan data jamaah. Belum ada API publik: disebut, belum diintegrasikan.</p></div>
+  </div>
+  <aside class="note">Jalur adopsi: pertama biro yang jujur, karena bukti uang jamaah aman adalah keunggulan jual. Lalu Kemenag dan akreditor maskapai sebagai penerbit klaim yang sesungguhnya, dan mandat regulator agar dana PPIU berada di earmark. SISKOPATUH bisa menjadi registry booking; kami belum menemukan API publiknya.</aside>
+</section>
+
+<!-- A5 · ROADMAP -->
+<section class="slide" data-title="Lampiran · Roadmap">
+  <div class="label kicker"><span class="app-tag">Lampiran A5</span> Roadmap</div>
+  <h2 style="font-size:72px">Dari token uji ke <em>rupiah berizin.</em></h2>
+  <div class="mid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+    <div class="paper tcard up"><span class="n">Rupiah</span><h3>Rupiah Digital / deposito tertokenisasi</h3><p>Bank Indonesia tidak mengizinkan kripto sebagai alat pembayaran: aset dasar harus rupiah berizin.</p></div>
+    <div class="paper tcard up" style="--u:.1s"><span class="n">DP → lunas</span><h3>Setoran bertahap</h3><p>DP dan pelunasan masuk ke earmark yang sama. Belum dibangun.</p></div>
+    <div class="paper tcard up" style="--u:.2s"><span class="n">Ujrah bertahap</span><h3>Sebagian saat visa terbit</h3><p>Untuk arus kas agen: sisa saat berangkat. Belum dibangun.</p></div>
+  </div>
+  <aside class="note">Roadmap: ganti tIDR dengan rupiah berizin, Rupiah Digital atau deposito tertokenisasi bank. Setoran bertahap, DP lalu pelunasan, masuk ke earmark yang sama. Dan ujrah bertahap untuk arus kas agen. Dua yang terakhir sengaja belum dibangun di hackathon.</aside>
+</section>
+
+<!-- A6 · KENAPA BUKAN BANK -->
+<section class="slide" data-title="Lampiran · Pembanding">
+  <div class="label kicker"><span class="app-tag">Lampiran A6</span> Pembanding</div>
+  <h2 style="font-size:72px">Bank menjawab <em>di mana.</em> Mabrur menjawab <em>untuk apa.</em></h2>
+  <table class="cmp up mid" style="font-size:30px">
+    <thead><tr><th></th><th>Rekening penampungan</th><th>Escrow bertahap</th><th>Mabrur</th></tr></thead>
+    <tbody>
+      <tr><td><b>Pemisahan per jamaah</b></td><td>rekening gabungan</td><td>satu kolam</td><td>per booking, di token</td></tr>
+      <tr><td><b>Penerima dipilih oleh</b></td><td>agen</td><td>agen</td><td>penanda tangan faktur</td></tr>
+      <tr><td><b>Agen menghilang</b></td><td>pengadilan</td><td>arbiter</td><td>refund() siapa pun</td></tr>
+      <tr><td><b>Pandangan regulator</b></td><td>setelah runtuh</td><td>tidak ada</td><td>langsung</td></tr>
+    </tbody>
+  </table>
+  <aside class="note">Kalau ditanya kenapa tidak rekening bank: agen memang harus membayar vendor di muka, jadi uang pasti keluar. Bank menjawab di mana uang disimpan; Mabrur menjawab untuk apa uang boleh dipakai. Kami tidak memutar dana ke DeFi: dana diam sampai dibayar ke vendor jamaah itu sendiri.</aside>
+</section>
+
+</main>
+</div>
+<div class="hint">← → navigasi · N catatan pembicara · ⌘P → PDF</div>
+<div class="hud"><span id="count">01 / 08</span><button type="button" id="prev" aria-label="Slide sebelumnya">←</button><button type="button" id="next" aria-label="Slide berikutnya">→</button><button type="button" id="notesBtn" aria-label="Catatan pembicara">N</button></div>
+<div class="notes" id="notes" aria-live="polite"><div class="label">Catatan pembicara · <span id="ntitle"></span></div><p id="ntext"></p></div>
+<div style="position:fixed;top:12px;right:18px;font:400 12px var(--font-data);color:var(--muted);z-index:10">v1 · 9 Okt 2026</div>
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var MAIN = 8, i = 0, stage = document.getElementById("stage");
+  function label(k) { return k < MAIN ? String(k + 1).padStart(2, "0") + " / " + String(MAIN).padStart(2, "0") : "A" + (k - MAIN + 1) + " · lampiran"; }
+  function fit() {
+    var w = document.documentElement.clientWidth, h = document.documentElement.clientHeight;
+    var s = Math.min(w / 1920, h / 1080);
+    stage.style.transform = "translate(-50%, -50%) scale(" + s + ")";
+  }
+  function show(k) {
+    i = Math.max(0, Math.min(slides.length - 1, k));
+    slides.forEach(function (s, j) { s.classList.toggle("on", j === i); s.setAttribute("aria-hidden", j === i ? "false" : "true"); });
+    document.getElementById("count").textContent = label(i);
+    var n = slides[i].querySelector("aside.note");
+    document.getElementById("ntitle").textContent = slides[i].dataset.title;
+    document.getElementById("ntext").textContent = n ? n.textContent : "";
+    if (location.hash !== "#" + (i + 1)) history.replaceState(null, "", "#" + (i + 1));
+  }
+  document.getElementById("prev").onclick = function () { show(i - 1); };
+  document.getElementById("next").onclick = function () { show(i + 1); };
+  var notes = document.getElementById("notes");
+  document.getElementById("notesBtn").onclick = function () { notes.classList.toggle("on"); };
+  document.addEventListener("keydown", function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var k = e.key;
+    if (k === "ArrowRight" || k === "PageDown" || k === " " || k === "Enter") { show(i + 1); e.preventDefault(); }
+    else if (k === "ArrowLeft" || k === "PageUp" || k === "Backspace") { show(i - 1); e.preventDefault(); }
+    else if (k === "Home") show(0); else if (k === "End") show(slides.length - 1);
+    else if (k === "n" || k === "N" || k === "p" || k === "P") notes.classList.toggle("on");
+  });
+  var x0 = null;
+  document.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener("touchend", function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1)); x0 = null; });
+  window.addEventListener("resize", fit);
+  window.addEventListener("hashchange", function () { var n = parseInt(location.hash.slice(1), 10); if (n) show(n - 1); });
+  fit();
+  var start = parseInt(location.hash.slice(1), 10);
+  show(start ? start - 1 : 0);
+})();
+</script>
+</body>
+</html>

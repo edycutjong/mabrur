@@ -12,7 +12,7 @@ describe("app/page.tsx — Home component", () => {
     expect(typeof pageModule.default).toBe("function");
   });
 
-  it("Home function calls redirect with /app path", async () => {
+  it("Home function falls back to the static landing page", async () => {
     const { redirect } = await import("next/navigation");
     const mockRedirect = vi.mocked(redirect);
 
@@ -26,7 +26,7 @@ describe("app/page.tsx — Home component", () => {
     Home();
 
     // Verify redirect was called with the correct path
-    expect(mockRedirect).toHaveBeenCalledWith("/app");
+    expect(mockRedirect).toHaveBeenCalledWith("/landing/index.html");
     expect(mockRedirect).toHaveBeenCalledTimes(1);
   });
 
