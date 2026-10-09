@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Address, isAddress, parseSignature } from "viem";
 import { useAccount, useWalletClient } from "wagmi";
@@ -19,6 +20,7 @@ import {
   useMabrurTx,
 } from "~~/hooks/mabrur/useMabrur";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { AHMAD_ID, SITI_ID } from "~~/utils/mabrur/demo";
 import { DecodedRevert, decodeRevert } from "~~/utils/mabrur/errors";
 import {
   LINES,
@@ -488,7 +490,13 @@ const JamaahInner = ({ params }: { params: Params }) => {
         </p>
       </header>
 
-      <div className="grid grid-cols-1 gap-6 xl:gap-8 xl:grid-cols-[minmax(0,520px)_minmax(0,1fr)]">
+      {/* With a deep link the passbook is the point (a judge on a projector): it leads at every width and the booking
+          form moves to the narrow side column. */}
+      <div
+        className={`grid grid-cols-1 gap-6 xl:gap-8 ${
+          deepLink ? "xl:grid-cols-[minmax(0,1fr)_minmax(0,460px)]" : "xl:grid-cols-[minmax(0,520px)_minmax(0,1fr)]"
+        }`}
+      >
         <div className="flex flex-col gap-6 min-w-0">
           <BookForm onBooked={id => setSelected(id)} />
           <div className="mb-sheet">
@@ -535,16 +543,26 @@ const JamaahInner = ({ params }: { params: Params }) => {
             )}
           </div>
         </div>
-        {/* With a deep link the passbook is the point: on narrow screens it comes before the booking form. */}
-        <div className={`min-w-0 ${deepLink ? "order-first xl:order-none" : ""}`}>
+        <div className={`min-w-0 ${deepLink ? "order-first" : ""}`}>
           {one ? (
             <Passbook b={one} name={name} />
           ) : (
-            <div className="mb-sheet">
+            <div className="mb-sheet mb-empty">
               <Bi
                 id={selected !== undefined && one === null ? "Booking tidak ditemukan." : "Pilih atau buat booking."}
                 en={selected !== undefined && one === null ? "No booking with this id." : "Pick or create a booking."}
               />
+              <p className="mb-p mt-4 mb-muted text-sm">
+                <T id="Atau buka booking contoh di Arbitrum One:" en="Or open a demo booking on Arbitrum One:" />
+              </p>
+              <div className="flex flex-wrap gap-3 mt-3">
+                <Link className="mb-btn mb-btn-ghost mb-go" href={`/app/jamaah?id=${AHMAD_ID}`}>
+                  <T id="Buku Amanah Pak Ahmad" en="Pak Ahmad's passbook" />
+                </Link>
+                <Link className="mb-btn mb-btn-ghost mb-go" href={`/app/jamaah?id=${SITI_ID}`}>
+                  <T id="Buku Amanah Ibu Siti" en="Ibu Siti's passbook" />
+                </Link>
+              </div>
             </div>
           )}
         </div>

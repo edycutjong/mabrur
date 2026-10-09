@@ -288,7 +288,7 @@ describe("app/app/jamaah/page.tsx", () => {
   it("title", () => {
     s();
     render(<JamaahPage />);
-    expect(screen.getByText(/Buku Amanah/)).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/Buku Amanah/);
   });
   it("desc", () => {
     s();
@@ -1042,6 +1042,14 @@ describe("app/app/jamaah/page.tsx behaviour", () => {
     it("asks to pick or create a booking when nothing is selected", () => {
       render(<JamaahPage />);
       expect(screen.getByTestId("bi").textContent).toBe("Pilih atau buat booking.");
+      expect(screen.getByRole("link", { name: /Buku Amanah Pak Ahmad/ })).toHaveAttribute(
+        "href",
+        expect.stringContaining("/app/jamaah?id=9307128895"),
+      );
+      expect(screen.getByRole("link", { name: /Buku Amanah Ibu Siti/ })).toHaveAttribute(
+        "href",
+        expect.stringContaining("/app/jamaah?id=3830303331"),
+      );
     });
 
     it("says the booking was not found when the selected id resolves to null", () => {

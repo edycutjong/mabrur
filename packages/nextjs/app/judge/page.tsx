@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { NextPage } from "next";
 import { T } from "~~/components/mabrur/T";
+import { AHMAD_ID, SITI_ID } from "~~/utils/mabrur/demo";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
 export const metadata = getMetadata({
@@ -12,8 +13,6 @@ const SCAN = "https://arbiscan.io";
 const PBM = "0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5";
 const REGISTRY = "0xd5B731CD0f2c91D5D64b59d9E4a2A4E4b6315ADb";
 const TIDR = "0x66F838be32A624f4C797483a151C7f6209A43448";
-const AHMAD_ID = "93071288952676167289577516806255635492368093588595261547394544652192346034554";
-const SITI_ID = "38303033312745746094663211795656914215448779063347601464497604008460359611737";
 
 /** The four mined refusals: [contract error, what the agency tried (ID), (EN), tx]. Error names stay as-is. */
 const REVERTS = [
