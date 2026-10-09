@@ -37,4 +37,19 @@ export default defineConfig([
       "@typescript-eslint/no-deprecated": "warn",
     },
   },
+  {
+    // Unit tests are excluded from the app tsconfig; lint them against tsconfig.test.json instead.
+    files: ["test/**/*.ts", "test/**/*.tsx"],
+    languageOptions: {
+      parserOptions: {
+        projectService: false,
+        project: ["./tsconfig.test.json"],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-deprecated": "off",
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
 ]);
