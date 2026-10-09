@@ -11,7 +11,7 @@ const titleTemplate = "%s | Mabrur";
 export const getMetadata = ({
   title,
   description,
-  imageRelativePath = "/og-image.png?v=2",
+  imageRelativePath = "/og-image.png?v=3",
 }: {
   title: string;
   description: string;
