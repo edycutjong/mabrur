@@ -15,9 +15,14 @@ export const Footer = () => {
           <a href={REPO} className="mb-link" target="_blank" rel="noreferrer">
             GitHub: edycutjong/mabrur
           </a>
-          <Link href="/debug" className="mb-link mb-muted">
-            Contracts (debug)
-          </Link>
+          <a
+            href="https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code"
+            className="mb-link mb-muted"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Kontrak terverifikasi · Verified contract (Arbiscan)
+          </a>
         </nav>
         <div className="mb-muted flex flex-wrap gap-x-6 gap-y-1">
           <span>tIDR = token uji tanpa nilai · test token, no value</span>

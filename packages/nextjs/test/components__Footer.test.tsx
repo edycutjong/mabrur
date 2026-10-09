@@ -56,11 +56,15 @@ describe("Footer component", () => {
     expect(githubLink).toHaveClass("mb-link");
   });
 
-  it("renders the debug/contracts link with correct href and text", () => {
+  it("links the verified MabrurPBM contract on Arbiscan in a new tab", () => {
     render(<Footer />);
-    const debugLink = screen.getByRole("link", { name: /Contracts \(debug\)/i });
+    const debugLink = screen.getByRole("link", { name: /Verified contract \(Arbiscan\)/i });
     expect(debugLink).toBeInTheDocument();
-    expect(debugLink).toHaveAttribute("href", "/debug");
+    expect(debugLink).toHaveAttribute(
+      "href",
+      "https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code",
+    );
+    expect(debugLink).toHaveAttribute("target", "_blank");
     expect(debugLink).toHaveClass("mb-link", "mb-muted");
   });
 
@@ -108,7 +112,7 @@ describe("Footer component", () => {
     expect(footer).toBeInTheDocument();
     expect(footer?.textContent).toContain("Untuk juri");
     expect(footer?.textContent).toContain("edycutjong/mabrur");
-    expect(footer?.textContent).toContain("Contracts");
+    expect(footer?.textContent).toContain("Verified contract");
     expect(footer?.textContent).toContain("tIDR");
     expect(footer?.textContent).toContain("fictional names");
     expect(footer?.textContent).toContain("demo claim issuer");
@@ -126,7 +130,10 @@ describe("Footer component", () => {
     const links = Array.from(nav.querySelectorAll("a"));
     expect(links[0]).toHaveAttribute("href", "/judge");
     expect(links[1]).toHaveAttribute("href", "https://github.com/edycutjong/mabrur");
-    expect(links[2]).toHaveAttribute("href", "/debug");
+    expect(links[2]).toHaveAttribute(
+      "href",
+      "https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code",
+    );
   });
 
   it("verifies the GitHub link opens in a new tab with security attributes", () => {

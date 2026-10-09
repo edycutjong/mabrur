@@ -73,7 +73,7 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
     color: "#28a0f0",
   },
   [chains.arbitrum.id]: {
-    color: "#28a0f0",
+    color: "#1666a8",
   },
   [chains.fantom.id]: {
     color: "#1969ff",
