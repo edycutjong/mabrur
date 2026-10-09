@@ -614,6 +614,51 @@ contract ClaimRegistryTest is MabrurBase {
         assertFalse(registry.isTrustedIssuer(issuer));
     }
 
+    function test_OtherIssuerCannotUnrevokeOrOverwriteClaim() public {
+        address issuerB = makeAddr("issuerB");
+        uint256[] memory topics = new uint256[](2);
+        topics[0] = 1;
+        topics[1] = 2;
+        vm.prank(regulator);
+        registry.addTrustedIssuer(issuerB, topics);
+        vm.prank(issuer);
+        registry.revokeClaim(airline, 2);
+        vm.startPrank(issuerB);
+        vm.expectRevert(ClaimRegistry.NotClaimIssuer.selector);
+        registry.issueClaim(airline, 2, uint64(block.timestamp + 1 days)); // cannot un-revoke
+        vm.expectRevert(ClaimRegistry.NotClaimIssuer.selector);
+        registry.issueClaim(agency, 1, uint64(block.timestamp + 1)); // cannot cut the agency licence short
+        vm.stopPrank();
+        assertFalse(registry.hasValidClaim(airline, 2));
+        assertTrue(registry.hasValidClaim(agency, 1));
+    }
+
+    function test_ReAddedIssuerDoesNotResurrectOldClaims() public {
+        uint256[] memory topics = new uint256[](1);
+        topics[0] = 3;
+        vm.startPrank(regulator);
+        registry.removeTrustedIssuer(issuer);
+        registry.addTrustedIssuer(issuer, topics);
+        vm.stopPrank();
+        assertFalse(registry.hasValidClaim(hotel, 3));
+        vm.prank(issuer);
+        registry.issueClaim(hotel, 3, uint64(block.timestamp + 1 days)); // a fresh claim is valid again
+        assertTrue(registry.hasValidClaim(hotel, 3));
+    }
+
+    function test_SuccessorIssuerCanReplaceRemovedIssuersClaim() public {
+        address issuerB = makeAddr("issuerB");
+        uint256[] memory topics = new uint256[](1);
+        topics[0] = 3;
+        vm.startPrank(regulator);
+        registry.removeTrustedIssuer(issuer);
+        registry.addTrustedIssuer(issuerB, topics);
+        vm.stopPrank();
+        vm.prank(issuerB);
+        registry.issueClaim(hotel, 3, uint64(block.timestamp + 1 days));
+        assertTrue(registry.hasValidClaim(hotel, 3));
+    }
+
     function test_FaucetDailyLimit() public {
         address m = makeAddr("mentor");
         for (uint256 i; i < 100; ++i) {

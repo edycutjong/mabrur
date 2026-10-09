@@ -15,6 +15,7 @@ contract ClaimRegistry {
         address issuer;
         uint64 expiry;
         bool revoked;
+        uint64 epoch; // issuer epoch at issuance: removing an issuer retires every claim it issued, for good
     }
 
     address public immutable owner;
@@ -22,6 +23,8 @@ contract ClaimRegistry {
     mapping(address => bool) private _trusted;
     mapping(address => mapping(uint256 => bool)) private _issuerTopics;
     mapping(address => uint256[]) private _issuerTopicList;
+    /// @dev Bumped on removal, so re-adding an issuer never resurrects its earlier claims.
+    mapping(address => uint64) public issuerEpoch;
     /// @dev subject => topic => latest claim
     mapping(address => mapping(uint256 => Claim)) public claims;
 
@@ -60,6 +63,7 @@ contract ClaimRegistry {
     function removeTrustedIssuer(address issuer) external onlyOwner {
         _clearTopics(issuer);
         _trusted[issuer] = false;
+        issuerEpoch[issuer]++;
         emit TrustedIssuerRemoved(issuer);
     }
 
@@ -75,7 +79,11 @@ contract ClaimRegistry {
         if (topic < PPIU_AGENCY || topic > VISA_PROVIDER) revert UnknownTopic(topic);
         if (!hasClaimTopic(msg.sender, topic)) revert IssuerNotTrustedForTopic(msg.sender, topic);
         if (expiry <= block.timestamp) revert InvalidExpiry();
-        claims[subject][topic] = Claim({ issuer: msg.sender, expiry: expiry, revoked: false });
+        // one trusted issuer can never overwrite (and so un-revoke or cut short) another live issuer's claim
+        Claim memory prev = claims[subject][topic];
+        if (prev.issuer != address(0) && prev.issuer != msg.sender && _isCurrent(prev, topic)) revert NotClaimIssuer();
+        claims[subject][topic] =
+            Claim({ issuer: msg.sender, expiry: expiry, revoked: false, epoch: issuerEpoch[msg.sender] });
         emit ClaimIssued(msg.sender, subject, topic, expiry);
     }
 
@@ -90,7 +98,12 @@ contract ClaimRegistry {
     /// @notice Valid = issuer still trusted for the topic, not revoked, not expired.
     function hasValidClaim(address subject, uint256 topic) external view returns (bool) {
         Claim memory c = claims[subject][topic];
-        return c.issuer != address(0) && !c.revoked && block.timestamp < c.expiry && hasClaimTopic(c.issuer, topic);
+        return c.issuer != address(0) && !c.revoked && block.timestamp < c.expiry && _isCurrent(c, topic);
+    }
+
+    /// @dev The claim's issuer is still trusted for the topic and has not been removed since it issued the claim.
+    function _isCurrent(Claim memory c, uint256 topic) private view returns (bool) {
+        return hasClaimTopic(c.issuer, topic) && c.epoch == issuerEpoch[c.issuer];
     }
 
     function _clearTopics(address issuer) private {
