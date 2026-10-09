@@ -125,7 +125,7 @@ Rp 32.000.000 package.
 ```bash
 git clone --recursive https://github.com/edycutjong/mabrur.git && cd mabrur
 yarn install
-cd packages/foundry && forge test          # 67 tests: unit, fuzz, invariant
+cd packages/foundry && forge test          # 87 tests: unit, fuzz, invariant
 cd ../.. && yarn chain                     # local anvil (terminal 1)
 yarn deploy                                # deploy + generate ABIs (terminal 2)
 NEXT_PUBLIC_LOCAL_CHAIN=true yarn start    # app on localhost:3000 (terminal 3)
@@ -139,7 +139,7 @@ Replaying the Arbitrum One demo (`script/run.sh SeedDemo`, `script/proof.sh`) ne
 
 | What | Result |
 |---|---|
-| `forge test` | **67 tests, 0 failed**: every custom error has a test; regression tests are named after the defect they pin (e.g. `test_ReAddedIssuerDoesNotResurrectOldClaims`) |
+| `forge test` | **87 tests, 0 failed, 100 % line · branch · function coverage on all three contracts**: every custom error has a test; regression tests are named after the defect they pin (e.g. `test_ReAddedIssuerDoesNotResurrectOldClaims`) |
 | Invariant suite | **7 invariants** × 256 runs × depth 100: Σ earmarks == `mUMRAH` supply == tracked total; tIDR held == supply + donations; per-booking and per-agency ledgers balance; no payment ever reaches an unclaimed address; no spend after a booking turns refundable; after warping past every deadline and refunding, supply is 0 |
 | T1 bound | `test_CaptureIssuer_Bound`: even a captured issuer cannot take more than the unexpired FLIGHT+HOTEL+VISA lines; the margin only ever goes to the agency |
 | Mined reverts | 4 adversarial attempts mined on Arbitrum One, each replayed by `script/proof.sh` and required to decode to the expected error |

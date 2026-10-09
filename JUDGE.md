@@ -21,7 +21,7 @@ Web version: **https://mabrur.edycu.dev/judge**
 | `InvoiceReplayed` | An already-paid invoice submitted again | [0x952f30ad…](https://arbiscan.io/tx/0x952f30adf9d7cc08982d8128c5e0de85a241d92a2d0e099799df6c7a75b9619a) |
 | `NotDeparted` | Agency signs its own "departure" to take its fee | [0xe4855ebd…](https://arbiscan.io/tx/0xe4855ebd72f05a8756a814cc8fbfb963b18f70bdd16856130cff391e1df5291b) |
 
-- **67 tests**, including 7 invariants × 256 runs × depth 100.
+- **87 tests** (100 % line, branch and function coverage), including 7 invariants × 256 runs × depth 100.
 - Cost from real receipts: departed lifecycle 907,185 gas ≈ Rp 809; refunded lifecycle 582,938 gas ≈ Rp 520 (ETH/IDR 44,563,294, CoinGecko, 9 Oct 2026).
 - Full ledger: [DEMO.md](DEMO.md).
 
