@@ -12,3 +12,9 @@ docs/
 # Dotenv file
 .env
 localhost.json
+
+# keep only the public Arbitrum One run ledgers
+broadcast/**/31337/
+broadcast/**/dry-run/
+broadcast/**/run-[0-9]*.json
+deployments/31337.json
