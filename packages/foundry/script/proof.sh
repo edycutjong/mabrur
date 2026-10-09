@@ -24,7 +24,7 @@ mine() { # label, expected error, cast args…
   local got
   got=$(cast run "$hash" --rpc-url "$RPC" --quick 2>&1 | grep -oE '← \[Revert\] [A-Za-z]+' | tail -1 | awk '{print $NF}')
   local verdict="✗ got ${got:-nothing}"; [ "$status" = "0x0" ] && [ "$got" = "$expected" ] && verdict="✓ mined revert $got"
-  echo "| $label | $expected | $hash | $verdict |"
+  echo "| $label | $expected | [$hash](https://arbiscan.io/tx/$hash) | $verdict |"
 }
 echo "| Attempt | Expected revert | Tx hash | Result |"
 echo "|---|---|---|---|"
