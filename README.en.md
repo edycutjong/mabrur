@@ -96,7 +96,7 @@ flowchart LR
 
 | Layer | Technology |
 |---|---|
-| Contracts | Solidity 0.8.33, OpenZeppelin 5.6.1 (`ERC20Wrapper`, `ERC20Permit`, `EIP712`, `ECDSA`, `ReentrancyGuard`) |
+| Contracts | Solidity `^0.8.24`, compiled and verified with solc 0.8.33; OpenZeppelin 5.6.1 (`ERC20Wrapper`, `ERC20Permit`, `EIP712`, `ECDSA`, `ReentrancyGuard`) |
 | Chain | **Arbitrum One (42161)**, all three contracts verified on Arbiscan |
 | Tooling | Foundry (unit, fuzz, invariant, scripts broadcasting to mainnet) |
 | App | Scaffold-ETH 2: Next.js App Router, wagmi + viem, RainbowKit; decoded custom errors via `simulateContract` |

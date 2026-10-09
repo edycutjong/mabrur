@@ -98,7 +98,7 @@ flowchart LR
 
 | Lapisan | Teknologi |
 |---|---|
-| Kontrak | Solidity 0.8.33, OpenZeppelin 5.6.1 (`ERC20Wrapper`, `ERC20Permit`, `EIP712`, `ECDSA`, `ReentrancyGuard`) |
+| Kontrak | Solidity `^0.8.24`, dikompilasi & diverifikasi dengan solc 0.8.33; OpenZeppelin 5.6.1 (`ERC20Wrapper`, `ERC20Permit`, `EIP712`, `ECDSA`, `ReentrancyGuard`) |
 | Chain | **Arbitrum One (42161)**, ketiga kontrak terverifikasi di Arbiscan |
 | Tooling | Foundry (unit, fuzz, invariant, skrip yang di-broadcast ke mainnet) |
 | Aplikasi | Scaffold-ETH 2: Next.js App Router, wagmi + viem, RainbowKit; error kontrak didekode lewat `simulateContract` |
