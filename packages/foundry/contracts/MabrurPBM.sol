@@ -69,7 +69,12 @@ contract MabrurPBM is ERC20Wrapper, EIP712, ReentrancyGuard {
     uint256 public totalEarmarked;
 
     event Booked(
-        uint256 indexed id, address indexed pilgrim, address indexed agency, uint256[4] lines, uint64 ticketBy, uint64 departBy
+        uint256 indexed id,
+        address indexed pilgrim,
+        address indexed agency,
+        uint256[4] lines,
+        uint64 ticketBy,
+        uint64 departBy
     );
     event Spent(uint256 indexed id, uint8 line, address indexed vendor, uint256 amount, bytes32 ref);
     event MarginReleased(uint256 indexed id, address indexed agency, uint256 amount, address confirmedBy);
@@ -122,7 +127,9 @@ contract MabrurPBM is ERC20Wrapper, EIP712, ReentrancyGuard {
         bytes32 r,
         bytes32 s
     ) external nonReentrant returns (uint256 bookingId) {
-        if (!registry.hasValidClaim(agency, registry.PPIU_AGENCY())) revert AgencyNotLicensed(agency);
+        if (!registry.hasValidClaim(agency, registry.PPIU_AGENCY())) {
+            revert AgencyNotLicensed(agency);
+        }
         if (departBy <= block.timestamp || departBy > block.timestamp + MAX_HORIZON) revert InvalidDepartBy();
         if (ticketBy <= block.timestamp || ticketBy > departBy) revert InvalidTicketBy();
         uint256 total = lines[0] + lines[1] + lines[2] + lines[3];
