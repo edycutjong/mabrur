@@ -183,7 +183,7 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
     <div className="mb-sheet">
       <div className="flex flex-wrap justify-between gap-3 items-start">
         <div>
-          <h2 className="mb-title">
+          <h2 className="mb-h2">
             <T id="Pesan paket umrah" en="Book an umrah package" />
           </h2>
         </div>
@@ -262,7 +262,7 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
         {LINES.map((L, i) => (
           <div key={L.key} className="mb-row grid gap-2 sm:grid-cols-[1fr_200px] items-center">
             <div>
-              <span className="font-bold">
+              <span className="font-medium">
                 <T id={L.id} en={L.en} />
               </span>
               <span className="block text-sm mb-muted">
@@ -270,7 +270,7 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
               </span>
             </div>
             <input
-              className="mb-input mb-num text-right"
+              className="mb-input mb-amt text-right"
               inputMode="numeric"
               value={lineStr[i]}
               onChange={e => setLineStr(s => s.map((x, j) => (j === i ? e.target.value : x)))}
@@ -278,11 +278,11 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
             />
           </div>
         ))}
-        <div className="flex flex-wrap justify-between items-baseline gap-2 mt-3">
-          <Label>
+        <div className="flex flex-wrap justify-between items-end gap-2 mt-3 pt-3 border-t border-[var(--rule)]">
+          <Label className="pb-2">
             <T id="Jumlah" en="Total" />
           </Label>
-          <Rp value={total} words />
+          <Rp value={total} words className="text-right ml-auto" />
         </div>
         <div className="text-sm mb-muted">
           <T id="Ujrah agen maksimal 20% dari paket" en="The agency fee is capped at 20% of the package" />
@@ -302,12 +302,12 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
             aria-label={t("Batas tiket", "Ticket-by date")}
           />
           <button
-            className="mb-chip mb-chip-ink mt-2 cursor-pointer"
+            className="mb-chip mb-chip-ink mb-hover mt-2 cursor-pointer"
             onClick={() => setTicketBy(Math.floor(Date.now() / 1000) + 600)}
           >
             <T id="Demo: 10 menit" en="Demo: 10 minutes" />
           </button>
-          <p className="mb-p text-sm mt-2">
+          <p className="mb-p text-sm mb-muted mt-2">
             <T
               id="Jika tiket pesawat belum dibayar sampai tanggal ini, siapa pun bisa mengembalikan sisa dana ke Anda."
               en="If no flight ticket is paid by this date, anyone can return your remaining money."
@@ -325,7 +325,7 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
             onChange={e => setDepartBy(fromLocalInput(e.target.value))}
             aria-label={t("Batas berangkat", "Depart-by date")}
           />
-          <p className="mb-p text-sm mt-2">
+          <p className="mb-p text-sm mb-muted mt-2">
             <T
               id="Jika belum berangkat sampai tanggal ini, siapa pun bisa mengembalikan sisa dana ke Anda. Maks. 180 hari."
               en="If you have not departed by this date, anyone can refund you. At most 180 days."
@@ -386,7 +386,7 @@ const BookingTab = ({ b, active, onClick }: { b: Booking; active: boolean; onCli
   const total = b.remaining.reduce((x, y) => x + y, 0n);
   const name = getLabel(idHex(b.id), chainId) ?? getLabel(b.pilgrim, chainId);
   const chip = b.refunded ? (
-    <span className="mb-chip mb-chip-after">
+    <span className="mb-chip mb-chip-returned">
       <T id="Dikembalikan" en="Refunded" />
     </span>
   ) : b.refundable && total > 0n ? (
@@ -394,7 +394,7 @@ const BookingTab = ({ b, active, onClick }: { b: Booking; active: boolean; onCli
       <T id="Bisa refund" en="Refundable" />
     </span>
   ) : b.flightVendor !== ZERO ? (
-    <span className="mb-chip mb-chip-after">
+    <span className="mb-chip mb-chip-paid">
       <T id="Tiket lunas" en="Ticket paid" />
     </span>
   ) : (
@@ -409,12 +409,12 @@ const BookingTab = ({ b, active, onClick }: { b: Booking; active: boolean; onCli
     <button
       onClick={onClick}
       aria-pressed={active}
-      className={`mb-sheet mb-hover text-left w-full flex flex-col gap-1 cursor-pointer ${active ? "outline-3 outline-[var(--ink)]" : ""}`}
+      className={`mb-sheet mb-hover text-left w-full flex flex-col gap-1 cursor-pointer ${active ? "mb-active" : ""}`}
       style={{ padding: 14 }}
     >
-      <span className="font-bold">{name ?? shortHex(idHex(b.id), 8, 6)}</span>
-      <span className="mb-data text-sm">{shortHex(idHex(b.id), 8, 6)}</span>
-      <span className="mb-num font-bold">{formatRp(total)}</span>
+      <span className="font-medium">{name ?? shortHex(idHex(b.id), 8, 6)}</span>
+      <span className="mb-data mb-muted text-[12.5px]">{shortHex(idHex(b.id), 8, 6)}</span>
+      <span className="mb-amt">{formatRp(total)}</span>
       <span className="text-sm mb-muted">
         <T
           id={`berangkat ≤ ${formatDateWIB(b.departBy, false)}`}
@@ -470,8 +470,8 @@ const JamaahInner = () => {
 
   return (
     <PageShell>
-      <header className="mb-6">
-        <Label>
+      <header className="mb-8 lg:mb-10">
+        <Label className="mb-runhead">
           <T id="Jamaah" en="Pilgrim" />
         </Label>
         <h1 className="mb-title">
@@ -481,7 +481,7 @@ const JamaahInner = () => {
             <T id="Buku Amanah Jamaah" en="Pilgrim's passbook" />
           )}
         </h1>
-        <p className="mb-p mt-2 mb-muted">
+        <p className="mb-p mb-lede mt-3">
           <T
             id="Uang muka Anda, disimpan per pos. Hanya faktur vendor berlisensi yang bisa memindahkannya."
             en="Your prepayment, earmarked line by line. Only a licensed vendor's invoice can move it."
@@ -489,7 +489,7 @@ const JamaahInner = () => {
         </p>
       </header>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,560px)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-6 xl:gap-8 xl:grid-cols-[minmax(0,520px)_minmax(0,1fr)]">
         <div className="flex flex-col gap-6 min-w-0">
           <BookForm onBooked={id => setSelected(id)} />
           <div className="mb-sheet">

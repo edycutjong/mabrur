@@ -184,14 +184,14 @@ const VendorInner = () => {
 
   return (
     <PageShell>
-      <header className="mb-6">
-        <Label>
+      <header className="mb-8 lg:mb-10">
+        <Label className="mb-runhead">
           <T id="Vendor berlisensi" en="Licensed vendor" />
         </Label>
         <h1 className="mb-title">
           <T id="Tanda tangani faktur" en="Sign an invoice" />
         </h1>
-        <p className="mb-p mb-muted mt-1">
+        <p className="mb-p mb-lede mt-3">
           <T
             id="Tanda tangani faktur dengan kunci Anda sendiri — tidak ada orang lain yang memilih penerima uang."
             en="Sign an invoice with your own key — nobody else chooses the payee."
@@ -199,15 +199,15 @@ const VendorInner = () => {
         </p>
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-2 max-w-6xl">
+      <div className="grid gap-6 xl:gap-8 lg:grid-cols-2 max-w-6xl">
         <div className="mb-sheet flex flex-col gap-4">
           <div>
             <Label>
               <T id="Kunci vendor" en="Your vendor key" />
             </Label>
-            <div className="flex gap-2 mt-2">
+            <div className="mb-seg mt-2">
               <button
-                className={`mb-btn mb-btn-sm ${mode === "burner" ? "" : "mb-btn-ghost"}`}
+                type="button"
                 aria-pressed={mode === "burner"}
                 onClick={() => {
                   if (mode !== "burner") setSigned(undefined);
@@ -217,7 +217,7 @@ const VendorInner = () => {
                 <T id="Burner di browser ini" en="Burner in this browser" />
               </button>
               <button
-                className={`mb-btn mb-btn-sm ${mode === "wallet" ? "" : "mb-btn-ghost"}`}
+                type="button"
                 aria-pressed={mode === "wallet"}
                 onClick={() => {
                   if (mode !== "wallet") setSigned(undefined);
@@ -253,7 +253,7 @@ const VendorInner = () => {
           </div>
           {mode === "burner" && (
             <details>
-              <summary className="cursor-pointer text-sm font-bold">
+              <summary className="cursor-pointer text-sm font-medium text-[var(--returned)] hover:text-[var(--paid-ink)]">
                 <T id="Ganti / impor kunci burner" en="Replace / import the burner key" />
               </summary>
               <p className="mb-p text-sm mb-muted mt-2">
@@ -358,7 +358,7 @@ const VendorInner = () => {
                 <T id="Jumlah" en="Amount" />
               </Label>
               <input
-                className="mb-input mb-num text-right"
+                className="mb-input mb-amt text-right"
                 inputMode="numeric"
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
@@ -408,7 +408,7 @@ const VendorInner = () => {
             </div>
           </div>
 
-          <p className="mb-p font-bold">
+          <p className="mb-p font-medium text-[var(--returned)] rounded-[8px] bg-[var(--returned-wash)] px-4 py-3">
             <Bi
               id="Uang hanya bisa dibayarkan ke alamat yang menandatangani faktur ini — alamat Anda."
               en="Money can only be paid to the address that signs this invoice — yours."
@@ -428,7 +428,7 @@ const VendorInner = () => {
           )}
         </div>
 
-        <div className="mb-sheet flex flex-col gap-4">
+        <div className="mb-sheet mb-slip flex flex-col gap-4 lg:self-start">
           <Label>
             <T id="Faktur bertanda tangan" en="Signed invoice" />
           </Label>
@@ -438,11 +438,11 @@ const VendorInner = () => {
             </p>
           ) : (
             <>
-              <div className="grid grid-cols-[120px_minmax(0,1fr)] gap-x-3 gap-y-1">
+              <div className="grid grid-cols-[120px_minmax(0,1fr)] gap-x-4 gap-y-2 items-baseline">
                 <span className="mb-label">
                   <T id="No. faktur" en="Invoice no." />
                 </span>
-                <span className="mb-data">{signed.refLabel}</span>
+                <span className="mb-data font-medium">{signed.refLabel}</span>
                 <span className="mb-label">Booking</span>
                 <span
                   className="mb-data text-sm whitespace-nowrap overflow-hidden text-ellipsis [word-break:normal] min-w-0"

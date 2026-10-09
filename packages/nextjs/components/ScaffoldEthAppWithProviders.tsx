@@ -12,8 +12,34 @@ import { Header } from "~~/components/Header";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
-// RainbowKit modal in the kuitansi palette: ink accent on paper, same radius as the sheets.
-const MABRUR_THEME = lightTheme({ accentColor: "#1a2238", accentColorForeground: "#fffdf7", borderRadius: "medium" });
+// RainbowKit modal in the v2 palette: old-green accent, cream text on it, white sheet, hairlines, Inter.
+const BASE_THEME = lightTheme({ accentColor: "#0F3D30", accentColorForeground: "#F9F6F0", borderRadius: "large" });
+const MABRUR_THEME = {
+  ...BASE_THEME,
+  colors: {
+    ...BASE_THEME.colors,
+    modalBackground: "#FFFFFF",
+    modalBorder: "#E4E6EA",
+    modalText: "#14181C",
+    modalTextSecondary: "#5D646D",
+    modalBackdrop: "rgba(20, 24, 28, 0.42)",
+    actionButtonBorder: "#E4E6EA",
+    actionButtonSecondaryBackground: "#F5F6F8",
+    closeButton: "#5D646D",
+    closeButtonBackground: "#F5F6F8",
+    generalBorder: "#E4E6EA",
+    menuItemBackground: "#E6ECE9",
+    profileForeground: "#F9F6F0",
+    selectedOptionBorder: "#0E8A5F",
+    connectButtonBackground: "#FFFFFF",
+    connectButtonText: "#0F3D30",
+  },
+  fonts: { body: 'var(--font-inter), "Inter", "Segoe UI", system-ui, sans-serif' },
+  shadows: {
+    ...BASE_THEME.shadows,
+    dialog: "0 1px 2px rgba(15, 61, 48, .04), 0 24px 60px -28px rgba(15, 61, 48, .45)",
+  },
+};
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -23,7 +49,21 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
         <main className="relative flex flex-col flex-1">{children}</main>
         <Footer />
       </div>
-      <Toaster />
+      <Toaster
+        toastOptions={{
+          style: {
+            fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
+            fontSize: 14,
+            color: "#14181C",
+            background: "#FFFFFF",
+            border: "1px solid #E4E6EA",
+            borderRadius: 10,
+            boxShadow: "0 18px 40px -26px rgba(15, 61, 48, .35)",
+          },
+          success: { iconTheme: { primary: "#0B6E4F", secondary: "#FFFFFF" } },
+          error: { iconTheme: { primary: "#9E2A2B", secondary: "#FFFFFF" } },
+        }}
+      />
     </>
   );
 };
@@ -49,7 +89,7 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider avatar={BlockieAvatar} theme={mounted && isDarkMode ? darkTheme() : MABRUR_THEME}>
-          <ProgressBar height="3px" color="#2299dd" />
+          <ProgressBar height="2px" color="#0E8A5F" />
           <ScaffoldEthApp>{children}</ScaffoldEthApp>
         </RainbowKitProvider>
       </QueryClientProvider>

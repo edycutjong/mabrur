@@ -62,7 +62,7 @@ export const ErrorCall = ({ name, args }: { name: string; args: { short: string;
   </span>
 );
 
-// DITOLAK / LUNAS / DIKEMBALIKAN are the brand: the same rubber stamp in both languages. Only the neutral dry-run
+// DITOLAK / LUNAS / DIKEMBALIKAN are the brand: the same seal in both languages. Only the neutral dry-run
 // stamp (never a real outcome) is translated.
 const STAMP_WORD: Record<StampKind, { id: string; en: string }> = {
   ditolak: { id: "Ditolak", en: "Ditolak" },
@@ -87,7 +87,7 @@ export const Stamp = ({
   const t = useT();
   const w = STAMP_WORD[kind];
   const word = t(w.id, w.en);
-  const tone = kind === "ditolak" ? "" : kind === "simulasi" ? "mb-stamp-sim" : "mb-stamp-after";
+  const tone = kind === "simulasi" ? "mb-stamp-sim" : `mb-stamp-${kind}`;
   return (
     <div
       className={`mb-stamp ${tone} ${small ? "mb-stamp-sm" : ""} ${className}`}
@@ -107,7 +107,7 @@ export const Stamp = ({
           <ErrorCall name={error.name} args={errorArgParts(error)} />
         </div>
       )}
-      {children && <div className="text-sm font-bold mt-1">{children}</div>}
+      {children && <div className="mb-stamp-detail">{children}</div>}
     </div>
   );
 };
@@ -117,7 +117,7 @@ export const RevertStamp = ({ d, simulated }: { d: DecodedRevert; simulated?: bo
   <div className="flex flex-col gap-2">
     <Stamp kind="ditolak" error={d} />
     <div className="flex flex-col gap-0.5">
-      <span className="mb-refused-text font-bold">
+      <span className="mb-refused-text font-medium">
         <T id={d.id} en={d.en} />
       </span>
       {simulated && (
@@ -140,6 +140,13 @@ export const RevertStamp = ({ d, simulated }: { d: DecodedRevert; simulated?: bo
   </div>
 );
 
+/** Drawn 1.5px-stroke check (no ✓ glyph as an icon). */
+export const CheckIcon = () => (
+  <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+    <path d="M2.5 6.3l2.2 2.2 4.8-5" strokeLinejoin="round" />
+  </svg>
+);
+
 export const ClaimBadge = ({ address, topic }: { address?: string; topic: number }) => {
   const { data: ok, isLoading } = useScaffoldReadContract({
     contractName: "ClaimRegistry",
@@ -150,8 +157,9 @@ export const ClaimBadge = ({ address, topic }: { address?: string; topic: number
   if (!address) return null;
   if (isLoading || ok === undefined) return <span className="mb-chip mb-chip-muted">{TOPICS[topic]} …</span>;
   return ok ? (
-    <span className="mb-chip mb-chip-ink" title="registry.hasValidClaim = true">
-      {TOPICS[topic] === "PPIU" ? <T id="Berizin PPIU" en="PPIU licensed" /> : TOPICS[topic]} ✓
+    <span className="mb-chip mb-chip-paid" title="registry.hasValidClaim = true">
+      {TOPICS[topic] === "PPIU" ? <T id="Berizin PPIU" en="PPIU licensed" /> : TOPICS[topic]}
+      <CheckIcon />
     </span>
   ) : (
     <span className="mb-chip mb-chip-muted" title="registry.hasValidClaim = false">
@@ -169,7 +177,7 @@ export const AddressChip = ({ address, topic, name }: { address?: string; topic?
   const href = explorerAddr(chainId, address, targetNetwork.blockExplorers?.default?.url);
   return (
     <span className="inline-flex flex-wrap items-center gap-2">
-      {label && <span className="font-bold">{label}</span>}
+      {label && <span className="font-medium">{label}</span>}
       {href ? (
         <a className="mb-data mb-link" href={href} target="_blank" rel="noreferrer" title={address}>
           {shortHex(address)}
@@ -190,7 +198,7 @@ export const TxLink = ({ hash }: { hash: string }) => {
   const href = explorerTx(chainId, hash, targetNetwork.blockExplorers?.default?.url);
   return href ? (
     <a
-      className="mb-data mb-link text-sm whitespace-nowrap [word-break:normal]"
+      className="mb-data mb-link mb-muted text-[12.5px] whitespace-nowrap [word-break:normal]"
       href={href}
       target="_blank"
       rel="noreferrer"
@@ -199,7 +207,7 @@ export const TxLink = ({ hash }: { hash: string }) => {
       tx {shortHex(hash, 8, 6)}
     </a>
   ) : (
-    <span className="mb-data text-sm">tx {shortHex(hash, 8, 6)}</span>
+    <span className="mb-data mb-muted text-[12.5px]">tx {shortHex(hash, 8, 6)}</span>
   );
 };
 
@@ -207,7 +215,14 @@ export const CopyButton = ({ text, label }: { text: string; label?: ReactNode })
   const { copyToClipboard, isCopiedToClipboard } = useCopyToClipboard();
   return (
     <button type="button" className="mb-btn mb-btn-ghost mb-btn-sm" onClick={() => copyToClipboard(text)}>
-      {isCopiedToClipboard ? <T id="Tersalin ✓" en="Copied ✓" /> : (label ?? <T id="Salin" en="Copy" />)}
+      {isCopiedToClipboard ? (
+        <>
+          <T id="Tersalin" en="Copied" />
+          <CheckIcon />
+        </>
+      ) : (
+        (label ?? <T id="Salin" en="Copy" />)
+      )}
     </button>
   );
 };

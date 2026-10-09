@@ -36,7 +36,11 @@ describe("app/app/page", () => {
   describe("AppHome component", () => {
     it("renders the main heading", () => {
       render(<AppHome />);
-      expect(screen.getByText(/Dana umrah Anda hanya bisa dipakai untuk umrah Anda/)).toBeInTheDocument();
+      expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName(
+        "Dana umrah Anda hanya bisa dipakai untuk umrah Anda.",
+      );
+      // the emphasised phrase carries the landing's swash
+      expect(screen.getByText("umrah Anda.")).toHaveClass("mb-swash");
     });
 
     it("renders the component label", () => {
@@ -104,8 +108,10 @@ describe("app/app/page", () => {
 
     it("renders the call-to-action text for each role", () => {
       render(<AppHome />);
-      const buttons = screen.getAllByText("Buka →");
+      const buttons = screen.getAllByText("Buka");
       expect(buttons).toHaveLength(3);
+      // a drawn arrow (CSS mask), never a → glyph
+      buttons.forEach(b => expect(b.closest(".mb-role-open")).toHaveClass("mb-go"));
     });
 
     it("renders with correct structure and classes", () => {
@@ -115,22 +121,20 @@ describe("app/app/page", () => {
       const mainDiv = container.querySelector(".w-full.max-w-6xl");
       expect(mainDiv).toBeInTheDocument();
 
-      // Grid structure for roles
-      const grid = container.querySelector(".grid.gap-5");
+      // One hairline-ruled sheet holds the three roles (bento), not three floating cards
+      const grid = container.querySelector(".mb-roles");
       expect(grid).toBeInTheDocument();
-
-      // Verify grid has 3 children (the links)
-      const links = container.querySelectorAll("a.mb-sheet");
-      expect(links).toHaveLength(3);
+      expect(grid!.querySelectorAll(":scope > a")).toHaveLength(3);
     });
 
     it("renders links as flex containers with gap", () => {
       const { container } = render(<AppHome />);
-      const links = container.querySelectorAll("a.mb-sheet.flex");
+      const links = container.querySelectorAll(".mb-roles > a.flex");
       expect(links).toHaveLength(3);
 
       links.forEach(link => {
-        expect(link).toHaveClass("flex-col", "gap-2", "hover:-translate-y-0.5", "transition-transform");
+        expect(link).toHaveClass("flex-col", "gap-3");
+        expect(link.querySelector(".mb-role-ico svg")).toBeInTheDocument();
       });
     });
 
@@ -202,7 +206,7 @@ describe("app/app/page", () => {
         "href",
         "/app/vendor",
       );
-      expect(screen.getAllByText("Open →")[0]).toBeVisible();
+      expect(screen.getAllByText("Open")[0]).toBeVisible();
       expect(screen.getByText(/tIDR is a test token with no value/)).toBeVisible();
       expect(screen.getByText(/tIDR adalah token uji tanpa nilai/)).not.toBeVisible();
       expect(screen.getByText("Mabrur · purpose-bound umrah prepayment")).toBeVisible();

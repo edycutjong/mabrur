@@ -14,48 +14,69 @@ import { getLabel } from "~~/utils/mabrur/names";
 
 const LineCard = ({ i, st }: { i: number; st: ReturnType<typeof deriveLines>[number] }) => {
   const L = LINES[i];
-  const wash =
-    st.state === "earmarked" || st.state === "partial" ? "mb-wash-before" : st.state === "empty" ? "" : "mb-wash-after";
+  const held = st.state === "earmarked" || st.state === "partial";
+  const wash = held
+    ? "mb-wash-before"
+    : st.state === "lunas"
+      ? "mb-wash-paid"
+      : st.state === "returned"
+        ? "mb-wash-returned"
+        : "";
+  const amtTone = held
+    ? "mb-before-text"
+    : st.state === "lunas"
+      ? "mb-paid-text"
+      : st.state === "returned"
+        ? "mb-returned-text"
+        : "";
   return (
-    <div className={`mb-sheet ${wash} flex flex-col gap-2 overflow-hidden`} style={{ minHeight: 170 }}>
-      <div className="flex items-start justify-between gap-2">
-        <Bi id={<span className="font-bold">{L.id}</span>} en={L.en !== L.id ? L.en : undefined} />
-        {(st.state === "earmarked" || st.state === "partial") && (
-          <span className="mb-chip mb-chip-before">
+    <div className={`${wash} flex flex-col gap-3`} style={{ minHeight: 170 }}>
+      <div className="mb-seal-row">
+        <div className="min-w-0">
+          <div className="mb-line-name">
+            <Bi id={L.id} en={L.en !== L.id ? L.en : undefined} />
+          </div>
+          <div className="text-sm mb-muted mt-1">
+            <Bi id={L.ruleId} en={L.ruleEn} />
+          </div>
+        </div>
+        {held && (
+          <span className="mb-held">
             <T id="Disimpan" en="Earmarked" />
           </span>
         )}
       </div>
-      <div className="text-sm">
-        <Bi id={L.ruleId} en={L.ruleEn} />
-      </div>
-      <div className="mt-auto">
-        <Label>
-          <T id="Sisa" en="Remaining" />
-        </Label>
-        <Rp value={st.remaining} />
-        {st.original !== undefined && st.original !== st.remaining && (
-          <div className="text-sm mb-muted mb-num">
-            <T id={`dari ${formatRp(st.original)}`} en={`of ${formatRp(st.original)}`} />
-          </div>
-        )}
-      </div>
-      {st.state === "lunas" && (
-        <div className="flex flex-col gap-1 items-start">
+      <div className={`mt-auto ${st.state === "lunas" ? "mb-seal-row" : ""}`}>
+        <div className="min-w-0">
+          <Label>
+            <T id="Sisa" en="Remaining" />
+          </Label>
+          <Rp value={st.remaining} className={amtTone} />
+          {st.original !== undefined && st.original !== st.remaining && (
+            <div className="text-sm mb-muted mb-num">
+              <T id={`dari ${formatRp(st.original)}`} en={`of ${formatRp(st.original)}`} />
+            </div>
+          )}
+        </div>
+        {st.state === "lunas" && (
           <Stamp kind="lunas" small>
             {st.spent[0] ? formatRp(st.spent[0].amount) : null}
           </Stamp>
+        )}
+      </div>
+      {st.state === "lunas" && (
+        <div className="flex flex-col gap-1 border-t border-dashed border-[#c7e2d6] pt-3">
           {st.spent.map(s => (
-            <div key={s.hash} className="text-sm flex flex-wrap gap-2 items-center">
+            <div key={s.hash} className="text-sm flex flex-wrap gap-x-2 gap-y-0.5 items-center">
               {s.to && <AddressChip address={s.to} />}
-              {s.ref && <span className="mb-data text-sm">{refToLabel(s.ref)}</span>}
+              {s.ref && <span className="mb-data text-[12.5px]">{refToLabel(s.ref)}</span>}
               {s.hash && <TxLink hash={s.hash} />}
             </div>
           ))}
         </div>
       )}
       {st.state === "returned" && (
-        <div className="mb-after-text font-bold text-sm">
+        <div className="mb-returned-text font-medium text-sm">
           <T
             id={`Dikembalikan ${st.refunded !== undefined ? formatRp(st.refunded) : ""}`.trim()}
             en={`Returned ${st.refunded !== undefined ? formatRp(st.refunded) : ""}`.trim()}
@@ -135,7 +156,11 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
   return (
     <article className="flex flex-col gap-5">
       {/* Header: the kuitansi */}
-      <div className="mb-sheet">
+      <div className="mb-sheet mb-slip">
+        <div className="flex items-baseline justify-between gap-3 mb-4 pb-4 border-b border-[var(--rule)]">
+          <span className="mb-h2 text-[var(--returned)]">Kuitansi Amanah</span>
+          <span className="mb-data mb-muted text-[12.5px]">mUMRAH</span>
+        </div>
         <div className="grid gap-4 md:grid-cols-[1fr_auto]">
           <div>
             <Label>
@@ -152,7 +177,7 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
             <AddressChip address={b.pilgrim} name={name} />
           </div>
         </div>
-        <div className="mt-3">
+        <div className="mt-4">
           <Label>
             <T id="Agen" en="Agency" />
           </Label>
@@ -168,15 +193,15 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
         </div>
         <div className="mt-1">
           {b.refunded ? (
-            <span className="mb-muted font-bold">
+            <span className="mb-returned-text font-medium">
               <T id={`Dana sudah dikembalikan ke ${who.id}`} en={`Refunded to ${who.en} — this booking is closed`} />
             </span>
           ) : departed ? (
-            <span className="mb-chip mb-chip-after">
+            <span className="mb-chip mb-chip-paid">
               <T id="Sudah berangkat" en="Departed" />
             </span>
           ) : departPassed ? (
-            <span className="mb-refused-text font-bold">
+            <span className="mb-refused-text font-medium">
               <T id="Batas berangkat lewat — siapa pun bisa refund" en="Depart-by date passed — anyone can refund" />
             </span>
           ) : (
@@ -197,14 +222,14 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
             <T id={formatDateWIB(b.ticketBy)} en={formatDateWIB(b.ticketBy, true, "en")} />
           </span>
           {flightPaid ? (
-            <span className="mb-chip mb-chip-wrap mb-chip-after">
+            <span className="mb-chip mb-chip-wrap mb-chip-paid">
               <T
                 id={`Tiket dibayar ${lines[0].spent[0] ? formatRp(lines[0].spent[0].amount) : ""} ke ${flightVendor}`}
                 en={`Ticket paid ${lines[0].spent[0] ? formatRp(lines[0].spent[0].amount) : ""} to ${flightVendor}`}
               />
             </span>
           ) : b.refunded ? (
-            <span className="mb-chip mb-chip-wrap mb-chip-muted">
+            <span className="mb-chip mb-chip-wrap mb-chip-returned">
               <T id="Tiket tidak dibeli · dana dikembalikan" en="No ticket bought · money returned" />
             </span>
           ) : ticketPassed ? (
@@ -220,7 +245,7 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
             </span>
           )}
         </div>
-        <p className="mb-p mt-2 text-sm mb-muted">
+        <p className="mb-p mt-3 text-sm mb-muted">
           <T
             id="Jika tiket pesawat belum dibayar sampai batas tiket, atau belum berangkat sampai batas berangkat, siapa pun bisa mengembalikan sisa dana ke jamaah."
             en="If no flight ticket is paid by the ticket-by date, or there is no departure by the depart-by date, anyone can return the remaining money to the pilgrim."
@@ -229,21 +254,21 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
       </div>
 
       {/* Four lines */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+      <div className="mb-lines">
         {lines.map((st, i) => (
           <LineCard key={i} i={i} st={st} />
         ))}
       </div>
-      <div className="flex flex-wrap items-baseline gap-3">
-        <Label>
+      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-1 px-1 pb-1 border-b border-[var(--rule)]">
+        <Label className="pb-2">
           <T id="Total sisa dana amanah" en="Total remaining prepayment" />
         </Label>
-        <Rp value={total} words />
+        <Rp value={total} words className="text-right ml-auto" />
       </div>
 
       {/* Refund */}
       {(canRefund || b.refunded || refundOutcome) && (
-        <div className={`mb-sheet ${b.refunded ? "mb-wash-after" : ""}`}>
+        <div className={`mb-sheet ${b.refunded ? "mb-wash-returned" : ""}`}>
           <Label>
             <T id="Pengembalian dana" en="Refund" />
           </Label>
@@ -366,7 +391,7 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
       )}
 
       {/* Ledger */}
-      <div className="mb-sheet">
+      <div className="mb-sheet mb-slip">
         <Label>
           <T id="Buku tabungan amanah" en="Passbook" />
         </Label>
@@ -383,19 +408,19 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
           </p>
         ) : (
           <div className="overflow-x-auto -mx-1 px-1">
-            <table className="w-full min-w-[480px] mt-2 text-left">
+            <table className="mb-ledger sm:min-w-[520px] mt-3">
               <thead>
-                <tr className="mb-label">
-                  <th className="py-2 pr-2">
+                <tr>
+                  <th>
                     <T id="Tanggal" en="Date" />
                   </th>
-                  <th className="py-2 pr-2">
+                  <th className="!pl-[30px]">
                     <T id="Keterangan" en="Description" />
                   </th>
-                  <th className="py-2 pr-2 text-right">
+                  <th className="text-right!">
                     <T id="Keluar" en="Out" />
                   </th>
-                  <th className="py-2 text-right">
+                  <th className="text-right!">
                     <T id="Sisa" en="Balance" />
                   </th>
                 </tr>
@@ -421,22 +446,26 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
                       ) : (
                         <T id={`Dikembalikan ke ${who.id}`} en={`Returned to ${who.en}`} />
                       );
+                    const node = r.kind === "Refunded" ? "mb-node-returned" : r.kind === "Booked" ? "" : "mb-node-paid";
                     return (
-                      <tr key={`${r.hash}-${r.logIndex}`} className="border-t border-[var(--rule)] align-top">
-                        <td className="py-2 pr-2 text-sm mb-num">
+                      <tr key={`${r.hash}-${r.logIndex}`}>
+                        <td className="text-[13px] mb-muted mb-num whitespace-nowrap">
                           {r.timestamp ? (
                             <T id={formatDateWIB(r.timestamp)} en={formatDateWIB(r.timestamp, true, "en")} />
                           ) : (
                             "–"
                           )}
                         </td>
-                        <td className="py-2 pr-2 text-sm">
-                          {desc} <TxLink hash={r.hash} />
+                        <td className={`mb-desc ${node}`}>
+                          <span className="block">{desc}</span>
+                          <TxLink hash={r.hash} />
                         </td>
-                        <td className="py-2 pr-2 text-right mb-num whitespace-nowrap">
+                        <td
+                          className={`text-right mb-amt ${r.kind === "Refunded" ? "mb-returned-text" : r.kind === "Booked" ? "mb-muted" : "mb-paid-text"}`}
+                        >
                           {r.kind === "Booked" ? "–" : formatRp(r.amount)}
                         </td>
-                        <td className="py-2 text-right mb-num font-bold whitespace-nowrap">{formatRp(bal)}</td>
+                        <td className="text-right mb-amt mb-bal">{formatRp(bal)}</td>
                       </tr>
                     );
                   });

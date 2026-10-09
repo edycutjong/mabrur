@@ -69,7 +69,7 @@ describe("Header component", () => {
       const wordmark = screen.getByText("Mabrur");
 
       expect(wordmark).toBeInTheDocument();
-      expect(wordmark).toHaveStyle({ fontWeight: "700", fontSize: "26px" });
+      expect(wordmark).toHaveClass("mb-wordmark");
     });
 
     it("renders the Mabrur brand icon (kuitansi + stamp), not a placeholder mark", () => {

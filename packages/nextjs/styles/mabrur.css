@@ -1,20 +1,38 @@
-/* Mabrur — kuitansi-and-passbook. Light only: printed paper under a lit projector. Colour means state only. */
+/* Mabrur v2 · "slim + old green". Light only: cream ground, white sheets, hairlines, and four state inks.
+   Colour means state: DISIMPAN gold · LUNAS emerald · DITOLAK madder · DIKEMBALIKAN old green. */
 :root {
-  --bg: #f4efe3;
-  --paper: #fffdf7;
-  --ink: #1a2238;
-  --muted: #5a6070;
-  --before: #8a5a0f;
-  --after: #2b3a9e;
-  --refused: #bf1f2f;
-  --rule: #d8cfba;
-  --before-wash: #f3e6cc;
-  --after-wash: #e6e8f5;
-  --refused-wash: #f8e1de;
-  --radius: 14px;
-  --font-display: var(--font-zilla), "Zilla Slab", "Roboto Slab", Georgia, serif;
-  --font-body: var(--font-jakarta), "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
-  --font-data: var(--font-courier), "Courier Prime", "Courier New", monospace;
+  /* ground + text */
+  --bg: #f9f6f0;
+  --paper: #ffffff;
+  --surface: #f5f6f8;
+  --ink: #14181c;
+  --muted: #5d646d;
+  --rule: #e4e6ea;
+
+  /* the four states */
+  --earmarked: #c5a869;
+  --paid: #0e8a5f;
+  --refused: #9e2a2b;
+  --returned: #0f3d30;
+  --earmarked-ink: #85672a;
+  --paid-ink: #0b6e4f;
+  --earmarked-wash: #f7f1e3;
+  --paid-wash: #e8f3ee;
+  --refused-wash: #f7e8e6;
+  --returned-wash: #e6ece9;
+  --on-dark: #f9f6f0;
+  --on-dark-muted: #bfd3c8;
+
+  /* v1 names kept only as the earmarked alias; --after is gone (LUNAS and DIKEMBALIKAN are separate inks now) */
+  --before: var(--earmarked-ink);
+  --before-wash: var(--earmarked-wash);
+
+  --radius: 10px;
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Garamond, serif;
+  --font-body: var(--font-inter), "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-data: var(--font-jetbrains), "JetBrains Mono", Menlo, monospace;
+  --shadow: 0 1px 2px rgba(15, 61, 48, 0.04), 0 18px 40px -26px rgba(15, 61, 48, 0.28);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html,
@@ -24,22 +42,35 @@ body,
   background: var(--bg);
   color: var(--ink);
 }
+html {
+  overflow-x: clip;
+  scrollbar-color: #cfd4d9 var(--bg);
+}
 body.mabrur {
   font-family: var(--font-body);
-  font-size: 17px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
 }
 @media (min-width: 1024px) {
   body.mabrur {
-    font-size: 19px;
+    font-size: 16.5px;
   }
 }
+.mabrur b,
+.mabrur strong,
+.mabrur .font-bold {
+  font-weight: 600;
+}
 ::selection {
-  background: var(--before-wash);
+  background: rgba(14, 138, 95, 0.16);
+  color: var(--ink);
 }
 .mabrur :focus-visible {
-  outline: 3px solid var(--ink);
-  outline-offset: 2px;
+  outline: 2px solid var(--paid-ink);
+  outline-offset: 3px;
 }
 
 /* ── One ID/EN switch, shared with the landing: <T/> renders both, html.lang-en picks one ── */
@@ -55,88 +86,126 @@ html.lang-en .t-id {
 
 /* ── Type roles ─────────────────────────────────────────── */
 .mb-label {
-  font-family: var(--font-display);
-  font-weight: 700;
+  font: 500 12px/1.4 var(--font-body);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 13px;
   color: var(--muted);
-}
-@media (min-width: 1024px) {
-  .mb-label {
-    font-size: 15px;
-  }
 }
 .mb-title {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 28px;
-  line-height: 1.1;
-  margin: 0;
-}
-@media (min-width: 1024px) {
-  .mb-title {
-    font-size: 40px;
-  }
+  font-weight: 500;
+  font-size: clamp(34px, 4.1vw, 52px);
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  font-variant-numeric: lining-nums;
+  text-wrap: balance;
 }
 .mb-h2 {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 22px;
-  line-height: 1.15;
-  margin: 0;
+  font-weight: 600;
+  font-size: 26px;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  font-variant-numeric: lining-nums;
+}
+@media (min-width: 1024px) {
+  .mb-h2 {
+    font-size: 30px;
+  }
+}
+.mb-lede {
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--muted);
+  max-width: 68ch;
+}
+@media (min-width: 1024px) {
+  .mb-lede {
+    font-size: 18.5px;
+  }
 }
 .mb-data {
   font-family: var(--font-data);
-  font-weight: 700;
-  font-size: 15px;
+  font-weight: 400;
+  font-size: 13.5px;
+  letter-spacing: 0;
   word-break: break-all;
+  font-variant-numeric: lining-nums tabular-nums;
 }
-@media (min-width: 1024px) {
-  .mb-data {
-    font-size: 17px;
-  }
-}
+/* Big money: Cormorant with lining figures (the shorthand above it never resets this one). */
 .mb-amount {
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  font-size: 22px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 32px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-variant-numeric: lining-nums;
   white-space: nowrap;
 }
 @media (min-width: 1024px) {
   .mb-amount {
-    font-size: 30px;
+    font-size: 38px;
   }
+}
+/* Row money: JetBrains Mono, right-aligned by its cell, coloured by state where the row has one. */
+.mb-amt {
+  font-family: var(--font-data);
+  font-weight: 500;
+  font-size: 14.5px;
+  font-variant-numeric: lining-nums tabular-nums;
+  white-space: nowrap;
 }
 .mb-terbilang {
+  font-family: var(--font-display);
   font-style: italic;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.35;
   color: var(--muted);
-  font-size: 14px;
-}
-@media (min-width: 1024px) {
-  .mb-terbilang {
-    font-size: 16px;
-  }
+  font-variant-numeric: lining-nums;
 }
 .mb-num {
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: lining-nums tabular-nums;
 }
 .mb-big-date {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 56px;
+  font-weight: 500;
+  font-size: 50px;
   line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: lining-nums;
 }
 @media (min-width: 1024px) {
   .mb-big-date {
-    font-size: 88px;
+    font-size: 68px;
   }
 }
 .mb-p {
-  margin: 0;
+  text-wrap: pretty;
+}
+/* Margin resets live in a layer so Tailwind spacing utilities (mt-*, my-*) on the same element win. */
+@layer components {
+  .mb-p,
+  .mb-title,
+  .mb-h2 {
+    margin: 0;
+  }
+  .mb-perforation {
+    margin: 20px 0;
+  }
+}
+
+/* Headline emphasis: same family, upright, emerald, with a soft hand-drawn swash under it (as on the landing). */
+.mb-swash {
+  color: var(--paid);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 14' preserveAspectRatio='none'%3E%3Cpath d='M2 9.5C60 4 150 3 298 7.5' fill='none' stroke='%230E8A5F' stroke-opacity='.22' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E")
+    left 92% / 100% 0.32em no-repeat;
+  padding-bottom: 0.04em;
 }
 
 /* ── Surfaces ───────────────────────────────────────────── */
+/* A hairline-ruled sheet: edge, no elevation. */
 .mb-sheet {
   background: var(--paper);
   border: 1px solid var(--rule);
@@ -149,49 +218,113 @@ html.lang-en .t-id {
     padding: 28px;
   }
 }
+/* The kuitansi / passbook sheet: elevation, no edge (edge OR shadow, never both). */
+.mb-slip {
+  border-color: transparent;
+  box-shadow: var(--shadow);
+}
 .mb-perforation {
-  border-top: 2px dashed var(--rule);
-  margin: 20px -20px;
+  border-top: 1px dashed var(--rule);
 }
 .mb-row {
-  border-bottom: 1px solid var(--rule);
-  padding: 12px 0;
+  border-bottom: 1px dashed var(--rule);
+  padding: 14px 0;
 }
 .mb-row:last-child {
   border-bottom: 0;
 }
 .mb-wash-before {
-  background: var(--before-wash);
+  background: var(--earmarked-wash);
 }
-.mb-wash-after {
-  background: var(--after-wash);
+.mb-wash-paid {
+  background: var(--paid-wash);
+}
+.mb-wash-returned {
+  background: var(--returned-wash);
 }
 .mb-wash-refused {
   background: var(--refused-wash);
 }
 
+/* The four pos as one ruled sheet split by 1px dividers (stat row), never four floating cards. */
+.mb-lines {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+@media (min-width: 640px) {
+  .mb-lines {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.mb-lines > * {
+  background: var(--paper);
+  padding: 20px 22px;
+  min-width: 0;
+}
+.mb-lines > .mb-wash-before {
+  background: var(--earmarked-wash);
+}
+.mb-lines > .mb-wash-paid {
+  background: var(--paid-wash);
+}
+.mb-lines > .mb-wash-returned {
+  background: var(--returned-wash);
+}
+.mb-line-name {
+  font: 600 22px/1.15 var(--font-display);
+  letter-spacing: -0.01em;
+}
+/* A seal row: words on the left, the seal in its own column, so it never covers text. */
+.mb-seal-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 16px;
+  align-items: center;
+}
+
+/* ── Chips: pills, 1px edge, quiet ── */
 .mb-chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   border-radius: 999px;
-  padding: 3px 12px;
-  font-size: 14px;
-  font-weight: 700;
-  border: 1.5px solid currentColor;
+  padding: 4px 11px;
+  font: 500 12.5px/1.35 var(--font-body);
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--ink);
   white-space: nowrap;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.mb-chip svg {
+  width: 12px;
+  height: 12px;
+  flex: none;
 }
 .mb-chip-before {
-  color: var(--before);
-  background: var(--before-wash);
+  color: var(--earmarked-ink);
+  background: var(--earmarked-wash);
+  border-color: #e3d3ae;
 }
-.mb-chip-after {
-  color: var(--after);
-  background: var(--after-wash);
+.mb-chip-paid {
+  color: var(--paid-ink);
+  background: var(--paid-wash);
+  border-color: #c7e2d6;
+}
+.mb-chip-returned {
+  color: var(--returned);
+  background: var(--returned-wash);
+  border-color: #c9d6cf;
 }
 .mb-chip-refused {
   color: var(--refused);
   background: var(--refused-wash);
+  border-color: #e8c8c4;
 }
 .mb-chip-ink {
   color: var(--ink);
@@ -201,50 +334,127 @@ html.lang-en .t-id {
   color: var(--muted);
   background: transparent;
 }
+/* DISIMPAN: the gold hairline pill. Not rotated, because nothing has been decided yet. */
+.mb-held {
+  display: inline-flex;
+  align-items: center;
+  font: 500 10.5px/1 var(--font-body);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--earmarked-ink);
+  border: 1px solid var(--earmarked);
+  border-radius: 999px;
+  padding: 6px 10px 5px;
+  background: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+}
 
-/* ── Buttons: ink on paper or paper on ink, never a state colour ── */
+/* ── Buttons: pills. Primary = old green, secondary = white + hairline. Never a state colour. ── */
 .mb-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 48px;
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 17px;
-  background: var(--ink);
-  color: var(--paper);
-  border: 2px solid var(--ink);
+  min-height: 46px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  font: 500 15px/1.2 var(--font-body);
+  background: var(--returned);
+  color: var(--on-dark);
+  border: 1px solid var(--returned);
   cursor: pointer;
-  transition:
-    transform 120ms ease,
-    background 120ms ease,
-    opacity 120ms ease;
   text-align: center;
+  font-variant-numeric: lining-nums;
+  transition:
+    transform 0.3s var(--ease),
+    box-shadow 0.3s var(--ease),
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    opacity 0.2s;
 }
 .mb-btn:hover:not(:disabled) {
+  background: #135040;
+  border-color: #135040;
+  box-shadow: 0 10px 24px -16px rgba(15, 61, 48, 0.5);
   transform: translateY(-1px);
 }
 .mb-btn:active:not(:disabled) {
-  transform: translateY(1px);
+  transform: translateY(0) scale(0.985);
 }
 .mb-btn:disabled {
-  opacity: 0.4;
+  background: #d7ddda;
+  border-color: #d7ddda;
+  color: #4d5a54;
   cursor: not-allowed;
 }
 .mb-btn-ghost {
   background: var(--paper);
   color: var(--ink);
+  border-color: var(--rule);
 }
 .mb-btn-ghost:hover:not(:disabled) {
-  background: var(--bg);
+  background: var(--paper);
+  border-color: var(--returned);
+}
+.mb-btn-ghost:disabled {
+  background: var(--paper);
+  border-color: var(--rule);
+  color: #737a82;
 }
 .mb-btn-sm {
   min-height: 36px;
-  padding: 4px 12px;
-  font-size: 14px;
-  border-radius: 8px;
+  padding: 6px 15px;
+  font-size: 13.5px;
+}
+/* Header CTA (connect wallet): old-green outline, caps 12px tracked — the landing's "Buka aplikasi" pill. */
+.mb-btn-nav {
+  min-height: 38px;
+  padding: 8px 16px;
+  font: 500 11.5px/1 var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--returned);
+  border-color: var(--returned);
+  white-space: nowrap;
+}
+.mb-btn-nav:hover:not(:disabled) {
+  background: var(--returned);
+  color: var(--on-dark);
+}
+
+/* Segmented control (pill rail on --surface, the selected tab is a white pill). */
+.mb-seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+}
+.mb-seg button {
+  font: 500 13px/1.2 var(--font-body);
+  padding: 9px 15px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background 0.25s var(--ease),
+    color 0.2s,
+    box-shadow 0.25s;
+}
+.mb-seg button:hover {
+  color: var(--ink);
+}
+.mb-seg button[aria-pressed="true"] {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--rule);
+  box-shadow: 0 4px 12px -8px rgba(15, 61, 48, 0.4);
 }
 
 .mb-input,
@@ -252,96 +462,184 @@ html.lang-en .t-id {
 .mb-textarea {
   width: 100%;
   background: var(--paper);
-  border: 1.5px solid var(--rule);
-  border-bottom: 2px solid var(--ink);
-  border-radius: 6px;
-  padding: 10px 12px;
+  border: 1px solid #d5d9de;
+  border-radius: 8px;
+  padding: 10px 13px;
   color: var(--ink);
   font: inherit;
-  min-height: 48px;
+  font-variant-numeric: lining-nums tabular-nums;
+  min-height: 46px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.mb-select {
+  appearance: none;
+  padding-right: 40px;
+  background: var(--paper)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%235D646D' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E")
+    right 14px center / 14px no-repeat;
+  cursor: pointer;
+}
+.mb-input::placeholder,
+.mb-textarea::placeholder {
+  color: #737a82;
+}
+.mb-input:hover,
+.mb-select:hover,
+.mb-textarea:hover {
+  border-color: #b9c0c7;
 }
 .mb-input.mb-data,
 .mb-textarea.mb-data {
   font-family: var(--font-data);
+  font-size: 13.5px;
+}
+.mb-input.mb-data::placeholder,
+.mb-textarea::placeholder {
+  font-family: var(--font-body);
 }
 .mb-textarea {
   min-height: 120px;
   font-family: var(--font-data);
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  background: var(--surface);
 }
 .mb-input:focus,
 .mb-select:focus,
 .mb-textarea:focus {
-  outline: 3px solid var(--ink);
-  outline-offset: 2px;
+  outline: none;
+  border-color: var(--paid-ink);
+  box-shadow: 0 0 0 3px rgba(14, 138, 95, 0.16);
 }
 
 .mb-link {
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-underline-offset: 4px;
+  transition:
+    color 0.2s,
+    text-decoration-color 0.2s;
 }
 .mb-link:hover {
-  opacity: 0.75;
+  color: var(--paid-ink);
+  text-decoration-color: currentColor;
 }
 
-/* ── The cap stempel ────────────────────────────────────── */
+/* Drawn arrows (no glyph icons): .mb-go = forward, .mb-ext = leaves the site. */
+.mb-go::after,
+.mb-ext::after {
+  content: "";
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-left: 0.35em;
+  vertical-align: -0.05em;
+  background: currentColor;
+  -webkit-mask: var(--arr) center / contain no-repeat;
+  mask: var(--arr) center / contain no-repeat;
+  transition: transform 0.25s var(--ease);
+}
+.mb-go {
+  --arr: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8h10M9 4l4 4-4 4'/%3E%3C/svg%3E");
+}
+.mb-ext {
+  --arr: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 11L11 5M6 5h5v5'/%3E%3C/svg%3E");
+}
+a:hover .mb-go::after,
+a.mb-go:hover::after {
+  transform: translateX(3px);
+}
+a.mb-ext:hover::after {
+  transform: translate(2px, -2px);
+}
+
+/* ── The seal: thin double rule, lands on the line it decides ── */
 .mb-stamp {
   --stamp-color: var(--refused);
-  --stamp-rot: -5deg;
-  display: inline-block;
-  color: var(--stamp-color);
-  border: 3px solid var(--stamp-color);
-  outline: 1.5px solid var(--stamp-color);
-  outline-offset: 3px;
-  border-radius: 6px;
-  padding: 6px 14px 8px;
-  transform: rotate(var(--stamp-rot));
-  mix-blend-mode: multiply;
-  background: transparent;
+  --stamp-rot: -2.5deg;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
   max-width: 100%;
-  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.6 1.45'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>");
-  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.6 1.45'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>");
-  animation: mb-stamp-land 180ms cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  color: var(--stamp-color);
+  border: 1.5px solid currentColor;
+  border-radius: 6px;
+  padding: 9px 18px 10px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    inset 0 0 0 2.5px rgba(255, 255, 255, 0.95),
+    inset 0 0 0 3.5px currentColor;
+  transform: rotate(var(--stamp-rot));
+  text-align: center;
+  animation: mb-seal-land 0.42s cubic-bezier(0.2, 0.9, 0.25, 1) both;
 }
-.mb-stamp-after {
-  --stamp-color: var(--after);
-  --stamp-rot: -4deg;
+.mb-stamp-lunas {
+  --stamp-color: var(--paid-ink);
+  --stamp-rot: -2deg;
+}
+.mb-stamp-dikembalikan {
+  --stamp-color: var(--returned);
+  --stamp-rot: -2deg;
 }
 .mb-stamp-word {
-  font-family: var(--font-display);
-  font-weight: 700;
+  font: 600 17px/1 var(--font-body);
+  letter-spacing: 0.24em;
+  text-indent: 0.24em;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 32px;
-  line-height: 1;
 }
 @media (min-width: 1024px) {
   .mb-stamp-word {
-    font-size: 44px;
+    font-size: 19px;
   }
+}
+.mb-stamp-sm {
+  padding: 7px 14px 8px;
 }
 .mb-stamp-sm .mb-stamp-word {
-  font-size: 22px;
+  font-size: 14px;
 }
 .mb-stamp-error {
-  font-family: var(--font-data);
-  font-weight: 700;
-  font-size: 15px;
+  font: 500 12.5px/1.3 var(--font-data);
+  letter-spacing: 0;
+  margin-top: 7px;
   word-break: break-all;
 }
-@keyframes mb-stamp-land {
+.mb-stamp-note,
+.mb-stamp-detail {
+  font: 500 12px/1.3 var(--font-data);
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: 0;
+  text-transform: none;
+  margin-top: 6px;
+}
+@keyframes mb-seal-land {
   0% {
-    transform: rotate(var(--stamp-rot)) scale(1.35);
     opacity: 0;
-  }
-  70% {
-    transform: rotate(var(--stamp-rot)) scale(0.97);
-    opacity: 1;
+    transform: rotate(var(--stamp-rot)) scale(1.16);
+    filter: blur(2px);
   }
   100% {
-    transform: rotate(var(--stamp-rot)) scale(1);
     opacity: 1;
+    transform: rotate(var(--stamp-rot)) scale(1);
+    filter: none;
   }
+}
+/* A dry run that would pass: neutral, dashed single rule, barely tilted — never the emerald LUNAS seal. */
+.mb-stamp-sim {
+  --stamp-color: var(--muted);
+  --stamp-rot: -1deg;
+  border-style: dashed;
+  box-shadow: none;
+}
+.mb-stamp-sim .mb-stamp-word {
+  letter-spacing: 0.16em;
+  text-indent: 0.16em;
+}
+.mb-stamp-sm.mb-stamp-sim .mb-stamp-word {
+  font-size: 12.5px;
 }
 @media (prefers-reduced-motion: reduce) {
   .mb-stamp {
@@ -352,16 +650,19 @@ html.lang-en .t-id {
 .mb-strike {
   text-decoration: line-through;
   text-decoration-color: var(--refused);
-  text-decoration-thickness: 3px;
+  text-decoration-thickness: 2px;
 }
 .mb-refused-text {
   color: var(--refused);
 }
-.mb-after-text {
-  color: var(--after);
+.mb-paid-text {
+  color: var(--paid-ink);
+}
+.mb-returned-text {
+  color: var(--returned);
 }
 .mb-before-text {
-  color: var(--before);
+  color: var(--earmarked-ink);
 }
 .mb-muted {
   color: var(--muted);
@@ -369,87 +670,135 @@ html.lang-en .t-id {
 
 .mb-countdown {
   font-family: var(--font-data);
-  font-weight: 700;
-  font-size: 40px;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 1.1;
+  font-variant-numeric: lining-nums tabular-nums;
 }
 
-.mb-nav a {
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-weight: 700;
+/* ── Header: sticky, blurred cream, hairline under it ── */
+.mb-header {
+  background: rgba(249, 246, 240, 0.86);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  backdrop-filter: blur(12px) saturate(1.1);
+  border-bottom-color: var(--rule);
 }
-.mb-nav a[aria-current="page"] {
-  background: var(--ink);
-  color: var(--paper);
+@media (min-width: 640px) {
+  .mb-header > div {
+    min-height: 72px;
+  }
 }
-.mb-nav a:not([aria-current="page"]):hover {
-  background: var(--paper);
-}
-
-/* ID | EN toggle (same control as the landing's .lang); the active half is drawn from the <html> class, so it is right before hydration */
-.mb-lang {
-  font: 700 13px/1.4 var(--font-display);
-  letter-spacing: 0.1em;
-  border: 1.5px solid var(--ink);
-  background: transparent;
+.mb-wordmark {
+  font: 600 27px/1 var(--font-display);
+  letter-spacing: -0.01em;
   color: var(--ink);
+}
+.mb-nav a,
+.mb-navlink {
+  position: relative;
+  padding: 8px 0;
+  font: 500 12px/1 var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.mb-nav a::after,
+.mb-navlink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2px;
+  height: 1px;
+  background: var(--paid);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--ease);
+}
+.mb-nav a:hover,
+.mb-navlink:hover,
+.mb-nav a[aria-current="page"],
+.mb-navlink[aria-current="page"] {
+  color: var(--ink);
+}
+.mb-nav a:hover::after,
+.mb-navlink:hover::after,
+.mb-nav a[aria-current="page"]::after,
+.mb-navlink[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+.mb-nav a[aria-current="page"]::after,
+.mb-navlink[aria-current="page"]::after {
+  height: 1.5px;
+  background: var(--returned);
+}
+
+/* ID | EN toggle (the landing's .lang); the active half is drawn from the <html> class, so it is right before hydration */
+.mb-lang {
+  display: inline-flex;
+  gap: 2px;
+  font: 500 11.5px/1 var(--font-body);
+  letter-spacing: 0.12em;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--muted);
   border-radius: 999px;
-  padding: 6px 12px;
+  padding: 4px;
   cursor: pointer;
   white-space: nowrap;
 }
 .mb-lang span {
-  padding: 2px 7px;
+  padding: 6px 9px;
   border-radius: 999px;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 html:not(.lang-en) .mb-lang [data-l="id"],
 html.lang-en .mb-lang [data-l="en"] {
-  color: var(--paper);
-  background: var(--ink);
-}
-/* A dry run that would pass: neutral ink, dashed — never the blue LUNAS (paid) stamp. */
-.mb-stamp-sim {
-  --stamp-color: var(--muted);
-  --stamp-rot: -2deg;
-  border-style: dashed;
-  outline-style: dashed;
-}
-.mb-stamp-sm.mb-stamp-sim .mb-stamp-word {
-  font-size: 18px;
-}
-.mb-stamp-note {
-  font-family: var(--font-data);
-  font-weight: 700;
-  font-size: 13px;
-  text-transform: none;
-  letter-spacing: 0;
-  margin-top: 2px;
+  color: var(--on-dark);
+  background: var(--returned);
 }
 
-/* Hover feedback for clickable sheets (booking tabs, console rows, logo). */
+/* Hover feedback for clickable sheets (booking tabs, console rows, role cards). */
 .mb-hover {
   transition:
-    transform 120ms ease,
-    border-color 120ms ease,
-    box-shadow 120ms ease;
+    transform 0.3s var(--ease),
+    border-color 0.2s,
+    box-shadow 0.3s var(--ease),
+    background 0.2s;
 }
 .mb-hover:hover {
   transform: translateY(-1px);
-  border-color: var(--ink);
-  box-shadow: 0 2px 0 var(--rule);
+  border-color: #c9d6cf;
+  box-shadow: 0 10px 24px -18px rgba(15, 61, 48, 0.45);
+}
+/* The picked booking: old-green edge + a 1px ring (never a thick coloured side border). */
+.mb-active {
+  border-color: var(--returned);
+  box-shadow: 0 0 0 1px var(--returned);
+}
+.mb-active:hover {
+  border-color: var(--returned);
+  box-shadow:
+    0 0 0 1px var(--returned),
+    0 10px 24px -18px rgba(15, 61, 48, 0.45);
 }
 .mb-logo {
-  transition: opacity 120ms ease;
+  transition: opacity 0.2s;
   border-radius: 8px;
 }
 .mb-logo:hover {
-  opacity: 0.75;
+  opacity: 0.8;
 }
 @media (prefers-reduced-motion: reduce) {
   .mb-hover,
-  .mb-hover:hover {
+  .mb-hover:hover,
+  .mb-btn,
+  .mb-btn:hover:not(:disabled) {
     transform: none;
   }
 }
@@ -460,17 +809,200 @@ html.lang-en .mb-lang [data-l="en"] {
   max-width: 100%;
 }
 
-/* ── /judge receipts: a table on wide screens, one card per row on a phone ── */
-.mb-receipts th {
+/* ── Passbook ledger: surface head in caps, dashed rows, mono money, a state node per row ── */
+.mb-ledger {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+}
+.mb-ledger th {
+  background: var(--surface);
+  font: 500 11.5px/1.3 var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 10px 12px;
+  text-align: left;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.mb-ledger th:first-child {
+  border-left: 1px solid var(--rule);
+  border-radius: 8px 0 0 8px;
+}
+.mb-ledger th:last-child {
+  border-right: 1px solid var(--rule);
+  border-radius: 0 8px 8px 0;
+}
+.mb-ledger td {
+  padding: 13px 12px;
+  vertical-align: top;
+  border-bottom: 1px dashed var(--rule);
+}
+.mb-ledger tr:last-child td {
+  border-bottom: 0;
+}
+.mb-ledger .mb-desc {
+  position: relative;
+  padding-left: 30px;
+}
+/* 9px node: hollow gold = booked/held, filled emerald = paid, filled old green = returned. */
+.mb-ledger .mb-desc::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 19px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid var(--node, var(--earmarked));
+  background: var(--node-fill, var(--paper));
+}
+.mb-node-paid {
+  --node: var(--paid);
+  --node-fill: var(--paid);
+}
+.mb-node-returned {
+  --node: var(--returned);
+  --node-fill: var(--returned);
+}
+.mb-ledger .mb-bal {
   color: var(--ink);
-  font-weight: 700;
+  font-weight: 600;
 }
-.mb-receipt-err,
-.mb-receipt-tx {
-  font-family: var(--font-data);
-  font-weight: 700;
+
+/* Phone: each ledger row stacks — description on top, then date · out · balance. No sideways scroll. */
+@media (max-width: 639px) {
+  .mb-ledger thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .mb-ledger,
+  .mb-ledger tbody {
+    display: block;
+  }
+  .mb-ledger tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    column-gap: 12px;
+    border-bottom: 1px dashed var(--rule);
+    padding: 12px 0;
+  }
+  .mb-ledger tr:last-child {
+    border-bottom: 0;
+  }
+  .mb-ledger td {
+    border: 0;
+    padding: 0;
+  }
+  .mb-ledger td:nth-child(2) {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    padding: 0 0 6px 18px;
+  }
+  .mb-ledger .mb-desc::before {
+    left: 0;
+    top: 7px;
+  }
+  .mb-ledger td:nth-child(1) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding: 0 0 4px 18px;
+    font-size: 12.5px;
+  }
+  .mb-ledger td:nth-child(3) {
+    grid-column: 2;
+    grid-row: 3;
+  }
+  .mb-ledger td:nth-child(4) {
+    grid-column: 3;
+    grid-row: 3;
+  }
+}
+
+/* ── KPI / reconciliation (regulator panel) ── */
+.mb-kpi {
+  font: 500 44px/1 var(--font-display);
+  letter-spacing: -0.03em;
+  font-variant-numeric: lining-nums;
+  color: var(--returned);
+  white-space: nowrap;
+}
+.mb-recon {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  border-top: 1px solid var(--rule);
+}
+.mb-recon > dt,
+.mb-recon > dd {
+  padding: 11px 0 11px 10px;
+  border-bottom: 1px solid var(--rule);
+  margin: 0;
+}
+.mb-recon > dd {
+  text-align: right;
+  padding: 11px 10px 11px 12px;
+}
+/* The figures that must match sit on the emerald wash: one glance, three equal numbers. */
+.mb-recon > .mb-match {
+  background: var(--paid-wash);
+  border-bottom-color: #d3e7dd;
+}
+
+/* ── Footer on dark: full-bleed old green ── */
+.mb-footer {
+  background: var(--returned);
+  color: var(--on-dark-muted);
+}
+.mb-footer a {
+  color: #dde6e1;
+  text-decoration: none;
+  font: 500 11.5px/1.4 var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.mb-footer a:hover {
+  color: var(--earmarked);
+}
+.mb-footer .mb-wordmark {
+  color: var(--on-dark);
+}
+
+/* ── /judge receipts: a table on wide screens, one card per row on a phone ── */
+.mb-receipts {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14.5px;
+}
+.mb-receipts th {
+  background: var(--surface);
+  color: var(--muted);
+  font: 500 11.5px/1.3 var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 10px 12px;
+}
+.mb-receipts td {
+  padding: 14px 12px;
+  border-top: 1px dashed var(--rule);
+  vertical-align: middle;
+}
+.mb-receipt-err {
+  font: 500 13px/1.3 var(--font-data);
+  color: var(--refused);
+}
+.mb-receipts .mb-stamp-error {
+  word-break: normal;
+  white-space: nowrap;
 }
 .mb-receipt-tx {
+  font: 400 13px var(--font-data);
   white-space: nowrap;
 }
 @media (max-width: 639px) {
@@ -490,37 +1022,190 @@ html.lang-en .mb-lang [data-l="en"] {
     width: 100%;
   }
   .mb-receipts tr {
-    border: 1px solid var(--rule);
-    border-radius: 10px;
-    padding: 10px 12px;
-    margin-bottom: 10px;
-  }
-  .mb-receipts tr:last-child {
-    margin-bottom: 0;
+    border-top: 1px dashed var(--rule);
+    padding: 14px 0;
   }
   .mb-receipts td {
-    padding: 2px 0;
+    padding: 3px 0;
     border: 0;
   }
   .mb-receipts td[data-label-id]::before {
     content: attr(data-label-id) " · ";
     color: var(--muted);
-    font-weight: 700;
+    font: 500 11.5px var(--font-body);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
   }
   html.lang-en .mb-receipts td[data-label-en]::before {
     content: attr(data-label-en) " · ";
   }
 }
 
-/* A command block: paper/ink, keyboard-scrollable (tabIndex=0), never SE-2 blue/grey. */
+/* Numbered path (judge): Cormorant numerals on a hairline list. */
+.mb-steps {
+  list-style: none;
+  counter-reset: step;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+}
+.mb-steps > li {
+  counter-increment: step;
+  position: relative;
+  padding: 16px 0 16px 48px;
+  border-bottom: 1px solid var(--rule);
+}
+.mb-steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 4px;
+  top: 17px;
+  font: 500 30px/0.9 var(--font-display);
+  font-variant-numeric: lining-nums;
+  color: var(--paid-ink);
+}
+.mb-ticks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.mb-ticks > li {
+  position: relative;
+  padding-left: 22px;
+}
+.mb-ticks > li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.5px solid var(--paid);
+}
+
+/* A command block: surface well, mono, keyboard-scrollable (tabIndex=0). */
 .mb-pre {
-  background: var(--bg);
+  background: var(--surface);
   color: var(--ink);
   border: 1px solid var(--rule);
-  border-radius: 10px;
-  padding: 12px 14px;
+  border-radius: 8px;
+  padding: 14px 16px;
   font-family: var(--font-data);
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1.6;
   overflow-x: auto;
   white-space: pre;
+}
+
+/* Role cards (/app): one ruled sheet split by hairlines, the landing's bento manners. */
+.mb-roles {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+@media (min-width: 768px) {
+  .mb-roles {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.mb-roles > a {
+  background: var(--paper);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: background 0.3s var(--ease);
+  text-decoration: none;
+  min-height: 250px;
+}
+.mb-roles > a:hover {
+  background: #fcfbf8;
+}
+.mb-roles > a:nth-child(2) {
+  background: var(--paid-wash);
+}
+.mb-roles > a:nth-child(2):hover {
+  background: #e1efe9;
+}
+.mb-role-ico {
+  width: 36px;
+  height: 36px;
+  color: var(--returned);
+}
+.mb-role-open {
+  margin-top: auto;
+  font: 500 12px/1 var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--returned);
+}
+.mb-btn svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+
+/* Running head (not an eyebrow): the page's role sits on its own hairline, well clear of the heading. */
+.mb-runhead {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.mb-runhead::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--rule);
+}
+@layer components {
+  .mb-runhead {
+    margin-bottom: 28px;
+  }
+  @media (min-width: 1024px) {
+    .mb-runhead {
+      margin-bottom: 40px;
+    }
+  }
+}
+
+/* Browser surfaces carry the palette too. */
+.mabrur input,
+.mabrur textarea {
+  caret-color: var(--paid-ink);
+}
+.mabrur ::-webkit-scrollbar {
+  width: 12px;
+  height: 10px;
+}
+.mabrur ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.mabrur ::-webkit-scrollbar-thumb {
+  background: #cfd4d9;
+  border-radius: 8px;
+  border: 3px solid var(--bg);
+}
+
+/* Phone: the segmented control becomes two equal halves instead of wrapping inside a pill. */
+@media (max-width: 480px) {
+  .mb-seg {
+    display: flex;
+    width: 100%;
+    flex-wrap: nowrap;
+    border-radius: 14px;
+  }
+  .mb-seg button {
+    flex: 1 1 0;
+    border-radius: 10px;
+    padding: 9px 8px;
+    font-size: 12.5px;
+    line-height: 1.25;
+  }
 }

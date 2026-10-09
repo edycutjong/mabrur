@@ -35,7 +35,10 @@ for (const r of ROUTES) {
 test("main nav lists the three roles and no Debug entry", async ({ page }) => {
   await page.goto("/app");
   const nav = page.getByRole("navigation", { name: "Peran" });
-  await expect(nav.getByRole("link")).toHaveText(["Jamaah", "Agen", "Vendor"], { useInnerText: true });
+  await expect(nav.getByRole("link")).toHaveText(["Jamaah", "Agen", "Vendor"], {
+    useInnerText: true,
+    ignoreCase: true, // the v2 nav is set in tracked caps (text-transform)
+  });
   await expect(page.getByRole("contentinfo").getByRole("link", { name: /github/i })).toHaveAttribute(
     "href",
     "https://github.com/edycutjong/mabrur",

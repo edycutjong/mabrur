@@ -9,6 +9,48 @@ export const metadata = getMetadata({
     "Pilih peran: jamaah, agen, atau vendor berlisensi. Uang umrah dikunci per pos onchain; tIDR adalah token uji tanpa nilai.",
 });
 
+// Drawn 1.5px-stroke icons (no glyphs): passbook, console with a seal, pen on an invoice.
+const ICONS = [
+  <svg
+    key="j"
+    viewBox="0 0 36 36"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M7 6.5h17.5a3 3 0 013 3V30H10a3 3 0 01-3-3z" />
+    <path d="M7 27a3 3 0 013-3h17.5M12 12h10M12 16.5h7" />
+  </svg>,
+  <svg
+    key="a"
+    viewBox="0 0 36 36"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="5" y="7" width="26" height="19" rx="2.5" />
+    <path d="M13 30.5h10M18 26v4.5M10 13h8M10 17.5h5" />
+    <rect x="21" y="12.5" width="6.5" height="6.5" rx="1" transform="rotate(-4 24 16)" />
+  </svg>,
+  <svg
+    key="v"
+    viewBox="0 0 36 36"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M9 5.5h13l5 5v20H9z" />
+    <path d="M22 5.5v5h5M13 15h9M13 19.5h6" />
+    <path d="M13.5 27c2-2.4 3.5-2.4 4.5-.6 1 1.6 2.4 1.4 4.5-.9" />
+  </svg>,
+];
+
 const ROLES = [
   {
     href: "/app/jamaah",
@@ -34,40 +76,47 @@ const ROLES = [
 ];
 
 const AppHome: NextPage = () => (
-  <div className="w-full max-w-6xl mx-auto px-4 lg:px-8 py-8 lg:py-12">
-    <div className="mb-label">
+  <div className="w-full max-w-6xl mx-auto px-4 lg:px-8 py-10 lg:py-16">
+    <div className="mb-label mb-runhead">
       <T id="Mabrur · uang muka umrah yang terikat tujuan" en="Mabrur · purpose-bound umrah prepayment" />
     </div>
-    <h1 className="mb-title mt-1">
+    <h1 className="mb-title max-w-4xl">
       <T
-        id="Dana umrah Anda hanya bisa dipakai untuk umrah Anda."
-        en="Your umrah money can only be spent on your umrah."
+        id={
+          <>
+            Dana umrah Anda hanya bisa dipakai untuk <span className="mb-swash">umrah Anda.</span>
+          </>
+        }
+        en={
+          <>
+            Your umrah money can only be spent on <span className="mb-swash">your umrah.</span>
+          </>
+        }
       />
     </h1>
-    <p className="mb-p mt-3 max-w-3xl">
+    <p className="mb-p mb-lede mt-5 max-w-3xl">
       <T
         id="Uang muka jamaah dikunci per pos di kontrak. Agen membayar vendor hanya dengan faktur bertanda tangan vendor berlisensi; jika tiket tidak dibeli tepat waktu, siapa pun bisa mengembalikan sisa dana ke jamaah."
         en="A pilgrim's prepayment is earmarked line by line on-chain. The agency pays vendors only with a licensed vendor's signed invoice; if no ticket is bought in time, anyone can return the rest to the pilgrim."
       />
     </p>
-    <div className="grid gap-5 md:grid-cols-3 mt-8">
-      {ROLES.map(r => (
-        <Link
-          key={r.href}
-          href={r.href}
-          className="mb-sheet flex flex-col gap-2 hover:-translate-y-0.5 transition-transform"
-        >
-          <span className="mb-label">
+    <div className="mb-roles mt-10 lg:mt-12">
+      {ROLES.map((r, i) => (
+        <Link key={r.href} href={r.href} className="flex flex-col gap-3 group">
+          <span className="mb-role-ico" aria-hidden="true">
+            {ICONS[i]}
+          </span>
+          <span className="mb-label mt-2">
             <T id={r.eyebrow.id} en={r.eyebrow.en} />
           </span>
           <span className="mb-h2">
             <T id={r.title.id} en={r.title.en} />
           </span>
-          <span className="mb-p">
+          <span className="mb-p mb-muted text-[15px]">
             <T id={r.id} en={r.en} />
           </span>
-          <span className="mt-auto font-bold">
-            <T id="Buka →" en="Open →" />
+          <span className="mb-role-open mb-go">
+            <T id="Buka" en="Open" />
           </span>
         </Link>
       ))}

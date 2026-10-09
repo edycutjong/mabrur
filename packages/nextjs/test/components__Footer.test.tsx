@@ -6,7 +6,7 @@ describe("Footer component", () => {
   it("renders a contentinfo landmark with the links nav", () => {
     render(<Footer />);
     const footer = screen.getByRole("contentinfo");
-    expect(footer).toHaveClass("border-t", "mt-10");
+    expect(footer).toHaveClass("mb-footer", "mt-16");
     expect(within(footer).getByRole("navigation", { name: "Tautan" })).toBeInTheDocument();
   });
 

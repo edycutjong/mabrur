@@ -291,16 +291,23 @@ describe("components/mabrur/ui", () => {
       expect(stamp).toHaveAttribute("role", "status");
     });
 
-    it("renders lunas stamp with mb-stamp-after class", () => {
+    it("renders lunas as the emerald seal, never the old-green one", () => {
       const { container } = render(<Stamp kind="lunas" />);
       const stamp = container.querySelector(".mb-stamp");
-      expect(stamp).toHaveClass("mb-stamp-after");
+      expect(stamp).toHaveClass("mb-stamp-lunas");
+      expect(stamp).not.toHaveClass("mb-stamp-dikembalikan");
     });
 
-    it("renders dikembalikan stamp with mb-stamp-after class", () => {
+    it("renders dikembalikan as the old-green seal, never the emerald one", () => {
       const { container } = render(<Stamp kind="dikembalikan" />);
       const stamp = container.querySelector(".mb-stamp");
-      expect(stamp).toHaveClass("mb-stamp-after");
+      expect(stamp).toHaveClass("mb-stamp-dikembalikan");
+      expect(stamp).not.toHaveClass("mb-stamp-lunas");
+    });
+
+    it("renders ditolak as the madder seal", () => {
+      const { container } = render(<Stamp kind="ditolak" />);
+      expect(container.querySelector(".mb-stamp")).toHaveClass("mb-stamp-ditolak");
     });
 
     it("renders simulasi stamp with mb-stamp-sim class", () => {
@@ -390,8 +397,9 @@ describe("components/mabrur/ui", () => {
           <span>Test</span>
         </Stamp>,
       );
-      const childDiv = container.querySelector(".text-sm.font-bold.mt-1");
+      const childDiv = container.querySelector(".mb-stamp-detail");
       expect(childDiv).toBeInTheDocument();
+      expect(childDiv).toHaveTextContent("Test");
     });
   });
 
@@ -412,7 +420,7 @@ describe("components/mabrur/ui", () => {
     it("renders error id with mb-refused-text class", () => {
       render(<RevertStamp d={mockError} />);
       const refused = screen.getByText("Nilai tidak sah");
-      expect(refused.closest(".mb-refused-text")).toHaveClass("mb-refused-text", "font-bold");
+      expect(refused.closest(".mb-refused-text")).toHaveClass("mb-refused-text", "font-medium");
     });
 
     it("renders the English reason only in EN mode", () => {
@@ -474,13 +482,17 @@ describe("components/mabrur/ui", () => {
     it("renders success chip with checkmark when ok is true", () => {
       useScaffoldReadContract.mockReturnValue({ data: true, isLoading: false });
       const { container } = render(<ClaimBadge address="0x123" topic={1} />);
-      expect(container.querySelector(".mb-chip")).toHaveTextContent(/PPIU.*✓/);
+      const chip = container.querySelector(".mb-chip");
+      expect(chip).toHaveTextContent(/PPIU/);
+      // a drawn check icon, not a ✓ glyph
+      expect(chip).not.toHaveTextContent("✓");
+      expect(chip!.querySelector("svg[aria-hidden='true']")).toBeInTheDocument();
     });
 
-    it("applies mb-chip-ink class when claim is valid", () => {
+    it("applies the emerald mb-chip-paid class when claim is valid", () => {
       useScaffoldReadContract.mockReturnValue({ data: true, isLoading: false });
       const { container } = render(<ClaimBadge address="0x123" topic={1} />);
-      const chip = container.querySelector(".mb-chip-ink");
+      const chip = container.querySelector(".mb-chip-paid");
       expect(chip).toBeInTheDocument();
     });
 
@@ -496,7 +508,7 @@ describe("components/mabrur/ui", () => {
     it("renders topic name for non-PPIU topics when claim is valid", () => {
       useScaffoldReadContract.mockReturnValue({ data: true, isLoading: false });
       render(<ClaimBadge address="0x456" topic={2} />);
-      expect(screen.getByText(/AIRLINE ✓/)).toBeInTheDocument();
+      expect(screen.getByText(/AIRLINE/)).toBeInTheDocument();
     });
 
     it("renders invalid claim chip with muted color", () => {
@@ -591,7 +603,7 @@ describe("components/mabrur/ui", () => {
     it("renders label when name prop is provided", () => {
       explorerAddr.mockReturnValue("https://arbiscan.io/address/0x123");
       render(<AddressChip address="0x123" name="My Address" />);
-      expect(screen.getByText("My Address")).toHaveClass("font-bold");
+      expect(screen.getByText("My Address")).toHaveClass("font-medium");
     });
 
     it("renders label from getLabel util when name prop is not provided", async () => {
@@ -711,11 +723,11 @@ describe("components/mabrur/ui", () => {
       expect(link).toHaveClass("mb-data");
     });
 
-    it("applies text-sm class to link", () => {
+    it("renders the link as quiet mono data", () => {
       explorerTx.mockReturnValue("https://arbiscan.io/tx/0xabc");
       const { container } = render(<TxLink hash="0xabc" />);
       const link = container.querySelector("a");
-      expect(link).toHaveClass("text-sm");
+      expect(link).toHaveClass("mb-data", "mb-muted");
     });
 
     it("sets hash as title attribute for full value on hover", () => {
@@ -756,7 +768,8 @@ describe("components/mabrur/ui", () => {
     it("shows 'Tersalin ✓' when isCopiedToClipboard is true", () => {
       useCopyToClipboard.mockReturnValue({ copyToClipboard: vi.fn(), isCopiedToClipboard: true });
       render(<CopyButton text="test" />);
-      expect(screen.getByText("Tersalin ✓")).toBeInTheDocument();
+      expect(screen.getByText("Tersalin")).toBeInTheDocument();
+      expect(screen.getByRole("button").querySelector("svg")).toBeInTheDocument();
     });
 
     it("calls copyToClipboard with correct text on click", async () => {

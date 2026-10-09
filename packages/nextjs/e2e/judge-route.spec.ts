@@ -57,14 +57,18 @@ test.describe("/judge", () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test("table headers are ink, not the faded theme default", async ({ page }) => {
+  test("table headers use the v2 label style, not the faded theme default", async ({ page }) => {
     await page.goto("/judge");
-    const color = await page
+    const th = await page
       .getByTestId("receipts")
       .locator("th")
       .first()
-      .evaluate(el => getComputedStyle(el).color);
-    expect(color).toBe("rgb(26, 34, 56)");
+      .evaluate(el => {
+        const cs = getComputedStyle(el);
+        return { color: cs.color, background: cs.backgroundColor, opacity: cs.opacity };
+      });
+    // --muted (5.6:1 on --surface), on the --surface well, fully opaque
+    expect(th).toEqual({ color: "rgb(93, 100, 109)", background: "rgb(245, 246, 248)", opacity: "1" });
   });
 
   test("the Reproduce block is keyboard-focusable and labelled", async ({ page }) => {

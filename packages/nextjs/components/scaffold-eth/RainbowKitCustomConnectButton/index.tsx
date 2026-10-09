@@ -33,7 +33,7 @@ export const RainbowKitCustomConnectButton = () => {
             {(() => {
               if (!connected) {
                 return (
-                  <button className="mb-btn mb-btn-sm" onClick={openConnectModal} type="button">
+                  <button className="mb-btn mb-btn-nav" onClick={openConnectModal} type="button">
                     {/* short on a phone so logo · ID|EN · wallet fit one row at 375px */}
                     <span className="sm:hidden">
                       <T id="Dompet" en="Wallet" />

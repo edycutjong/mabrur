@@ -19,6 +19,7 @@ vi.mock("~~/hooks/scaffold-eth", () => ({
 // Mock UI components
 vi.mock("~~/components/mabrur/ui", async () => ({
   T: ((await vi.importActual("~~/components/mabrur/T")) as any).T,
+  CheckIcon: () => <svg data-testid="check-icon" />,
   AddressChip: ({ address, topic }: { address?: string; topic?: number }) => (
     <span data-testid="address-chip">
       AddressChip: {address || "none"} topic={topic}
@@ -141,7 +142,7 @@ describe("RegulatorPanel component", () => {
       const { container } = render(<RegulatorPanel />);
 
       // Check for backed=true CSS class
-      const backedDiv = container.querySelector(".mb-wash-after");
+      const backedDiv = container.querySelector(".mb-wash-paid");
       expect(backedDiv).toBeInTheDocument();
 
       // Check for Bi component (only rendered when backed === true)
@@ -415,7 +416,10 @@ describe("RegulatorPanel component", () => {
 
       render(<RegulatorPanel agency={validAgency} />);
 
-      expect(screen.getByText(/✓ Kewajiban/)).toBeInTheDocument();
+      const agree = screen.getByText(/^Kewajiban \(setoran/).closest("p");
+      expect(agree).toHaveAttribute("data-agree", "true");
+      expect(agree).toHaveClass("mb-paid-text");
+      expect(screen.getByText("Sesuai:")).toBeInTheDocument();
     });
 
     it("renders X mark (✗) when liabilities does not equal earmarked", () => {
@@ -434,7 +438,10 @@ describe("RegulatorPanel component", () => {
 
       render(<RegulatorPanel agency={validAgency} />);
 
-      expect(screen.getByText(/✗ Kewajiban/)).toBeInTheDocument();
+      const agree = screen.getByText(/^Kewajiban \(setoran/).closest("p");
+      expect(agree).toHaveAttribute("data-agree", "false");
+      expect(agree).toHaveClass("mb-refused-text");
+      expect(screen.getByText("Tidak sesuai:")).toBeInTheDocument();
     });
 
     it("does not render comparison when liabilities or earmarked is undefined", () => {
@@ -605,7 +612,10 @@ describe("RegulatorPanel component", () => {
 
       // Check conservation data
       expect(screen.getAllByText(`Rp ${wrappedSupply}`).length).toBeGreaterThan(0);
-      expect(screen.getByText(/✓ Kewajiban/)).toBeInTheDocument();
+      const agree = screen.getByText(/^Kewajiban \(setoran/).closest("p");
+      expect(agree).toHaveAttribute("data-agree", "true");
+      expect(agree).toHaveClass("mb-paid-text");
+      expect(screen.getByText("Sesuai:")).toBeInTheDocument();
 
       // Check regulator view data
       expect(screen.getByText("3")).toBeInTheDocument();
@@ -687,7 +697,7 @@ describe("RegulatorPanel component", () => {
       expect(aside).toHaveClass("gap-4");
     });
 
-    it("uses whitespace-nowrap for right-aligned numbers", () => {
+    it("uses nowrap mono amounts for right-aligned numbers", () => {
       (useScaffoldReadContract as any).mockImplementation(({ functionName }) => {
         if (functionName === "conservation") {
           return { data: [BigInt(100), BigInt(100), BigInt(150)] };
@@ -697,7 +707,7 @@ describe("RegulatorPanel component", () => {
 
       const { container } = render(<RegulatorPanel />);
 
-      const nowrapElements = container.querySelectorAll(".whitespace-nowrap");
+      const nowrapElements = container.querySelectorAll("dd.mb-amt");
       expect(nowrapElements.length).toBeGreaterThan(0);
     });
   });
@@ -747,7 +757,7 @@ describe("RegulatorPanel component", () => {
 
       const { container } = render(<RegulatorPanel />);
 
-      const backedDiv = container.querySelector(".mb-wash-after");
+      const backedDiv = container.querySelector(".mb-wash-paid");
       expect(backedDiv).toBeInTheDocument();
       expect(screen.getByTestId("bi-component")).toBeInTheDocument();
     });
@@ -765,7 +775,7 @@ describe("RegulatorPanel component", () => {
 
       const { container } = render(<RegulatorPanel />);
 
-      const backedDiv = container.querySelector(".mb-wash-after");
+      const backedDiv = container.querySelector(".mb-wash-paid");
       expect(backedDiv).toBeInTheDocument();
     });
 

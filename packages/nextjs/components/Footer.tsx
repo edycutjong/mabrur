@@ -12,20 +12,23 @@ const PBM_CODE = "https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe98922
 export const Footer = () => {
   const t = useT();
   return (
-    <footer className="border-t border-[var(--rule)] mt-10">
-      <div className="max-w-[1600px] mx-auto px-4 lg:px-8 py-5 text-sm flex flex-col gap-3">
-        <nav className="flex flex-wrap gap-x-5 gap-y-1 font-bold" aria-label={t("Tautan", "Links")}>
-          <Link href="/judge" className="mb-link">
-            <T id="Untuk juri" en="For judges" />
-          </Link>
-          <a href={REPO} className="mb-link" target="_blank" rel="noreferrer">
-            GitHub: edycutjong/mabrur
-          </a>
-          <a href={PBM_CODE} className="mb-link mb-muted" target="_blank" rel="noreferrer">
-            <T id="Kontrak terverifikasi (Arbiscan)" en="Verified contract (Arbiscan)" />
-          </a>
-        </nav>
-        <div className="mb-muted flex flex-wrap gap-x-6 gap-y-1">
+    <footer className="mb-footer mt-16">
+      <div className="max-w-[1600px] mx-auto px-4 lg:px-8 pt-10 pb-12 text-[13px] flex flex-col gap-6">
+        <div className="flex flex-wrap items-center justify-between gap-x-10 gap-y-5">
+          <span className="mb-wordmark">Mabrur</span>
+          <nav className="flex flex-wrap gap-x-6 gap-y-2" aria-label={t("Tautan", "Links")}>
+            <Link href="/judge">
+              <T id="Untuk juri" en="For judges" />
+            </Link>
+            <a href={REPO} className="mb-ext" target="_blank" rel="noreferrer">
+              GitHub: edycutjong/mabrur
+            </a>
+            <a href={PBM_CODE} className="mb-ext" target="_blank" rel="noreferrer">
+              <T id="Kontrak terverifikasi (Arbiscan)" en="Verified contract (Arbiscan)" />
+            </a>
+          </nav>
+        </div>
+        <div className="flex flex-wrap gap-x-6 gap-y-1 border-t border-[rgba(249,246,240,0.14)] pt-5">
           <span>
             <T id="tIDR = token uji tanpa nilai" en="tIDR = test token, no value" />
           </span>

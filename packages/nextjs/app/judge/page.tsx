@@ -50,18 +50,18 @@ cd mabrur/packages/foundry && forge test
 `;
 
 const JudgePage: NextPage = () => (
-  <div className="w-full max-w-4xl mx-auto px-4 lg:px-8 py-8 lg:py-12 flex flex-col gap-8">
-    <header>
-      <div className="mb-label">
+  <div className="w-full max-w-4xl mx-auto px-4 lg:px-8 py-10 lg:py-16 flex flex-col gap-8">
+    <header className="mb-2">
+      <div className="mb-label mb-runhead">
         <T id="Untuk juri · 30 detik" en="For judges · 30 seconds" />
       </div>
-      <h1 className="mb-title mt-1">
+      <h1 className="mb-title">
         <T
           id="Uang muka jamaah hanya bisa dipakai untuk perjalanannya sendiri."
           en="A pilgrim's prepayment can only be spent on her own trip."
         />
       </h1>
-      <p className="mb-p mt-3">
+      <p className="mb-p mb-lede mt-5">
         <T
           id="Mabrur mengunci rupiah setiap jamaah per pos (tiket pesawat, hotel, visa, ujrah agen) di dalam token yang tidak bisa dipindahtangankan di Arbitrum One. Agen hanya bisa membayar faktur bertanda tangan dari vendor yang klaimnya terverifikasi, penerima uangnya selalu si penanda tangan, ujrah baru terbuka setelah keberangkatan, dan siapa pun bisa mengembalikan sisa dana begitu batas tiket lewat tanpa tiket dibeli."
           en="Mabrur earmarks each pilgrim's rupiah per line (flight, hotel, visa, agency fee) inside a non-transferable token on Arbitrum One. The agency can pay only a claim-verified vendor's signed invoice, the payee is always that signer, the fee unlocks only after departure, and anyone can refund the rest once the ticket-by date passes with no ticket bought."
@@ -73,10 +73,10 @@ const JudgePage: NextPage = () => (
       <h2 className="mb-h2">
         <T id="Jalur 30 detik (tanpa dompet, tanpa instal)" en="The 30-second path (no wallet, no install)" />
       </h2>
-      <ol className="list-decimal pl-5 flex flex-col gap-2 mb-p">
+      <ol className="mb-steps mb-p mt-2">
         <li>
           <T id="Buka booking Pak Ahmad:" en="Open Pak Ahmad's booking:" />{" "}
-          <Link className="link" href={`/app/jamaah?id=${AHMAD_ID}`}>
+          <Link className="mb-link" href={`/app/jamaah?id=${AHMAD_ID}`}>
             /app/jamaah
           </Link>{" "}
           —{" "}
@@ -87,7 +87,7 @@ const JudgePage: NextPage = () => (
         </li>
         <li>
           <T id="Buka booking Ibu Siti:" en="Open Ibu Siti's booking:" />{" "}
-          <Link className="link" href={`/app/jamaah?id=${SITI_ID}`}>
+          <Link className="mb-link" href={`/app/jamaah?id=${SITI_ID}`}>
             /app/jamaah
           </Link>{" "}
           —{" "}
@@ -107,11 +107,11 @@ const JudgePage: NextPage = () => (
             id={
               <>
                 Minta keputusan kontrak atas faktur Anda sendiri: tanda tangani satu di{" "}
-                <Link className="link" href="/app/vendor">
+                <Link className="mb-link" href="/app/vendor">
                   halaman vendor
                 </Link>
                 , tempel JSON-nya di{" "}
-                <Link className="link" href="/app/agen">
+                <Link className="mb-link" href="/app/agen">
                   konsol agen
                 </Link>{" "}
                 (<em>Tempel faktur</em> → <em>Baca faktur</em>), lalu tekan <em>Simulasi saja</em> di sana. Konsol yang
@@ -121,11 +121,11 @@ const JudgePage: NextPage = () => (
             en={
               <>
                 Get the contract&apos;s verdict on your own invoice: sign one on the{" "}
-                <Link className="link" href="/app/vendor">
+                <Link className="mb-link" href="/app/vendor">
                   vendor page
                 </Link>
                 , paste its JSON into the{" "}
-                <Link className="link" href="/app/agen">
+                <Link className="mb-link" href="/app/agen">
                   agency console
                 </Link>{" "}
                 (<em>Paste invoice</em> → <em>Read invoice</em>), then press <em>Simulate only</em> there. The same
@@ -137,12 +137,12 @@ const JudgePage: NextPage = () => (
       </ol>
     </section>
 
-    <section className="mb-sheet flex flex-col gap-3">
+    <section className="mb-sheet mb-slip flex flex-col gap-4">
       <h2 className="mb-h2">
         <T id="Bukti on-chain" en="Receipts" />
       </h2>
       {/* A table on wide screens; below 640px each row stacks into a card (see .mb-receipts in mabrur.css). */}
-      <table className="table table-sm mb-receipts" data-testid="receipts">
+      <table className="mb-receipts" data-testid="receipts">
         <thead>
           <tr>
             <th scope="col">
@@ -159,12 +159,23 @@ const JudgePage: NextPage = () => (
         <tbody>
           {REVERTS.map(([err, whatId, whatEn, tx]) => (
             <tr key={tx}>
-              <td className="mb-receipt-err">{err}</td>
+              <td>
+                <span className="mb-stamp mb-stamp-sm">
+                  <span className="mb-stamp-word">Ditolak</span>
+                  <span className="mb-stamp-error mb-receipt-err">{err}</span>
+                </span>
+              </td>
               <td>
                 <T id={whatId} en={whatEn} />
               </td>
               <td data-label-id="Tx tertambang" data-label-en="Mined tx">
-                <a className="link mb-receipt-tx" href={`${SCAN}/tx/${tx}`} target="_blank" rel="noreferrer" title={tx}>
+                <a
+                  className="mb-link mb-ext mb-receipt-tx"
+                  href={`${SCAN}/tx/${tx}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  title={tx}
+                >
                   <span className="sr-only">
                     <T id={`Transaksi ${err} di Arbiscan:`} en={`${err} transaction on Arbiscan:`} />{" "}
                   </span>
@@ -175,7 +186,7 @@ const JudgePage: NextPage = () => (
           ))}
         </tbody>
       </table>
-      <ul className="list-disc pl-5 mb-p flex flex-col gap-1">
+      <ul className="mb-ticks mb-p text-[15px] mt-2">
         <li>
           <T
             id={
@@ -202,15 +213,15 @@ const JudgePage: NextPage = () => (
         </li>
         <li>
           <T id="Kontrak terverifikasi di Arbiscan:" en="Contracts verified on Arbiscan:" />{" "}
-          <a className="link" href={`${SCAN}/address/${PBM}#code`} target="_blank" rel="noreferrer">
+          <a className="mb-link" href={`${SCAN}/address/${PBM}#code`} target="_blank" rel="noreferrer">
             MabrurPBM
           </a>
           ,{" "}
-          <a className="link" href={`${SCAN}/address/${REGISTRY}#code`} target="_blank" rel="noreferrer">
+          <a className="mb-link" href={`${SCAN}/address/${REGISTRY}#code`} target="_blank" rel="noreferrer">
             ClaimRegistry
           </a>
           ,{" "}
-          <a className="link" href={`${SCAN}/address/${TIDR}#code`} target="_blank" rel="noreferrer">
+          <a className="mb-link" href={`${SCAN}/address/${TIDR}#code`} target="_blank" rel="noreferrer">
             TIDR
           </a>
           .
@@ -235,7 +246,7 @@ const JudgePage: NextPage = () => (
           en="cast run <any tx above> --rpc-url https://arb1.arbitrum.io/rpc --quick"
         />
       </pre>
-      <p className="mb-p text-sm">
+      <p className="mb-p text-sm mb-muted">
         <T
           id="Setiap skrip demo mengirim transaksi ke Arbitrum One; tidak ada mode mock, offline, atau dry-run."
           en="Every demo script broadcasts to Arbitrum One; there is no mock, offline or dry-run mode."
@@ -247,7 +258,7 @@ const JudgePage: NextPage = () => (
       <h2 className="mb-h2">
         <T id="Batasan yang jujur" en="Honest limits" />
       </h2>
-      <ul className="list-disc pl-5 mb-p flex flex-col gap-1">
+      <ul className="mb-ticks mb-p text-[15px]">
         <li>
           <T
             id="tIDR adalah token uji tanpa nilai: belum ada token rupiah berizin yang bisa dipakai di Arbitrum One. Pembungkusnya menerima ERC-20 biasa apa pun."
@@ -270,18 +281,18 @@ const JudgePage: NextPage = () => (
     </section>
 
     <section className="flex flex-wrap gap-3">
-      <a className="mb-btn" href="https://github.com/edycutjong/mabrur" target="_blank" rel="noreferrer">
+      <a className="mb-btn mb-ext" href="https://github.com/edycutjong/mabrur" target="_blank" rel="noreferrer">
         <T id="Repo GitHub" en="GitHub repo" />
       </a>
       <a
-        className="mb-btn mb-btn-ghost"
+        className="mb-btn mb-btn-ghost mb-ext"
         href="https://github.com/edycutjong/mabrur/blob/main/DEMO.md"
         target="_blank"
         rel="noreferrer"
       >
         <T id="Buku besar DEMO.md" en="DEMO.md ledger" />
       </a>
-      <Link className="mb-btn mb-btn-ghost" href="/app">
+      <Link className="mb-btn mb-btn-ghost mb-go" href="/app">
         <T id="Buka aplikasi" en="Open the app" />
       </Link>
     </section>

@@ -129,7 +129,9 @@ const InlineResult = ({ a }: { a?: Attempt }) => {
     <div ref={ref} className="mt-3 flex flex-col gap-4 items-start" aria-live="polite" data-testid="inline-result">
       <AttemptStamp a={a} />
       <div className="text-sm">
-        <span className={`font-bold ${a.kind === "ditolak" ? "mb-refused-text" : ""}`}>
+        <span
+          className={`font-medium ${a.kind === "ditolak" ? "mb-refused-text" : a.action === "refund" ? "mb-returned-text" : a.simulated ? "" : "mb-paid-text"}`}
+        >
           <T id={r.id} en={r.en} />
         </span>{" "}
         {a.hash && <TxLink hash={a.hash} />}
@@ -222,19 +224,19 @@ const BookingRow = ({
   return (
     // The whole card selects the booking (the inner button is the keyboard path); its own controls keep their clicks.
     <div
-      className={`mb-sheet mb-hover flex flex-col gap-1 cursor-pointer ${active ? "outline-3 outline-[var(--ink)]" : ""}`}
+      className={`mb-sheet mb-hover flex flex-col gap-1 cursor-pointer ${active ? "mb-active" : ""}`}
       style={{ padding: 14 }}
       onClick={e => {
         if (!(e.target as HTMLElement).closest("button, a, input, textarea, select, label")) onSelect();
       }}
     >
       <button className="text-left flex flex-col gap-1 cursor-pointer" onClick={onSelect} aria-pressed={active}>
-        <span className="font-bold">{label || "Booking"}</span>
-        <span className="mb-data text-sm">{shortHex(idHex(b.id), 8, 6)}</span>
-        <span className="mb-num font-bold">{formatRp(total)}</span>
-        <span>
+        <span className="font-medium">{label || "Booking"}</span>
+        <span className="mb-data mb-muted text-[12.5px]">{shortHex(idHex(b.id), 8, 6)}</span>
+        <span className="mb-amt">{formatRp(total)}</span>
+        <span className="mt-1">
           {b.refunded ? (
-            <span className="mb-chip mb-chip-after">
+            <span className="mb-chip mb-chip-returned">
               <T id="Dikembalikan" en="Refunded" />
             </span>
           ) : canRefund ? (
@@ -242,11 +244,11 @@ const BookingRow = ({
               <T id="Bisa refund" en="Refundable" />
             </span>
           ) : flightPaid ? (
-            <span className="mb-chip mb-chip-after">
+            <span className="mb-chip mb-chip-paid">
               <T id="Tiket lunas" en="Ticket paid" />
             </span>
           ) : (
-            <span className="mb-chip mb-chip-before">
+            <span className="mb-held">
               <T id="Disimpan" en="Earmarked" />
             </span>
           )}
@@ -261,7 +263,7 @@ const BookingRow = ({
             <T id={formatCountdown(left)} en={formatCountdown(left, "en")} />
           </div>
           {left <= 0 && (
-            <div className="mb-refused-text font-bold text-sm">
+            <div className="mb-refused-text font-medium text-sm">
               <T id="lewat — siapa pun bisa refund" en="passed — anyone can refund" />
             </div>
           )}
@@ -290,10 +292,10 @@ const BookingRow = ({
         </div>
       )}
       <InlineResult a={last} />
-      <div className="flex gap-2 mt-1">
+      <div className="flex items-center gap-3 mt-2 pt-2 border-t border-dashed border-[var(--rule)]">
         <input
           className="mb-input text-sm"
-          style={{ minHeight: 32, padding: "4px 8px" }}
+          style={{ minHeight: 34, padding: "4px 10px" }}
           placeholder={t("nama", "name")}
           value={label}
           onChange={e => {
@@ -413,26 +415,26 @@ const InvoiceRow = ({
     );
 
   return (
-    <div className="mb-row flex flex-col gap-2">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <span>
-          <span className="mb-data">{inv.refLabel ?? refToLabel(inv.invoice.ref)}</span>
+    <div className="mb-row flex flex-col gap-3">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <span className="min-w-0">
+          <span className="mb-data font-medium text-[14px]">{inv.refLabel ?? refToLabel(inv.invoice.ref)}</span>
           {inv.label && inv.label !== inv.refLabel && <span className="text-sm mb-muted"> · {inv.label}</span>}
         </span>
-        <span className="mb-num font-bold">{formatRp(inv.invoice.amount)}</span>
+        <span className="mb-amt text-[16px]">{formatRp(inv.invoice.amount)}</span>
       </div>
-      <dl className="grid grid-cols-[110px_1fr] gap-x-3 gap-y-1 text-sm">
+      <dl className="grid grid-cols-[minmax(92px,auto)_1fr] gap-x-4 gap-y-2 text-sm items-baseline">
         <dt className="mb-label">Booking</dt>
         <dd>
           <span className="mb-data text-sm">{shortHex(idHex(inv.invoice.bookingId), 8, 6)}</span>{" "}
           {getLabel(idHex(inv.invoice.bookingId)) && <span>({getLabel(idHex(inv.invoice.bookingId))})</span>}{" "}
           {booking &&
             (forThis ? (
-              <span className="mb-chip mb-chip-ink">
+              <span className="mb-chip mb-chip-paid">
                 <T id="booking ini" en="this booking" />
               </span>
             ) : (
-              <span className="mb-chip mb-chip-muted">
+              <span className="mb-chip mb-chip-refused">
                 <T id="booking lain" en="another booking" />
               </span>
             ))}
@@ -460,7 +462,7 @@ const InvoiceRow = ({
           en="The payee is the signer; there is no payee field."
         />
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 sm:justify-end">
         <button className="mb-btn" disabled={!booking || busy} onClick={() => pay(false)}>
           <T id="Bayar faktur" en="Pay invoice" />
         </button>
@@ -477,9 +479,9 @@ const AttemptRow = ({ a }: { a: Attempt }) => {
   const act = actionLabel(a);
   return (
     <div
-      className={`mb-row flex flex-col gap-2 px-3 rounded-[10px] ${a.kind === "ditolak" ? "mb-wash-refused" : a.simulated ? "bg-[var(--bg)]" : "mb-wash-after"}`}
+      className={`mb-row flex flex-col gap-2 px-4 rounded-[10px] border-0! ${a.kind === "ditolak" ? "mb-wash-refused" : a.simulated ? "bg-[var(--surface)]" : a.action === "refund" ? "mb-wash-returned" : "mb-wash-paid"}`}
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="mb-seal-row items-start!">
         <div className="flex flex-col gap-1">
           <span className="mb-label">
             <T
@@ -496,7 +498,7 @@ const AttemptRow = ({ a }: { a: Attempt }) => {
       </div>
       {a.kind === "ditolak" && a.error && (
         <div>
-          <span className="mb-refused-text font-bold">
+          <span className="mb-refused-text font-medium">
             <T id={a.error.id} en={a.error.en} />
           </span>
           {a.simulated && (
@@ -515,7 +517,7 @@ const AttemptRow = ({ a }: { a: Attempt }) => {
           )}
           {a.vendor && (
             <>
-              <span>→</span>
+              <span className="mb-go" aria-hidden="true" />
               <AddressChip address={a.vendor} />
             </>
           )}
@@ -712,15 +714,15 @@ const ConsoleInner = () => {
 
   return (
     <PageShell>
-      <header className="mb-6 flex flex-wrap justify-between gap-4 items-end">
-        <div>
-          <Label>
+      <header className="mb-8 lg:mb-10 flex flex-wrap justify-between gap-4 items-end">
+        <div className="w-full">
+          <Label className="mb-runhead">
             <T id="Agen" en="Agency" />
           </Label>
           <h1 className="mb-title">
             <T id="Konsol Agen" en="Agency console" />
           </h1>
-          <p className="mb-p mt-1 mb-muted">
+          <p className="mb-p mb-lede mt-3">
             <T
               id="Agen hanya bisa membayar faktur bertanda tangan vendor untuk booking ini."
               en="The agency can only pay a vendor-signed invoice for this booking."
@@ -738,7 +740,7 @@ const ConsoleInner = () => {
         </div>
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)_380px]">
+      <div className="grid gap-6 xl:gap-8 lg:grid-cols-[280px_minmax(0,1fr)_380px]">
         {/* Left: bookings */}
         <section className="flex flex-col gap-3" aria-label={t("Booking agen", "Agency bookings")}>
           <Label>
@@ -828,21 +830,25 @@ const ConsoleInner = () => {
             <Label>
               <T id="Bayar dari booking" en="Pay from booking" />
             </Label>
-            <h2 className="mb-h2 mt-1">
+            <h2 className="mb-h2 mt-2">
               {bookingName ??
                 (selected ? shortHex(selected, 8, 6) : <T id="— pilih booking —" en="— pick a booking —" />)}
             </h2>
             {booking && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 2xl:grid-cols-4 gap-3 mt-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 2xl:grid-cols-4 gap-px bg-[var(--rule)] border border-[var(--rule)] rounded-[10px] overflow-hidden mt-4">
                 {LINES.map((L, i) => (
                   <div
                     key={L.key}
-                    className={`rounded-[10px] p-3 ${booking.remaining[i] > 0n ? "mb-wash-before" : "mb-wash-after"}`}
+                    className={`p-3.5 flex flex-col gap-1 ${booking.remaining[i] > 0n ? "mb-wash-before" : booking.refunded ? "mb-wash-returned" : "mb-wash-paid"}`}
                   >
-                    <div className="text-sm font-bold">
+                    <div className="text-sm font-medium">
                       <T id={L.id} en={L.en} />
                     </div>
-                    <div className="mb-num font-bold whitespace-nowrap">{formatRp(booking.remaining[i])}</div>
+                    <div
+                      className={`mb-amt ${booking.remaining[i] > 0n ? "mb-before-text" : booking.refunded ? "mb-returned-text" : "mb-paid-text"}`}
+                    >
+                      {formatRp(booking.remaining[i])}
+                    </div>
                   </div>
                 ))}
               </div>

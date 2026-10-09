@@ -1,10 +1,16 @@
 "use client";
 
 import { Address, isAddress } from "viem";
-import { AddressChip, Bi, Label, T } from "~~/components/mabrur/ui";
+import { AddressChip, Bi, CheckIcon, Label, T } from "~~/components/mabrur/ui";
 import { useT } from "~~/hooks/mabrur/useLang";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { formatRp, inWords, terbilang } from "~~/utils/mabrur/format";
+
+const CrossIcon = () => (
+  <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+    <path d="M3 3l6 6M9 3l-6 6" />
+  </svg>
+);
 
 /** Every figure is read from chain state at render time: regulatorView(agency) + conservation(). Nothing hard-coded. */
 export const RegulatorPanel = ({ agency }: { agency?: string }) => {
@@ -22,25 +28,31 @@ export const RegulatorPanel = ({ agency }: { agency?: string }) => {
   const backed = cons ? underlyingHeld! >= wrappedSupply! && sumEarmarks === wrappedSupply : undefined;
   const surplus = cons ? underlyingHeld! - wrappedSupply! : undefined;
 
+  const ledgersAgree = liabilities !== undefined && earmarked !== undefined && liabilities === earmarked;
+  const m = backed ? "mb-match" : "";
+  const am = ledgersAgree ? "mb-match" : "";
+
   return (
     <aside className="mb-sheet flex flex-col gap-4" aria-label={t("Panel regulator", "Regulator panel")}>
-      <div>
+      <div className="flex flex-col gap-1">
         <Label>
           <T id="Panel regulator" en="Regulator view" />
         </Label>
-        <span className="text-sm mb-muted">
-          <span className="mb-data text-sm">regulatorView</span> +{" "}
-          <span className="mb-data text-sm">conservation()</span>,{" "}
+        <span className="text-[13px] mb-muted leading-snug">
+          <span className="mb-data text-[12.5px] text-[var(--ink)]">regulatorView</span> +{" "}
+          <span className="mb-data text-[12.5px] text-[var(--ink)]">conservation()</span>,{" "}
           <T id="dibaca langsung dari kontrak" en="read live from the chain" />
         </span>
       </div>
 
-      <div className={`rounded-[10px] p-4 ${backed ? "mb-wash-after" : backed === false ? "mb-wash-refused" : ""}`}>
-        <div className="mb-amount">{formatRp(wrappedSupply)}</div>
-        <div className="mb-terbilang">
+      <div
+        className={`rounded-[10px] p-5 ${backed ? "mb-wash-paid" : backed === false ? "mb-wash-refused" : "bg-[var(--surface)]"}`}
+      >
+        <div className={`mb-kpi ${backed === false ? "mb-refused-text" : ""}`}>{formatRp(wrappedSupply)}</div>
+        <div className="mb-terbilang mt-1">
           {wrappedSupply !== undefined ? <T id={terbilang(wrappedSupply)} en={inWords(wrappedSupply)} /> : ""}
         </div>
-        <p className="mb-p mt-2 font-bold">
+        <p className="mb-p mt-3 font-medium leading-snug">
           {backed === undefined ? (
             <T id="Memuat…" en="Loading…" />
           ) : backed ? (
@@ -56,34 +68,34 @@ export const RegulatorPanel = ({ agency }: { agency?: string }) => {
         </p>
       </div>
 
-      <dl className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3 gap-y-3 mb-num">
-        <dt className="min-w-0 leading-tight">
+      <dl className="mb-recon text-[14.5px]">
+        <dt className={`min-w-0 leading-tight ${m}`}>
           <T id="Rupiah di kontrak" en="Rupiah held in-contract" />
         </dt>
-        <dd className="text-right font-bold whitespace-nowrap">{formatRp(underlyingHeld)}</dd>
-        <dt className="min-w-0 leading-tight">
+        <dd className={`mb-amt ${m}`}>{formatRp(underlyingHeld)}</dd>
+        <dt className={`min-w-0 leading-tight ${m}`}>
           <T id="mUMRAH beredar" en="mUMRAH supply (wrapped)" />
         </dt>
-        <dd className="text-right font-bold whitespace-nowrap">{formatRp(wrappedSupply)}</dd>
-        <dt className="min-w-0 leading-tight">
+        <dd className={`mb-amt ${m}`}>{formatRp(wrappedSupply)}</dd>
+        <dt className={`min-w-0 leading-tight ${m}`}>
           <T id="Σ pos tersimpan" en="Σ earmarks" />
         </dt>
-        <dd className="text-right font-bold whitespace-nowrap">{formatRp(sumEarmarks)}</dd>
-        <dt className="min-w-0 leading-tight">
+        <dd className={`mb-amt ${m}`}>{formatRp(sumEarmarks)}</dd>
+        <dt className="min-w-0 leading-tight mb-muted">
           <T id="Surplus" en="Surplus (direct donations)" />
         </dt>
-        <dd className="text-right whitespace-nowrap">{formatRp(surplus)}</dd>
+        <dd className="mb-amt mb-muted">{formatRp(surplus)}</dd>
       </dl>
-      <p className="mb-p text-sm mb-muted">
+      <p className="mb-p text-[13px] mb-muted leading-snug">
         <T
           id="Surplus = tIDR yang dikirim langsung ke kontrak tanpa booking; bukan selisih, bukan kewajiban."
           en="Surplus is tIDR sent to the contract outside a booking — never a gap, never a liability."
         />
       </p>
 
-      <div className="mb-perforation" style={{ margin: "4px -20px" }} />
+      <div className="mb-perforation my-1" />
 
-      <div>
+      <div className="flex flex-col gap-1">
         <Label>
           <T id="Agen" en="Agency" />
         </Label>
@@ -96,30 +108,41 @@ export const RegulatorPanel = ({ agency }: { agency?: string }) => {
         )}
       </div>
       {a && (
-        <dl className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3 gap-y-3 mb-num">
+        <dl className="mb-recon text-[14.5px]">
           <dt className="min-w-0 leading-tight">
             <T id="Booking terbuka" en="Open bookings" />
           </dt>
-          <dd className="text-right font-bold whitespace-nowrap">{openBookings?.toString() ?? "–"}</dd>
-          <dt className="min-w-0 leading-tight">
+          <dd className="mb-amt">{openBookings?.toString() ?? "–"}</dd>
+          <dt className={`min-w-0 leading-tight ${am}`}>
             <T id="Kewajiban ke jamaah" en="Liabilities to pilgrims" />
           </dt>
-          <dd className="text-right font-bold whitespace-nowrap">{formatRp(liabilities)}</dd>
-          <dt className="min-w-0 leading-tight">
+          <dd className={`mb-amt ${am}`}>{formatRp(liabilities)}</dd>
+          <dt className={`min-w-0 leading-tight ${am}`}>
             <T id="Tersimpan per pos" en="Earmarked per line" />
           </dt>
-          <dd className="text-right font-bold whitespace-nowrap">{formatRp(earmarked)}</dd>
+          <dd className={`mb-amt ${am}`}>{formatRp(earmarked)}</dd>
         </dl>
       )}
       {a && liabilities !== undefined && earmarked !== undefined && (
-        <p className="mb-p text-sm">
-          <T
-            id={`${liabilities === earmarked ? "✓" : "✗"} Kewajiban (setoran − pembayaran) = Σ pos tersimpan: dua buku independen sama.`}
-            en={`${liabilities === earmarked ? "✓" : "✗"} Liabilities (deposits − payouts) equal Σ earmarks: two independent ledgers agree.`}
-          />
+        <p
+          className={`mb-p text-[13.5px] leading-snug flex gap-2 items-start ${ledgersAgree ? "mb-paid-text" : "mb-refused-text"}`}
+          data-agree={ledgersAgree}
+        >
+          <span className="mt-[3px] shrink-0 [&_svg]:w-[13px] [&_svg]:h-[13px]">
+            {ledgersAgree ? <CheckIcon /> : <CrossIcon />}
+          </span>
+          <span>
+            <span className="sr-only">
+              {ledgersAgree ? <T id="Sesuai:" en="Match:" /> : <T id="Tidak sesuai:" en="Mismatch:" />}{" "}
+            </span>
+            <T
+              id="Kewajiban (setoran − pembayaran) = Σ pos tersimpan: dua buku independen sama."
+              en="Liabilities (deposits − payouts) equal Σ earmarks: two independent ledgers agree."
+            />
+          </span>
         </p>
       )}
-      <p className="mb-p text-sm mb-muted">
+      <p className="mb-p text-[13px] mb-muted leading-snug">
         <T
           id="Penerbit klaim: kunci demo, pengganti Kemenag / IATA. tIDR = token uji tanpa nilai."
           en="Claim issuer: a demo key standing in for Kemenag / IATA. tIDR = test token, no value."
