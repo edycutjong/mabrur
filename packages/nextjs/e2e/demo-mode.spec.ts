@@ -21,7 +21,9 @@ for (const r of ROUTES) {
     const og = (p: string) => page.locator(`meta[property="${p}"]`).getAttribute("content");
     expect(await og("og:title")).toMatch(/Mabrur/);
     expect(await og("og:description")).toBeTruthy();
-    expect(await og("og:image")).toMatch(/\/og-image\.png$/);
+    expect(await og("og:image")).toMatch(/\/og-image\.png(\?v=\d+)?$/);
+    expect(await og("og:image:width")).toBe("1200");
+    expect(await og("og:image:height")).toBe("630");
     expect(await page.locator('meta[name="twitter:card"]').getAttribute("content")).toBe("summary_large_image");
 
     // let the chain reads settle (contracts guard → screen), then check nothing errored
