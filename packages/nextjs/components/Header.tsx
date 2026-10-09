@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
@@ -14,12 +15,8 @@ export const menuLinks = [
 ];
 
 /** A round double-ring stamp mark (an empty stamp ring) next to the wordmark. */
-const Mark = () => (
-  <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
-    <circle cx="15" cy="15" r="13" fill="none" stroke="var(--ink)" strokeWidth="2.5" />
-    <circle cx="15" cy="15" r="8.5" fill="none" stroke="var(--ink)" strokeWidth="1.5" />
-  </svg>
-);
+// The brand mark (kuitansi + red DITOLAK stamp) — the same public/icon.svg used by the favicon and the landing page.
+const Mark = () => <Image src="/icon.svg" alt="" width={32} height={32} priority unoptimized aria-hidden="true" />;
 
 export const Header = () => {
   const { targetNetwork } = useTargetNetwork();

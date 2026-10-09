@@ -72,24 +72,14 @@ describe("Header component", () => {
       expect(wordmark).toHaveStyle({ fontWeight: "700", fontSize: "26px" });
     });
 
-    it("renders Mark SVG with correct structure", () => {
-      (usePathname as any).mockReturnValue("/app");
-      (useTargetNetwork as any).mockReturnValue({
-        targetNetwork: { id: 1, name: "Sepolia" },
-      });
-
+    it("renders the Mabrur brand icon (kuitansi + stamp), not a placeholder mark", () => {
       const { container } = render(<Header />);
-      const svg = container.querySelector("svg");
-
-      expect(svg).toBeInTheDocument();
-      expect(svg).toHaveAttribute("width", "30");
-      expect(svg).toHaveAttribute("height", "30");
-      expect(svg).toHaveAttribute("aria-hidden", "true");
-
-      const circles = container.querySelectorAll("circle");
-      expect(circles).toHaveLength(2);
-      expect(circles[0]).toHaveAttribute("r", "13");
-      expect(circles[1]).toHaveAttribute("r", "8.5");
+      const icon = container.querySelector('img[src*="icon.svg"]');
+      expect(icon).toBeInTheDocument();
+      expect(icon).toHaveAttribute("width", "32");
+      expect(icon).toHaveAttribute("height", "32");
+      expect(icon).toHaveAttribute("alt", "");
+      expect(container.querySelectorAll("circle")).toHaveLength(0);
     });
   });
 
