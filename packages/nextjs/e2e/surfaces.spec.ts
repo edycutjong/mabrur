@@ -22,7 +22,9 @@ test.describe("landing page at /", () => {
     );
 
     const meta = (sel: string) => page.locator(sel).getAttribute("content");
-    expect(await meta('meta[property="og:image"]')).toMatch(/\/og-image\.png$/);
+    expect(await meta('meta[property="og:image"]')).toMatch(/\/og-image\.png(\?v=\d+)?$/); // ?v=N busts social-card caches
+    expect(await meta('meta[property="og:image:width"]')).toBe("1200");
+    expect(await meta('meta[property="og:image:height"]')).toBe("630");
     expect(await meta('meta[name="twitter:card"]')).toBe("summary_large_image");
 
     // every image on the page resolves (real screenshots, served from /landing/assets)

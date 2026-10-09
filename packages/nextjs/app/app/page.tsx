@@ -6,7 +6,7 @@ import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 export const metadata = getMetadata({
   title: "Pilih peran",
   description:
-    "Mabrur: a pilgrim's umrah prepayment earmarked per line on Arbitrum One. Pick a role — pilgrim, agency or licensed vendor.",
+    "Pilih peran: jamaah, agen, atau vendor berlisensi. Uang umrah dikunci per pos onchain; tIDR adalah token uji tanpa nilai.",
 });
 
 const ROLES = [

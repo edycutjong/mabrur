@@ -17,8 +17,10 @@ describe("app/app/page", () => {
     });
 
     it("exports metadata with correct description", () => {
-      expect(metadata.description).toContain("Mabrur: a pilgrim's umrah prepayment");
-      expect(metadata.description).toContain("Arbitrum One");
+      expect(metadata.description).toContain("Pilih peran: jamaah, agen, atau vendor berlisensi");
+      expect(metadata.description).toContain("token uji tanpa nilai");
+      // social previews truncate around 125 characters
+      expect((metadata.description as string).length).toBeLessThanOrEqual(125);
     });
 
     it("exports metadata as an object with title and description", () => {

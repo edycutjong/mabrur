@@ -3,7 +3,7 @@ import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 export const metadata = getMetadata({
   title: "Buku Amanah · Jamaah",
   description:
-    "Book an umrah package with one permit signature and read your passbook: every rupiah earmarked per line, refundable by anyone after the deadline.",
+    "Pesan umrah dengan satu tanda tangan dan baca buku amanah Anda: setiap rupiah dikunci per pos, bisa di-refund siapa pun.",
 });
 
 export default function JamaahLayout({ children }: { children: React.ReactNode }) {

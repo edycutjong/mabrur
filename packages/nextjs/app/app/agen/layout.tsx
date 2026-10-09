@@ -3,7 +3,7 @@ import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 export const metadata = getMetadata({
   title: "Konsol Agen",
   description:
-    "The agency console: pay a licensed vendor's signed invoice from one booking, see every refusal decoded, and read the regulator panel.",
+    "Konsol agen: bayar faktur vendor berlisensi dari satu booking, lihat setiap penolakan terdekode, dan baca panel regulator.",
 });
 
 export default function AgenLayout({ children }: { children: React.ReactNode }) {

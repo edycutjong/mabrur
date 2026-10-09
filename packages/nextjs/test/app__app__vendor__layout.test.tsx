@@ -24,7 +24,8 @@ describe("VendorLayout", () => {
 
   it("exports metadata with correct description", () => {
     expect(metadata).toBeDefined();
-    expect(metadata.description).toContain("A licensed vendor signs an invoice");
+    expect(metadata.description).toContain("Vendor berlisensi menandatangani faktur");
+    expect((metadata.description as string).length).toBeLessThanOrEqual(125);
   });
 
   it("renders children correctly", () => {

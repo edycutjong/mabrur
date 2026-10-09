@@ -26,7 +26,7 @@ const courier = Courier_Prime({
 export const metadata = getMetadata({
   title: "Mabrur — purpose-bound umrah prepayment",
   description:
-    "A pilgrim's umrah prepayment, earmarked per line on-chain: only a licensed vendor's signed invoice can move it, and anyone can refund it after the deadline. tIDR is a test token with no value.",
+    "Uang umrah jamaah dikunci per pos di Arbitrum One: hanya faktur vendor berlisensi yang bisa membayar, siapa pun bisa refund.",
 });
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {

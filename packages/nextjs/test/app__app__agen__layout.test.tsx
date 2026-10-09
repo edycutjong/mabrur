@@ -54,7 +54,7 @@ describe("AgenLayout", () => {
 
   it("exports metadata with correct description", () => {
     expect(metadata.description).toBe(
-      "The agency console: pay a licensed vendor's signed invoice from one booking, see every refusal decoded, and read the regulator panel.",
+      "Konsol agen: bayar faktur vendor berlisensi dari satu booking, lihat setiap penolakan terdekode, dan baca panel regulator.",
     );
   });
 
@@ -66,7 +66,7 @@ describe("AgenLayout", () => {
     expect(metadata.openGraph).toBeDefined();
     expect(metadata.openGraph?.title?.default).toBe("Konsol Agen");
     expect(metadata.openGraph?.description).toBe(
-      "The agency console: pay a licensed vendor's signed invoice from one booking, see every refusal decoded, and read the regulator panel.",
+      "Konsol agen: bayar faktur vendor berlisensi dari satu booking, lihat setiap penolakan terdekode, dan baca panel regulator.",
     );
     expect(metadata.openGraph?.siteName).toBe("Mabrur");
     expect(metadata.openGraph?.type).toBe("website");
@@ -77,7 +77,7 @@ describe("AgenLayout", () => {
     expect(metadata.twitter?.card).toBe("summary_large_image");
     expect(metadata.twitter?.title?.default).toBe("Konsol Agen");
     expect(metadata.twitter?.description).toBe(
-      "The agency console: pay a licensed vendor's signed invoice from one booking, see every refusal decoded, and read the regulator panel.",
+      "Konsol agen: bayar faktur vendor berlisensi dari satu booking, lihat setiap penolakan terdekode, dan baca panel regulator.",
     );
   });
 

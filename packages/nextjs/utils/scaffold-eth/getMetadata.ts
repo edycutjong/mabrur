@@ -11,7 +11,7 @@ const titleTemplate = "%s | Mabrur";
 export const getMetadata = ({
   title,
   description,
-  imageRelativePath = "/og-image.png",
+  imageRelativePath = "/og-image.png?v=2",
 }: {
   title: string;
   description: string;
@@ -37,8 +37,8 @@ export const getMetadata = ({
       images: [
         {
           url: imageUrl,
-          width: 2400,
-          height: 1260,
+          width: 1200,
+          height: 630,
           alt: "Mabrur — purpose-bound umrah prepayment on Arbitrum One",
         },
       ],

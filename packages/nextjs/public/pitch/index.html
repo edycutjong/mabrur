@@ -5,165 +5,181 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mabrur · Pitch deck · ETHJKT 2026</title>
 <meta name="description" content="Pitch deck Mabrur: setoran umrah dikunci per jamaah, per pos, di Arbitrum One. Masalah, solusi, use case RWA, implementasi onchain, dampak.">
-<meta name="theme-color" content="#F4EFE3">
+<meta name="theme-color" content="#F9F6F0">
 <link rel="icon" href="/pitch/assets/icon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mabrur">
 <meta property="og:title" content="Mabrur · Pitch deck">
 <meta property="og:description" content="Uang umrah Pak Ahmad hanya mau berangkat bersamanya. Setoran dikunci per jamaah, per pos, di Arbitrum One.">
 <meta property="og:url" content="https://mabrur.edycu.dev/pitch">
-<meta property="og:image" content="https://mabrur.edycu.dev/og-image.png">
+<meta property="og:image" content="https://mabrur.edycu.dev/og-image.png?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Kuitansi Mabrur: segel merah DITOLAK di baris hotel Pak Ahmad, dan ajakan Coba demo di mabrur.edycu.dev">
+<meta property="og:locale" content="id_ID">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://mabrur.edycu.dev/og-image.png">
+<meta name="twitter:title" content="Mabrur · Pitch deck">
+<meta name="twitter:description" content="Uang umrah Pak Ahmad hanya mau berangkat bersamanya. Setoran dikunci per jamaah, per pos, di Arbitrum One.">
+<meta name="twitter:image" content="https://mabrur.edycu.dev/og-image.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Courier+Prime:wght@400;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Courier+Prime:wght@400;700&display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Courier+Prime:wght@400;700&display=swap"></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
 <style>
 :root {
-  --bg:      #F4EFE3;
-  --paper:   #FFFDF7;
-  --ink:     #1A2238;
-  --muted:   #5A6070;
-  --before:  #8A5A0F;
-  --after:   #2B3A9E;
-  --refused: #BF1F2F;
-  --rule:    #D8CFBA;
-  --before-wash:  #F3E6CC;
-  --after-wash:   #E6E8F5;
-  --refused-wash: #F8E1DE;
+  /* Mabrur v2 · slim + old green (specs/design.md "Direction v2"), same contract as the landing */
+  --bg:        #F9F6F0;
+  --paper:     #FFFFFF;
+  --ink:       #14181C;
+  --muted:     #5D646D;
+  --earmarked: #C5A869;
+  --paid:      #0E8A5F;
+  --refused:   #9E2A2B;
+  --returned:  #0F3D30;
+  --rule:      #E4E6EA;
+  --surface:   #F5F6F8;
+  --earmarked-ink: #85672A;
+  --paid-ink:      #0B6E4F;
+  --earmarked-wash: #F7F1E3;
+  --paid-wash:      #E8F3EE;
+  --refused-wash:   #F7E8E6;
+  --returned-wash:  #E6ECE9;
+  --on-dark:       #F9F6F0;
+  --on-dark-muted: #BFD3C8;
   --radius: 14px;
-  --font-display: "Zilla Slab", "Roboto Slab", Georgia, serif;
-  --font-body:    "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
-  --font-data:    "Courier Prime", "Courier New", monospace;
-  --shadow: 0 1px 0 var(--rule), 0 26px 50px -28px rgba(26, 34, 56, .4);
+  --font-display: "Cormorant Garamond", "Cormorant", Garamond, "Times New Roman", serif;
+  --font-body:    "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-data:    "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+  --shadow: 0 2px 4px rgba(15, 61, 48, .04), 0 30px 60px -36px rgba(15, 61, 48, .32);
   --ease: cubic-bezier(.16, 1, .3, 1);
 }
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; overflow: hidden; background: #E9E2D2; }
-body { font-family: var(--font-body); color: var(--ink); font-variant-numeric: tabular-nums; }
-::selection { background: var(--before-wash); }
-:focus-visible { outline: 3px solid var(--after); outline-offset: 3px; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #ECE8DF; }
+body { font-family: var(--font-body); color: var(--ink); -webkit-font-smoothing: antialiased; }
+::selection { background: rgba(14, 138, 95, .16); }
+:focus-visible { outline: 2px solid var(--paid-ink); outline-offset: 3px; }
 .viewport { position: fixed; inset: 0; overflow: hidden; }
 .stage { width: 1920px; height: 1080px; position: absolute; left: 50%; top: 50%; transform-origin: center center; transform: translate(-50%, -50%) scale(.5); }
-.slide {
-  position: absolute; inset: 0; padding: 92px 120px 110px; display: none; overflow: hidden;
-  background: var(--bg);
-  background-image:
-    repeating-linear-gradient(180deg, transparent 0 47px, rgba(216, 207, 186, .38) 47px 48px),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
-}
+.slide { position: absolute; inset: 0; padding: 150px 120px 100px; display: none; overflow: hidden; background: var(--bg); }
 .slide.on { display: flex; flex-direction: column; }
+.slide > * { flex-shrink: 0; }
 .slide > .mid { margin-top: auto !important; margin-bottom: auto; }
 .slide > h2 + .mid { padding-top: 40px; }
-.slide.dark { background: var(--ink); color: var(--paper); }
-.label { font: 700 22px/1.3 var(--font-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-.kicker { display: flex; align-items: center; gap: 16px; }
-.kicker:before { content: ""; width: 48px; height: 3px; background: var(--before); }
-h1, h2, h3 { font-family: var(--font-display); font-weight: 700; margin: 0; line-height: 1.02; letter-spacing: -.015em; text-wrap: balance; }
-h1 { font-size: 104px; }
-h2 { font-size: 84px; margin-top: 22px; max-width: 1500px; }
-h2 em, h1 em { font-style: normal; color: var(--before); background: linear-gradient(transparent 64%, var(--before-wash) 64% 94%, transparent 94%); }
-.en { font: italic 500 32px/1.35 var(--font-display); color: var(--muted); margin-top: 16px; }
+.slide.dark { background: var(--returned); color: var(--on-dark); }
+.label { font: 500 18px/1.3 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+/* running head: the rubric section this slide answers, not an eyebrow over the heading */
+.kicker { position: absolute; top: 56px; left: 120px; right: 120px; display: flex; align-items: center; gap: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--rule); font-size: 17px; }
+.kicker:after { content: "Mabrur · ETHJKT 2026"; margin-left: auto; color: var(--muted); letter-spacing: .14em; }
+.dark .kicker { border-color: rgba(249, 246, 240, .16); }
+.dark .kicker:after { color: var(--on-dark-muted); }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 500; margin: 0; line-height: 1.04; letter-spacing: -.02em; text-wrap: balance; font-variant-numeric: lining-nums; }
+h1 { font-size: 92px; letter-spacing: -.035em; }
+h2 { font-size: 84px; letter-spacing: -.03em; max-width: 1500px; }
+h3 { font-weight: 600; }
+h2 em, h1 em { font-style: normal; color: var(--paid);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 24' preserveAspectRatio='none'%3E%3Cpath d='M2 15C70 7 150 5 220 8s120 6 176 2' fill='none' stroke='%230E8A5F' stroke-opacity='.22' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E") 0 94% / 100% .28em no-repeat;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.en { font: 300 30px/1.4 var(--font-body); color: var(--muted); margin-top: 20px; }
 .mono { font-family: var(--font-data); }
-.paper { background: var(--paper); border-radius: var(--radius); box-shadow: var(--shadow); }
-.foot { position: absolute; left: 120px; right: 120px; bottom: 40px; display: flex; justify-content: space-between; align-items: center; font: 400 19px var(--font-data); color: var(--muted); }
-.foot b { font: 700 19px var(--font-display); letter-spacing: .1em; color: var(--ink); text-transform: uppercase; }
-.dark .foot, .dark .foot b { color: #B9BFD0; }
-.chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border: 2px solid var(--ink); border-radius: 999px; font-size: 20px; white-space: nowrap; font-weight: 700; background: var(--paper); }
-.chip.warn { border-color: var(--before); color: var(--before); }
+.paper { background: var(--paper); border: 1.5px solid var(--rule); border-radius: var(--radius); }
+.slip.paper { border: 0; box-shadow: var(--shadow); }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border: 1.5px solid var(--rule); border-radius: 999px; font: 500 20px var(--font-body); white-space: nowrap; background: var(--paper); }
+.chip.warn { border-color: #E3D3AE; background: var(--earmarked-wash); color: var(--earmarked-ink); }
 
-/* stamp — signature element, same as the landing */
-.stamp { position: absolute; z-index: 3; display: inline-block; padding: 12px 24px 13px; border: 7px double currentColor; border-radius: 8px; font: 700 50px/1 var(--font-display); letter-spacing: .14em; text-transform: uppercase; transform: rotate(var(--rot, -6deg)); mix-blend-mode: multiply; white-space: nowrap; pointer-events: none;
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.75'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.75'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E"); }
-.stamp small { display: block; font: 700 22px/1.2 var(--font-data); letter-spacing: 0; text-transform: none; margin-top: 6px; }
-.stamp.no { color: var(--refused); } .stamp.ok { color: var(--after); }
-.slide.on .stamp.anim { animation: land .28s cubic-bezier(.3, 1.5, .55, 1) both; animation-delay: var(--d, .6s); }
-@keyframes land { 0% { opacity: 0; transform: rotate(var(--rot, -6deg)) scale(1.45); filter: blur(3px); } 70% { opacity: 1; transform: rotate(var(--rot, -6deg)) scale(.96); filter: none; } 100% { opacity: 1; transform: rotate(var(--rot, -6deg)) scale(1); } }
-.slide.on .up { animation: up .7s var(--ease) both; animation-delay: var(--u, 0s); }
+/* seal: the signature element, same as the landing at projector scale */
+.stamp { position: absolute; z-index: 3; display: inline-flex; flex-direction: column; align-items: center; padding: 14px 30px 15px; border: 2.5px solid currentColor; border-radius: 10px;
+  font: 600 38px/1 var(--font-body); letter-spacing: .24em; text-indent: .24em; text-transform: uppercase; background: rgba(255, 255, 255, .92);
+  box-shadow: inset 0 0 0 5px rgba(255, 255, 255, .95), inset 0 0 0 7px currentColor;
+  transform: rotate(calc(var(--rot, -6deg) * .5)); white-space: nowrap; pointer-events: none; }
+.stamp small { display: block; font: 500 21px/1.2 var(--font-data); letter-spacing: 0; text-indent: 0; text-transform: none; margin-top: 10px; }
+.stamp.no { color: var(--refused); } .stamp.ok { color: var(--paid-ink); } .stamp.back { color: var(--returned); }
+.slide.on .stamp.anim { animation: land .45s cubic-bezier(.2, .9, .25, 1) both; animation-delay: var(--d, .6s); }
+@keyframes land { 0% { opacity: 0; transform: rotate(calc(var(--rot, -6deg) * .5)) scale(1.16); filter: blur(3px); } 100% { opacity: 1; transform: rotate(calc(var(--rot, -6deg) * .5)) scale(1); filter: none; } }
+.slide.on .up { animation: up .8s var(--ease) both; animation-delay: var(--u, 0s); }
 @keyframes up { from { opacity: 0; transform: translateY(18px); } }
 
 /* kuitansi */
-.slip { position: relative; padding: 34px 40px 30px; transform: rotate(.8deg); }
-.slip-top { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 2px dashed var(--rule); }
-.slip-title { font: 700 34px var(--font-display); letter-spacing: .06em; text-transform: uppercase; }
-.who { display: grid; grid-template-columns: auto 1fr; gap: 6px 22px; padding: 16px 0; border-bottom: 1.5px solid var(--rule); font-size: 24px; align-items: baseline; }
-.line { position: relative; display: grid; grid-template-columns: 1fr auto; padding: 16px 14px; margin: 0 -14px; border-bottom: 1.5px dashed var(--rule); border-radius: 10px; align-items: center; }
-.line b { font-size: 27px; display: block; } .line small { font-size: 19px; color: var(--muted); }
-.line .amt { font-weight: 800; font-size: 29px; color: var(--before); }
-.line.held { background: linear-gradient(90deg, var(--before-wash), transparent 70%); }
-.line.paid .amt { color: var(--after); }
-.line.refused { background: linear-gradient(90deg, var(--refused-wash), transparent 80%); }
-.line .stamp { left: 27%; top: 50%; margin-top: -46px; }
-.total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 18px; }
-.total strong { font: 700 44px var(--font-display); }
-.terbilang { font: italic 500 22px var(--font-display); color: var(--muted); }
+.slip { position: relative; padding: 38px 42px 32px; }
+.slip-top { display: flex; justify-content: space-between; align-items: center; padding-bottom: 18px; border-bottom: 1.5px solid var(--rule); }
+.slip-title { font: 600 38px/1.1 var(--font-display); color: var(--returned); margin-bottom: 6px; }
+.who { display: grid; grid-template-columns: auto 1fr; gap: 8px 24px; padding: 18px 0; border-bottom: 1.5px solid var(--rule); font-size: 24px; align-items: baseline; }
+.who b { font-weight: 600; }
+.line { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 20px; padding: 17px 16px; margin: 0 -16px; border-bottom: 1.5px dashed var(--rule); border-radius: 10px; align-items: center; }
+.line b { font-size: 27px; font-weight: 500; display: block; } .line small { font-size: 19px; color: var(--muted); }
+.line .amt { font: 500 26px var(--font-data); color: var(--ink); grid-column: 3; grid-row: 1; text-align: right; font-variant-numeric: tabular-nums; }
+.line.held { background: linear-gradient(90deg, var(--earmarked-wash), rgba(247, 241, 227, 0) 75%); }
+.line.held .amt { color: var(--earmarked-ink); }
+.line.paid .amt { color: var(--paid-ink); }
+.line.refused { background: linear-gradient(90deg, var(--refused-wash), rgba(247, 232, 230, 0) 80%); }
+.line.refused .amt { color: var(--refused); }
+.line .stamp { position: relative; grid-column: 2; grid-row: 1; justify-self: center; font-size: 26px; padding: 10px 20px 11px; box-shadow: inset 0 0 0 4px rgba(255, 255, 255, .95), inset 0 0 0 5.5px currentColor; }
+.line .stamp small { font-size: 16px; margin-top: 7px; }
+.held-tag { grid-column: 2; grid-row: 1; justify-self: center; font: 500 15px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--earmarked-ink); border: 1.5px solid var(--earmarked); border-radius: 999px; padding: 8px 16px; }
+.total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 20px; }
+.total strong { font: 500 50px var(--font-display); letter-spacing: -.02em; font-variant-numeric: lining-nums; }
+.terbilang { font: italic 500 24px var(--font-display); color: var(--muted); }
 
 /* layouts */
 .cols { display: grid; gap: 64px; }
 .c2 { grid-template-columns: 1fr 1fr; } .c55 { grid-template-columns: 1.15fr .85fr; } .c64 { grid-template-columns: 1.3fr .7fr; }
-.big { font: 700 96px/1 var(--font-display); letter-spacing: -.02em; }
-.clip { display: grid; grid-template-columns: 360px 1fr; gap: 10px 30px; align-items: baseline; padding: 44px 40px; border-left: 8px solid var(--refused); border-radius: 6px var(--radius) var(--radius) 6px; }
-.clip .big small { display: block; font: 600 22px var(--font-body); color: var(--muted); letter-spacing: 0; margin-top: 8px; }
-.clip .what { font-size: 34px; } .clip .src { font-size: 22px; color: var(--muted); }
-.clip .big { font-size: 110px; }
-.clip.scale { border-left-color: var(--before); }
-.rules { display: grid; gap: 22px; }
-.rule { display: grid; grid-template-columns: 64px 1fr; gap: 24px; align-items: start; padding: 36px 36px; }
-.rule .n { font: 700 54px/1 var(--font-display); color: var(--after); }
-.rule h3 { font-size: 40px; } .rule p { margin: 8px 0 0; font-size: 24px; color: var(--muted); }
-.rule .code { font: 700 20px var(--font-data); color: var(--ink); }
-.folder { background: var(--before-wash); border-radius: 6px 18px 18px 18px; padding: 28px 30px; position: relative; }
-.folder:before { content: ""; position: absolute; top: -18px; left: 0; width: 40%; height: 20px; background: var(--before-wash); border-radius: 10px 10px 0 0; }
-.folder .row { display: flex; justify-content: space-between; font-size: 36px; padding: 22px 0; border-bottom: 2px dashed rgba(138, 90, 15, .25); }
-.folder .row b { color: var(--before); }
-.flow { display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 64px; }
-.step { padding: 28px 30px; border-right: 2px dashed var(--rule); display: grid; gap: 12px; align-content: start; }
-.step:last-child { border-right: 0; }
-.step .n { font: 700 20px var(--font-display); letter-spacing: .14em; color: var(--before); }
-.step h3 { font-size: 44px; } .step p { margin: 0; font-size: 22px; color: var(--muted); line-height: 1.4; }
-.step .code { font: 700 20px var(--font-data); }
-.shot { overflow: hidden; border: 1.5px solid var(--rule); }
+.big { font: 500 96px/1 var(--font-display); letter-spacing: -.03em; font-variant-numeric: lining-nums; }
+.rules { display: grid; gap: 0; border-top: 1.5px solid var(--rule); }
+.rule { display: grid; grid-template-columns: 64px 1fr; gap: 24px; align-items: start; padding: 32px 4px; border-bottom: 1.5px solid var(--rule); }
+.rules .paper.rule { background: transparent; border: 0; border-bottom: 1.5px solid var(--rule); border-radius: 0; box-shadow: none; }
+.rule .n { font: 500 56px/1 var(--font-display); color: var(--paid); font-variant-numeric: lining-nums; }
+.rule .n svg { width: 40px; height: 40px; margin-top: 6px; }
+.rule h3 { font-size: 42px; } .rule p { margin: 8px 0 0; font-size: 24px; color: var(--muted); }
+.rule .code { font: 500 20px var(--font-data); color: var(--ink); }
+.folder { background: var(--earmarked-wash); border: 1.5px solid #EADFC4; border-radius: 6px 18px 18px 18px; padding: 30px 32px; position: relative; }
+.folder:before { content: ""; position: absolute; top: -19px; left: -1.5px; width: 40%; height: 19px; background: var(--earmarked-wash); border: 1.5px solid #EADFC4; border-bottom: 0; border-radius: 10px 10px 0 0; }
+.folder .row { display: flex; justify-content: space-between; font-size: 34px; padding: 22px 0; border-bottom: 1.5px dashed #E3D3AE; }
+.folder .row b { color: var(--earmarked-ink); font: 500 30px var(--font-data); }
+.flow { display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 64px; overflow: hidden; }
+.step { padding: 30px 30px; border-right: 1.5px solid var(--rule); display: grid; gap: 12px; align-content: start; }
+.step:last-child { border-right: 0; background: var(--returned-wash); }
+.step .n { font: 500 17px var(--font-body); letter-spacing: .14em; color: var(--earmarked-ink); }
+.step h3 { font-size: 46px; } .step p { margin: 0; font-size: 22px; color: var(--muted); line-height: 1.4; }
+.step .code { font: 500 19px var(--font-data); }
+.shot { overflow: hidden; }
 .shot img { display: block; width: 100%; height: auto; }
-.shot .bar { display: flex; gap: 10px; align-items: center; padding: 12px 18px; border-bottom: 1.5px solid var(--rule); background: var(--bg); font: 400 20px var(--font-data); color: var(--muted); }
-.shot .bar i { width: 13px; height: 13px; border-radius: 50%; background: var(--rule); }
-.ledger li { list-style: none; padding: 22px 0; border-top: 2px dashed var(--rule); display: grid; gap: 6px; font-size: 25px; }
-.ledger ol { margin: 0; padding: 0; }
-.ledger .res { font: 700 29px var(--font-data); color: var(--refused); }
-.ledger .tx { font: 400 19px var(--font-data); color: var(--muted); }
-.k { display: grid; gap: 10px; padding: 38px 36px; }
-.k .big { font-size: 96px; }
-.k p { margin: 0; font-size: 26px; color: var(--muted); line-height: 1.4; }
-.contract { display: grid; grid-template-columns: 300px 1fr; gap: 6px 28px; padding: 30px 0; border-top: 2px dashed var(--rule); font-size: 32px; align-items: baseline; }
-.contract .mono { font-size: 27px; color: var(--muted); }
-.prim { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
-.prim span { font: 700 25px var(--font-data); padding: 8px 14px; border-radius: 8px; background: var(--paper); border: 1.5px solid var(--rule); }
-.qr { width: 260px; height: 260px; border-radius: 12px; overflow: hidden; background: var(--paper); padding: 8px; }
+.shot .bar { display: flex; gap: 10px; align-items: center; padding: 13px 20px; border-bottom: 1.5px solid var(--rule); background: var(--surface); font: 400 19px var(--font-data); color: var(--muted); }
+.shot .bar i { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #CFD4D9; }
+.k { display: grid; gap: 12px; padding: 36px 36px; }
+.k .big { font-size: 96px; color: var(--returned); }
+.k p { margin: 0; font-size: 25px; color: var(--muted); line-height: 1.4; }
+.contract { display: grid; grid-template-columns: 300px 1fr; gap: 6px 28px; padding: 30px 0; border-top: 1.5px solid var(--rule); font-size: 32px; align-items: baseline; }
+.contract b { font-weight: 500; font-family: var(--font-display); font-size: 40px; }
+.contract .mono { font-size: 26px; color: var(--muted); }
+.prim { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.prim span { font: 500 23px var(--font-data); padding: 9px 16px; border-radius: 8px; background: var(--paper); border: 1.5px solid var(--rule); }
+.qr { width: 270px; height: 270px; border-radius: 16px; overflow: hidden; background: var(--paper); padding: 12px; }
 .qr svg { width: 100%; height: 100%; display: block; }
 .list { margin: 0; padding: 0 0 0 30px; display: grid; gap: 14px; font-size: 26px; color: var(--muted); line-height: 1.4; }
 .list b { color: var(--ink); }
-.app-tag { display: inline-block; font: 700 18px var(--font-display); letter-spacing: .16em; padding: 6px 14px; border-radius: 999px; background: var(--ink); color: var(--paper); }
+.app-tag { display: inline-block; font: 500 16px var(--font-body); letter-spacing: .16em; padding: 7px 16px; border-radius: 999px; background: var(--returned); color: var(--on-dark); }
 .tcard { padding: 44px 40px; display: grid; gap: 16px; align-content: start; min-height: 440px; }
-.tcard .n { font: 700 64px/1 var(--font-display); color: var(--before); }
-.tcard h3 { font-size: 44px; } .tcard p { margin: 0; font-size: 28px; color: var(--muted); line-height: 1.45; }
+.tcard .n { font: 500 62px/1 var(--font-display); color: var(--returned); letter-spacing: -.02em; font-variant-numeric: lining-nums; }
+.tcard h3 { font-size: 44px; } .tcard p { margin: 0; font-size: 27px; color: var(--muted); line-height: 1.45; }
+.mid > .tcard:first-child { background: var(--returned-wash); border-color: #D3DED8; }
 table.cmp { width: 100%; border-collapse: collapse; font-size: 24px; margin-top: 48px; }
-table.cmp th, table.cmp td { text-align: left; padding: 18px 22px; border-bottom: 2px solid var(--rule); }
-table.cmp thead th { font: 700 19px var(--font-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash); font-weight: 700; }
+table.cmp th, table.cmp td { text-align: left; padding: 22px 26px; border-bottom: 1.5px solid var(--rule); }
+table.cmp td { color: var(--muted); } table.cmp td b { color: var(--ink); font-weight: 500; }
+table.cmp thead th { font: 500 18px var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+table.cmp td:last-child, table.cmp th:last-child { background: var(--paid-wash); color: var(--paid-ink); font-weight: 500; }
 
 /* chrome */
-.hud { position: fixed; right: 18px; bottom: 14px; display: flex; gap: 8px; align-items: center; font: 400 14px var(--font-data); color: var(--muted); z-index: 10; }
-.hud button { font: 700 14px var(--font-display); letter-spacing: .08em; border: 1.5px solid var(--ink); background: var(--paper); color: var(--ink); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
-.hud button:hover { background: var(--ink); color: var(--paper); }
-.hint { position: fixed; left: 18px; bottom: 14px; font: 400 13px var(--font-data); color: var(--muted); z-index: 10; }
-.notes { position: fixed; left: 0; right: 0; bottom: 0; max-height: 42vh; overflow: auto; background: var(--ink); color: var(--paper); padding: 18px 26px 54px; font-size: 17px; line-height: 1.55; display: none; z-index: 9; }
+.hud { position: fixed; right: 18px; bottom: 14px; display: flex; gap: 8px; align-items: center; font: 400 13px var(--font-data); color: var(--muted); z-index: 10; }
+.hud button { font: 500 13px var(--font-body); letter-spacing: .08em; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); border-radius: 999px; padding: 6px 13px; cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
+.hud button:hover { background: var(--returned); border-color: var(--returned); color: var(--on-dark); }
+.hint { position: fixed; left: 18px; bottom: 14px; font: 400 12.5px var(--font-data); color: var(--muted); z-index: 10; }
+.notes { position: fixed; left: 0; right: 0; bottom: 0; max-height: 42vh; overflow: auto; background: var(--returned); color: var(--on-dark); padding: 18px 26px 54px; font-size: 17px; line-height: 1.6; display: none; z-index: 9; }
 .notes.on { display: block; }
-.notes .label { color: #E9C891; font-size: 13px; }
+.notes .label { color: var(--earmarked); font-size: 12.5px; }
 .slide aside.note { display: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.on-dark .hint, .on-dark .hud, .on-dark .ver { color: #C9CEDC !important; }
+.on-dark .hint, .on-dark .hud, .on-dark .ver { color: var(--on-dark-muted) !important; }
+.on-dark .hud button { background: transparent; color: var(--on-dark); border-color: rgba(249, 246, 240, .3); }
 @media print {
   @page { size: 1920px 1080px; margin: 0; }
   html, body { overflow: visible; height: auto; background: none; }
@@ -171,10 +187,12 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
   .stage { transform: none !important; position: static; width: 1920px; height: auto; }
   .slide { display: flex !important; flex-direction: column; position: relative; width: 1920px; height: 1080px; break-after: page; page-break-after: always; }
   .slide .up, .slide .stamp.anim { animation: none !important; opacity: 1 !important; }
+  .slide:last-of-type { break-after: auto; page-break-after: auto; }
   .hud, .hint, .notes, .ver { display: none !important; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 @media (prefers-reduced-motion: reduce) { .slide.on .up, .slide.on .stamp.anim { animation: none !important; } }
+.step:last-child .n { color: var(--returned); }
 </style>
 </head>
 <body>
@@ -186,8 +204,8 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
   <div class="cols" style="grid-template-columns:.95fr 1.05fr;gap:56px;height:100%;align-items:center">
     <div>
       <div class="label kicker up" style="font-size:19px">ETHJKT × HackQuest 2026 · Build the Real World Onchain</div>
-      <div class="up" style="--u:.05s;display:flex;align-items:center;gap:22px;margin:40px 0 30px"><img src="/pitch/assets/icon.svg" alt="" width="92" height="92"><span style="font:700 76px var(--font-display)">Mabrur</span></div>
-      <h1 class="up" style="--u:.12s">Uang umrah Pak Ahmad hanya mau <em>berangkat bersamanya.</em></h1>
+      <div class="up" style="--u:.05s;display:flex;align-items:center;gap:22px;margin:40px 0 30px"><img src="/pitch/assets/icon.svg" alt="" width="92" height="92"><span style="font:600 76px var(--font-display);color:var(--returned)">Mabrur</span></div>
+      <h1>Uang umrah Pak Ahmad hanya mau <em>berangkat bersamanya.</em></h1>
       <div class="en up" style="--u:.2s">Pak Ahmad’s umrah money only departs with him.</div>
       <div class="up" style="--u:.28s;display:flex;flex-wrap:wrap;gap:12px;margin-top:44px"><span class="chip">Arbitrum One · <span class="mono">42161</span></span><span class="chip">3 kontrak terverifikasi</span><span class="chip warn">tIDR = token uji tanpa nilai</span></div>
     </div>
@@ -196,7 +214,7 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
       <div class="who"><span class="label" style="font-size:17px">Sudah terima dari</span><b>Pak Ahmad</b><span class="label" style="font-size:17px">Agen</span><span>PT Amanah Contoh Wisata</span></div>
       <div class="line paid"><div><b>Tiket pesawat</b><small>hanya ke maskapai berizin</small></div><span class="amt">Rp 14.000.000</span><span class="stamp ok anim" style="--rot:-4deg;--d:1.5s">Lunas<small>ke PT Contoh GSA</small></span></div>
       <div class="line refused"><div><b>Hotel</b><small class="mono">INV-HTL-0001 · faktur Ibu Siti</small></div><span class="amt">Rp 9.000.000</span><span class="stamp no anim" style="--rot:-7deg;--d:.8s">Ditolak<small>EarmarkMismatch</small></span></div>
-      <div class="line held"><div><b>Visa</b><small>hanya ke penyedia visa berizin</small></div><span class="amt">Rp 4.000.000</span></div>
+      <div class="line held"><div><b>Visa</b><small>hanya ke penyedia visa berizin</small></div><span class="amt">Rp 4.000.000</span><span class="held-tag">Disimpan</span></div>
       <div class="line refused"><div><b>Ujrah agen</b><small>terbuka setelah berangkat</small></div><span class="amt">Rp 5.000.000</span><span class="stamp no anim" style="--rot:-5deg;--d:2.2s">Ditolak<small>NotDeparted</small></span></div>
       <div class="total"><span class="label" style="font-size:17px">Jumlah</span><strong>Rp 32.000.000</strong></div>
       <div class="terbilang">Terbilang: tiga puluh dua juta rupiah</div>
@@ -209,15 +227,15 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
 <section class="slide" data-title="Masalah">
   <div class="label kicker">01 · Masalah</div>
   <div class="mid" style="text-align:center;display:grid;justify-items:center;gap:6px">
-    <div class="up" style="font:700 300px/.9 var(--font-display);letter-spacing:-.04em;color:var(--refused)">63.310</div>
-    <div class="up" style="--u:.1s;font:700 54px/1.15 var(--font-display)">jamaah First Travel gagal berangkat · <span style="color:var(--refused)">Rp 905 miliar</span></div>
+    <div class="up" style="font:500 300px/.9 var(--font-display);letter-spacing:-.04em;color:var(--refused);font-variant-numeric:lining-nums">63.310</div>
+    <div class="up" style="--u:.1s;font:500 54px/1.15 var(--font-display)">jamaah First Travel gagal berangkat · <span style="color:var(--refused)">Rp 905 miliar</span></div>
     <div class="up mono" style="--u:.15s;font-size:22px;color:var(--muted);margin-top:8px">Kompas, 5 Jan 2023</div>
-    <div class="up" style="--u:.25s;font:italic 500 40px/1.35 var(--font-display);color:var(--muted);margin-top:30px;max-width:1300px">Uang jamaah baru membayar keberangkatan jamaah lama, sampai semuanya runtuh.</div>
+    <div class="up" style="--u:.25s;font:300 36px/1.45 var(--font-body);color:var(--muted);margin-top:30px;max-width:1300px">Uang jamaah baru membayar keberangkatan jamaah lama, sampai semuanya runtuh.</div>
   </div>
   <div class="up" style="--u:.35s;display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:22px;margin-bottom:10px">
-    <div class="paper" style="padding:22px 28px;border-left:8px solid var(--refused);border-radius:6px var(--radius) var(--radius) 6px"><b style="font:700 48px var(--font-display)">86.720</b> <span style="font-size:24px;display:block">jamaah Abu Tours · ±Rp 1,8 triliun</span><div class="mono" style="font-size:18px;color:var(--muted)">Kompas, 29 Jan 2019</div></div>
-    <div class="paper" style="padding:22px 28px;border-left:8px solid var(--before);border-radius:6px var(--radius) var(--radius) 6px"><b style="font:700 48px var(--font-display)">±1,4 juta</b> <span style="font-size:24px;display:block">jamaah lewat PPIU, 2024</span><div class="mono" style="font-size:18px;color:var(--muted)">HIMPUH, 18 Feb 2025 (sekunder)</div></div>
-    <div style="font:600 34px/1.3 var(--font-display);align-self:center;padding-left:12px">Rekening bank tidak bisa menolak perintah transfer dari agen.</div>
+    <div class="paper" style="padding:24px 30px"><b style="font:500 60px/1 var(--font-display);color:var(--refused);letter-spacing:-.02em">86.720</b> <span style="font-size:24px;display:block">jamaah Abu Tours · ±Rp 1,8 triliun</span><div class="mono" style="font-size:18px;color:var(--muted)">Kompas, 29 Jan 2019</div></div>
+    <div class="paper" style="padding:24px 30px"><b style="font:500 60px/1 var(--font-display);color:var(--earmarked-ink);letter-spacing:-.02em">±1,4 juta</b> <span style="font-size:24px;display:block">jamaah lewat PPIU, 2024</span><div class="mono" style="font-size:18px;color:var(--muted)">HIMPUH, 18 Feb 2025 (sekunder)</div></div>
+    <div style="font:500 34px/1.3 var(--font-display);align-self:center;padding-left:12px">Rekening bank tidak bisa menolak perintah transfer dari agen.</div>
   </div>
   <aside class="note">Tahun 2017, First Travel membuat 63.310 jamaah gagal umrah, Rp 905 miliar. Abu Tours: 86.720 jamaah. Polanya sama: uang jamaah baru membiayai keberangkatan jamaah lama. Setiap tahun sekitar 1,4 juta jamaah berangkat lewat PPIU, dan uangnya masih masuk ke satu rekening agen. Rekening bank tidak bisa menolak perintah agen.</aside>
 </section>
@@ -227,7 +245,7 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
   <div class="label kicker">02 · Solusi</div>
   <h2>Setiap rupiah dikunci <em>per jamaah, per pos.</em></h2>
   <div class="cols c55 mid" style="gap:72px;align-items:center">
-    <div class="folder up"><div class="label" style="color:var(--before);margin-bottom:10px">Map amanah · Pak Ahmad</div>
+    <div class="folder up"><div class="label" style="color:var(--earmarked-ink);margin-bottom:10px">Map amanah · Pak Ahmad</div>
       <div class="row"><span>Tiket pesawat</span><b>Rp 14.000.000</b></div><div class="row"><span>Hotel</span><b>Rp 9.000.000</b></div><div class="row"><span>Visa</span><b>Rp 4.000.000</b></div><div class="row" style="border:0"><span>Ujrah agen</span><b>Rp 5.000.000</b></div>
     </div>
     <div class="rules">
@@ -251,8 +269,8 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
     <div class="step"><span class="n">5 · SIAPA PUN</span><h3>Kembalikan</h3><p>lewat batas tiket</p><span class="code">refund()</span></div>
   </div>
   <div class="cols mid up" style="--u:.2s;grid-template-columns:.8fr 1.2fr;gap:48px;align-items:center;padding-top:36px">
-    <div style="font:600 38px/1.35 var(--font-display)">Uang muka umrah adalah aktivitas ekonomi nyata. Mabrur menjadikannya klaim yang dipegang jamaah sendiri, <span style="color:var(--before)">tidak bisa dipindahtangankan.</span></div>
-    <div class="paper shot"><div class="bar"><i></i><i></i><i></i>Buku tabungan amanah · Pak Ahmad</div><img src="/pitch/assets/passbook-ahmad.webp" width="1597" height="950" style="max-height:440px;object-fit:cover;object-position:top" alt="Buku tabungan amanah Pak Ahmad: pemesanan, tiket, hotel, visa, ujrah, dengan tx hash."></div>
+    <div style="font:500 38px/1.35 var(--font-display)">Uang muka umrah adalah aktivitas ekonomi nyata. Mabrur menjadikannya klaim yang dipegang jamaah sendiri, <span style="color:var(--earmarked-ink)">tidak bisa dipindahtangankan.</span></div>
+    <div class="paper shot"><div class="bar"><i></i><i></i><i></i>Buku tabungan amanah · Pak Ahmad</div><img src="/pitch/assets/passbook-ahmad.webp" width="1597" height="950" style="max-height:360px;object-fit:cover;object-position:top" alt="Buku tabungan amanah Pak Ahmad: pemesanan, tiket, hotel, visa, ujrah, dengan tx hash."></div>
   </div>
   <aside class="note">Aset dunia nyatanya bukan token spekulatif: ini hak jamaah atas layanan berizin. Lima pelaku nyata: jamaah memesan dengan satu tanda tangan, penerbit klaim (di demo: kunci pengganti Kemenag / IATA) mengakui vendor, vendor menandatangani faktur, agen hanya meneruskan, dan siapa pun bisa mengembalikan dana. mUMRAH tidak bisa dipindahtangankan.</aside>
 </section>
@@ -261,11 +279,11 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
 <section class="slide" data-title="Implementasi onchain · bukti">
   <div class="label kicker">04 · Implementasi onchain · bukti</div>
   <div class="mid" style="display:grid;justify-items:center;text-align:center;gap:26px">
-    <div class="up" style="font:600 40px/1.3 var(--font-display);color:var(--muted);max-width:1400px">Agen membayar hotel Ibu Siti dari dana Pak Ahmad.</div>
+    <div class="up" style="font:500 40px/1.3 var(--font-display);color:var(--muted);max-width:1400px">Agen membayar hotel Ibu Siti dari dana Pak Ahmad.</div>
     <div style="position:relative;height:380px;width:1100px">
-      <span class="stamp no anim" style="--rot:-6deg;--d:.5s;font-size:140px;left:50%;top:50%;translate:-50% -50%;border-width:12px;padding:18px 44px 22px">Ditolak<small style="font-size:46px;margin-top:10px">EarmarkMismatch</small></span>
+      <span class="stamp no anim" style="--rot:-6deg;--d:.5s;font-size:110px;left:50%;top:50%;translate:-50% -50%;border-width:4px;padding:30px 70px 32px;box-shadow:inset 0 0 0 9px rgba(255,255,255,.95),inset 0 0 0 12px currentColor">Ditolak<small style="font-size:44px;margin-top:18px">EarmarkMismatch</small></span>
     </div>
-    <a class="up mono" style="--u:.9s;font-size:31px;color:var(--ink);text-decoration:none;border-bottom:3px solid var(--rule);padding-bottom:6px" href="https://arbiscan.io/tx/0x9ed30e3802f988fb2219a08c9d184ab779da13d2afbc7f9314d0ab3fa0bbc316">0x9ed30e3802f988fb2219a08c9d184ab779da13d2afbc7f9314d0ab3fa0bbc316</a>
+    <a class="up mono" style="--u:.9s;font-size:31px;color:var(--ink);text-decoration:none;border-bottom:1.5px solid var(--rule);padding-bottom:8px" href="https://arbiscan.io/tx/0x9ed30e3802f988fb2219a08c9d184ab779da13d2afbc7f9314d0ab3fa0bbc316">0x9ed30e3802f988fb2219a08c9d184ab779da13d2afbc7f9314d0ab3fa0bbc316</a>
     <div class="up" style="--u:1s;font-size:26px;color:var(--muted)">transaksi gagal yang <b style="color:var(--ink)">ditambang</b> di Arbitrum One · buka di Arbiscan, nama error-nya ada di sana</div>
   </div>
   <div class="up" style="--u:1.1s;display:flex;justify-content:center;gap:56px;margin-bottom:6px">
@@ -283,9 +301,9 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
   <div class="cols c64 mid" style="gap:44px;align-items:center">
     <div class="paper shot up"><div class="bar"><i></i><i></i><i></i>mabrur.edycu.dev/app/agen</div><img src="/pitch/assets/ditolak-earmark.webp" width="1280" height="870" alt="Konsol agen: cap DITOLAK EarmarkMismatch pada faktur hotel Ibu Siti yang dicoba di booking Pak Ahmad."></div>
     <div class="rules up" style="--u:.15s">
-      <div class="paper rule"><span class="n" style="font-size:40px">→</span><div><h3 style="font-size:32px">Simulasi saja</h3><p>keputusan kontrak dari Arbitrum One, tanpa dompet, tanpa transaksi</p></div></div>
-      <div class="paper rule"><span class="n" style="font-size:40px">→</span><div><h3 style="font-size:32px">Penerima = penanda tangan</h3><p>tidak ada kolom alamat yang bisa diisi agen</p></div></div>
-      <div class="paper rule"><span class="n" style="font-size:40px">→</span><div><h3 style="font-size:32px">Coba sendiri</h3><p class="mono">mabrur.edycu.dev/app/agen</p></div></div>
+      <div class="paper rule"><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></span><div><h3 style="font-size:32px">Simulasi saja</h3><p>keputusan kontrak dari Arbitrum One, tanpa dompet, tanpa transaksi</p></div></div>
+      <div class="paper rule"><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></span><div><h3 style="font-size:32px">Penerima = penanda tangan</h3><p>tidak ada kolom alamat yang bisa diisi agen</p></div></div>
+      <div class="paper rule"><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></span><div><h3 style="font-size:32px">Coba sendiri</h3><p class="mono">mabrur.edycu.dev/app/agen</p></div></div>
     </div>
   </div>
   <aside class="note">Di aplikasinya sama: konsol agen memuat faktur, tombol Simulasi saja meminta keputusan kontrak dari Arbitrum One tanpa dompet, dan capnya mendarat di baris faktur itu. Penerimanya selalu penanda tangan faktur; tidak ada kolom alamat. Silakan coba sendiri.</aside>
@@ -299,7 +317,7 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
     <div class="up">
       <div class="contract"><b>MabrurPBM</b><span class="mono">0x36f1d899…20336d2D5</span></div>
       <div class="contract"><b>ClaimRegistry</b><span class="mono">0xd5B731CD…E4b6315ADb</span></div>
-      <div class="contract" style="border-bottom:2px dashed var(--rule)"><b>TIDR <small style="font-weight:500;color:var(--before)">uji</small></b><span class="mono">0x66F838be…7f6209A43448</span></div>
+      <div class="contract" style="border-bottom:2px dashed var(--rule)"><b>TIDR <small style="font-weight:500;color:var(--earmarked-ink)">uji</small></b><span class="mono">0x66F838be…7f6209A43448</span></div>
       <div class="prim"><span>ERC20Wrapper · _update</span><span>EIP-712 invoice</span><span>ERC20Permit</span><span>refund()</span><span>regulatorView</span></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-content:start">
@@ -318,15 +336,15 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
   <div class="mid" style="display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center">
     <div class="up" style="display:grid;gap:10px">
       <div class="label">Mengunci uang satu jamaah, dari pesan sampai berangkat</div>
-      <div style="font:700 250px/.9 var(--font-display);letter-spacing:-.04em;color:var(--after)">Rp 809</div>
+      <div style="font:500 250px/.9 var(--font-display);letter-spacing:-.04em;color:var(--returned);font-variant-numeric:lining-nums">Rp 809</div>
       <div class="terbilang" style="font-size:34px;margin-top:22px">Terbilang: delapan ratus sembilan rupiah</div>
       <div style="font-size:28px;margin-top:14px">≈ <b>0,0025 %</b> dari paket Rp 32.000.000 · refund: <b>Rp 520</b></div>
       <div class="mono" style="font-size:19px;color:var(--muted)">907.185 gas · ETH/IDR 44.563.294 · CoinGecko 9 Okt 2026 · receipt asli</div>
     </div>
-    <div class="up" style="--u:.15s;background:var(--after-wash);border-radius:var(--radius);padding:38px 40px;display:grid;gap:18px">
-      <div class="label" style="color:var(--after)">Ibu Siti · tiket tidak dibeli</div>
-      <div style="font:700 60px/1.05 var(--font-display)">Rp 23.000.000 kembali, ditekan pihak ketiga.</div>
-      <img src="/pitch/assets/dikembalikan-siti.webp" width="1590" height="390" alt="Cap DIKEMBALIKAN Rp 23.000.000 ke Ibu Siti." style="width:100%;height:auto;border-radius:10px;border:1.5px solid #cdd2ec">
+    <div class="up" style="--u:.15s;background:var(--returned-wash);border-radius:var(--radius);padding:38px 40px;display:grid;gap:18px">
+      <div class="label" style="color:var(--returned)">Ibu Siti · tiket tidak dibeli</div>
+      <div style="font:500 60px/1.05 var(--font-display)">Rp 23.000.000 kembali, ditekan pihak ketiga.</div>
+      <img src="/pitch/assets/dikembalikan-siti.webp" width="1590" height="390" alt="Cap DIKEMBALIKAN Rp 23.000.000 ke Ibu Siti." style="width:100%;height:auto;border-radius:10px;border:1.5px solid #D3DED8">
       <div style="font-size:24px;color:var(--ink)">Tanpa izin agen, tanpa pengadilan.</div>
     </div>
   </div>
@@ -337,17 +355,17 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
 <section class="slide dark" data-title="Coba sekarang">
   <div class="cols" style="grid-template-columns:1.3fr .7fr;height:100%;align-items:center">
     <div>
-      <div class="label kicker" style="color:#E9C891">Coba sekarang · tanpa dompet</div>
-      <h2 style="color:var(--paper);font-size:96px">Buka buku Pak Ahmad. <span style="color:#E9C891">Coba bayar hotel orang lain.</span></h2>
-      <div style="margin-top:44px;display:grid;gap:12px;font:400 30px var(--font-data);color:#DCE0EC">
+      <div class="label kicker" style="color:var(--earmarked)">Coba sekarang · tanpa dompet</div>
+      <h2 style="color:var(--on-dark);font-size:96px">Buka buku Pak Ahmad. <span style="color:var(--earmarked)">Coba bayar hotel orang lain.</span></h2>
+      <div style="margin-top:44px;display:grid;gap:12px;font:400 30px var(--font-data);color:#DDE6E1">
         <span>mabrur.edycu.dev/app/jamaah</span><span>mabrur.edycu.dev/judge</span><span>github.com/edycutjong/mabrur</span>
       </div>
-      <div style="margin-top:40px;font-size:24px;color:#B9BFD0">tIDR token uji tanpa nilai · tidak menjamin kursi: tiket lunas, atau sisa dana kembali.</div>
+      <div style="margin-top:40px;font-size:24px;color:var(--on-dark-muted)">tIDR token uji tanpa nilai · tidak menjamin kursi: tiket lunas, atau sisa dana kembali.</div>
     </div>
     <div style="display:grid;justify-items:center;gap:16px">
-      <div class="qr" role="img" aria-label="Kode QR ke https://mabrur.edycu.dev"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 290 290" aria-hidden="true"><g transform="scale(10)"><path fill="#fffdf7" d="M0 0h29v29h-29z"/><path class="qrline" stroke="#1a2238" d="M2 2.5h7m1 0h2m5 0h2m1 0h7m-25 1h1m5 0h1m3 0h1m2 0h2m3 0h1m5 0h1m-25 1h1m1 0h3m1 0h1m2 0h3m2 0h2m2 0h1m1 0h3m1 0h1m-25 1h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h5m1 0h1m1 0h3m1 0h1m-25 1h1m1 0h3m1 0h1m1 0h2m3 0h4m1 0h1m1 0h3m1 0h1m-25 1h1m5 0h1m1 0h1m2 0h2m1 0h1m1 0h1m1 0h1m5 0h1m-25 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-17 1h4m2 0h2m-16 1h1m3 0h1m1 0h3m8 0h5m2 0h1m-23 1h2m1 0h1m1 0h3m3 0h1m1 0h2m3 0h2m1 0h1m-24 1h1m1 0h1m2 0h5m4 0h4m1 0h1m1 0h2m-23 1h1m1 0h2m3 0h1m2 0h3m1 0h1m4 0h2m1 0h2m-22 1h1m2 0h2m2 0h1m1 0h2m1 0h2m1 0h3m1 0h4m-25 1h4m4 0h1m5 0h2m4 0h1m2 0h1m-22 1h7m4 0h5m1 0h4m-19 1h1m3 0h2m2 0h1m3 0h5m1 0h2m-24 1h3m1 0h3m2 0h4m3 0h7m-15 1h3m1 0h5m3 0h1m-21 1h7m1 0h2m1 0h1m2 0h1m1 0h1m1 0h1m1 0h1m-21 1h1m5 0h1m3 0h2m4 0h1m3 0h4m-24 1h1m1 0h3m1 0h1m1 0h1m3 0h1m3 0h7m-23 1h1m1 0h3m1 0h1m2 0h2m1 0h4m1 0h3m2 0h3m-25 1h1m1 0h3m1 0h1m4 0h1m2 0h1m1 0h1m1 0h1m2 0h1m1 0h1m-24 1h1m5 0h1m3 0h1m1 0h1m1 0h1m2 0h1m1 0h5m-24 1h7m1 0h1m1 0h1m4 0h1m6 0h3"/></g></svg>
+      <div class="qr" role="img" aria-label="Kode QR ke https://mabrur.edycu.dev"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 290 290" aria-hidden="true"><g transform="scale(10)"><path fill="#ffffff" d="M0 0h29v29h-29z"/><path class="qrline" stroke="#0F3D30" d="M2 2.5h7m1 0h2m5 0h2m1 0h7m-25 1h1m5 0h1m3 0h1m2 0h2m3 0h1m5 0h1m-25 1h1m1 0h3m1 0h1m2 0h3m2 0h2m2 0h1m1 0h3m1 0h1m-25 1h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h5m1 0h1m1 0h3m1 0h1m-25 1h1m1 0h3m1 0h1m1 0h2m3 0h4m1 0h1m1 0h3m1 0h1m-25 1h1m5 0h1m1 0h1m2 0h2m1 0h1m1 0h1m1 0h1m5 0h1m-25 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-17 1h4m2 0h2m-16 1h1m3 0h1m1 0h3m8 0h5m2 0h1m-23 1h2m1 0h1m1 0h3m3 0h1m1 0h2m3 0h2m1 0h1m-24 1h1m1 0h1m2 0h5m4 0h4m1 0h1m1 0h2m-23 1h1m1 0h2m3 0h1m2 0h3m1 0h1m4 0h2m1 0h2m-22 1h1m2 0h2m2 0h1m1 0h2m1 0h2m1 0h3m1 0h4m-25 1h4m4 0h1m5 0h2m4 0h1m2 0h1m-22 1h7m4 0h5m1 0h4m-19 1h1m3 0h2m2 0h1m3 0h5m1 0h2m-24 1h3m1 0h3m2 0h4m3 0h7m-15 1h3m1 0h5m3 0h1m-21 1h7m1 0h2m1 0h1m2 0h1m1 0h1m1 0h1m1 0h1m-21 1h1m5 0h1m3 0h2m4 0h1m3 0h4m-24 1h1m1 0h3m1 0h1m1 0h1m3 0h1m3 0h7m-23 1h1m1 0h3m1 0h1m2 0h2m1 0h4m1 0h3m2 0h3m-25 1h1m1 0h3m1 0h1m4 0h1m2 0h1m1 0h1m1 0h1m2 0h1m1 0h1m-24 1h1m5 0h1m3 0h1m1 0h1m1 0h1m2 0h1m1 0h5m-24 1h7m1 0h1m1 0h1m4 0h1m6 0h3"/></g></svg>
 </div>
-      <span class="mono" style="color:#DCE0EC;font-size:22px">mabrur.edycu.dev</span>
+      <span class="mono" style="color:#DDE6E1;font-size:22px">mabrur.edycu.dev</span>
     </div>
   </div>
   <aside class="note">Silakan coba sendiri, tanpa dompet: buka buku Pak Ahmad dan coba bayar hotel orang lain di konsol agen. Kami jujur soal batasnya: tIDR adalah token uji tanpa nilai, dan Mabrur tidak menjamin kursi; yang dijamin tiket lunas atau sisa dana kembali. Terima kasih.</aside>
@@ -434,7 +452,7 @@ table.cmp td:last-child, table.cmp th:last-child { background: var(--after-wash)
 </div>
 <nav aria-label="Navigasi deck"><div class="hint">← → navigasi · N catatan pembicara · ⌘P → PDF</div>
 <div class="hud"><span id="count">01 / 09</span><button type="button" id="prev" aria-label="Slide sebelumnya">←</button><button type="button" id="next" aria-label="Slide berikutnya">→</button><button type="button" id="notesBtn" aria-label="Catatan pembicara">N</button></div>
-<div class="ver" style="position:fixed;top:12px;right:18px;font:400 12px var(--font-data);color:var(--muted);z-index:10">v2 · 9 Okt 2026</div></nav>
+<div class="ver" style="position:fixed;top:12px;right:18px;font:400 12px var(--font-data);color:var(--muted);z-index:10">v3 · 9 Okt 2026</div></nav>
 <aside class="notes" id="notes" aria-live="polite" aria-label="Catatan pembicara"><div class="label">Catatan pembicara · <span id="ntitle"></span></div><p id="ntext"></p></aside>
 <script>
 (function () {

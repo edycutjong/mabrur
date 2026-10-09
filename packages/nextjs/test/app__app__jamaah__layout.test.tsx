@@ -61,7 +61,7 @@ describe("app/app/jamaah/layout.tsx", () => {
 
     expect(metadata).toBeDefined();
     expect(metadata.description).toBe(
-      "Book an umrah package with one permit signature and read your passbook: every rupiah earmarked per line, refundable by anyone after the deadline.",
+      "Pesan umrah dengan satu tanda tangan dan baca buku amanah Anda: setiap rupiah dikunci per pos, bisa di-refund siapa pun.",
     );
   });
 
@@ -78,7 +78,7 @@ describe("app/app/jamaah/layout.tsx", () => {
     expect(metadata.openGraph?.title).toBeDefined();
     expect(metadata.openGraph?.title?.default).toBe("Buku Amanah · Jamaah");
     expect(metadata.openGraph?.description).toBe(
-      "Book an umrah package with one permit signature and read your passbook: every rupiah earmarked per line, refundable by anyone after the deadline.",
+      "Pesan umrah dengan satu tanda tangan dan baca buku amanah Anda: setiap rupiah dikunci per pos, bisa di-refund siapa pun.",
     );
     expect(metadata.openGraph?.siteName).toBe("Mabrur");
     expect(metadata.openGraph?.type).toBe("website");
@@ -94,7 +94,7 @@ describe("app/app/jamaah/layout.tsx", () => {
     expect(metadata.twitter?.title).toBeDefined();
     expect(metadata.twitter?.title?.default).toBe("Buku Amanah · Jamaah");
     expect(metadata.twitter?.description).toBe(
-      "Book an umrah package with one permit signature and read your passbook: every rupiah earmarked per line, refundable by anyone after the deadline.",
+      "Pesan umrah dengan satu tanda tangan dan baca buku amanah Anda: setiap rupiah dikunci per pos, bisa di-refund siapa pun.",
     );
   });
 
