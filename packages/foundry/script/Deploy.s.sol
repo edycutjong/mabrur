@@ -1,25 +1,24 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.24;
 
 import "./DeployHelpers.s.sol";
-import { DeployYourContract } from "./DeployYourContract.s.sol";
+import { TIDR } from "../contracts/TIDR.sol";
+import { ClaimRegistry } from "../contracts/ClaimRegistry.sol";
+import { MabrurPBM } from "../contracts/MabrurPBM.sol";
 
-/**
- * @notice Main deployment script for all contracts
- * @dev Run this when you want to deploy multiple contracts at once
- *
- * Example: yarn deploy # runs this script(without`--file` flag)
- */
+/// @notice Deploys tIDR, ClaimRegistry (owner = REGULATOR_ADDR) and MabrurPBM, then exports SE-2 deployments.
+/// yarn deploy --network arbitrum  (or forge script … --broadcast --slow --verify)
 contract DeployScript is ScaffoldETHDeploy {
-    function run() external {
-        // Deploys all your contracts sequentially
-        // Add new deployments here when needed
-
-        DeployYourContract deployYourContract = new DeployYourContract();
-        deployYourContract.run();
-
-        // Deploy another contract
-        // DeployMyContract myContract = new DeployMyContract();
-        // myContract.run();
+    function run() external ScaffoldEthDeployerRunner {
+        address regulator = vm.envOr("REGULATOR_ADDR", deployer);
+        TIDR tidr = new TIDR();
+        ClaimRegistry registry = new ClaimRegistry(regulator);
+        MabrurPBM pbm = new MabrurPBM(tidr, registry);
+        deployments.push(Deployment("TIDR", address(tidr)));
+        deployments.push(Deployment("ClaimRegistry", address(registry)));
+        deployments.push(Deployment("MabrurPBM", address(pbm)));
+        console.log("TIDR", address(tidr));
+        console.log("ClaimRegistry", address(registry));
+        console.log("MabrurPBM", address(pbm));
     }
 }
