@@ -120,11 +120,32 @@ jobs:
             packages/nextjs/test-results/
           retention-days: 7
 
-  # ── STAGE 6: Gate ───────────────────────────────────────────────────────
-  deploy-gate:
-    name: "Stage 6 · All gates passed"
+  # ── STAGE 6: Deploy (main only, after every gate) ────────────────────────
+  deploy:
+    name: "Stage 6 · Deploy to Vercel (mabrur.edycu.dev)"
     needs: [contracts, build, e2e, dependency-audit]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    concurrency:
+      group: vercel-production
+      cancel-in-progress: false
+    env:
+      VERCEL_ORG_ID: team_RJcQx4a22v5LqjetHv8HhhLY
+      VERCEL_PROJECT_ID: prj_lOJYH75rtEIF2suDMUvuD3s3dwW7
     steps:
-      - run: echo "Contracts, frontend, security and build gates passed."
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Deploy production
+        run: |
+          npx --yes vercel@latest deploy --prod --yes --token "${{ secrets.VERCEL_TOKEN }}" \
+            --build-env YARN_ENABLE_IMMUTABLE_INSTALLS=false \
+            --build-env ENABLE_EXPERIMENTAL_COREPACK=1 \
+            --build-env VERCEL_TELEMETRY_DISABLED=1 | tee deploy.txt
+      - name: Smoke-check the live domain
+        run: |
+          for p in / /app /app/jamaah /app/agen /app/vendor /judge; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -L "https://mabrur.edycu.dev$p")
+            echo "$p $code"; [ "$code" = 200 ] || exit 1
+          done
