@@ -21,6 +21,8 @@ export const getMetadata = ({
 
   return {
     metadataBase: new URL(baseUrl),
+    authors: [{ name: "Edy Cu", url: "https://github.com/edycutjong" }],
+    creator: "Edy Cu",
     title: {
       default: title,
       template: titleTemplate,
@@ -45,6 +47,7 @@ export const getMetadata = ({
     },
     twitter: {
       card: "summary_large_image",
+      creator: "@edycutjong",
       title: {
         default: title,
         template: titleTemplate,
