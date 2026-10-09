@@ -2,17 +2,19 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import { Address } from "viem";
+import { T } from "~~/components/mabrur/T";
+import { useT } from "~~/hooks/mabrur/useLang";
 import { explorerAddr, explorerTx, useMabrurContracts } from "~~/hooks/mabrur/useMabrur";
 import { useCopyToClipboard, useScaffoldReadContract, useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { DecodedRevert, errorArgParts } from "~~/utils/mabrur/errors";
-import { TOPICS, formatRp, shortHex, terbilang } from "~~/utils/mabrur/format";
+import { TOPICS, formatRp, inWords, shortHex, terbilang } from "~~/utils/mabrur/format";
 import { getLabel } from "~~/utils/mabrur/names";
 
+export { T };
+
+/** A bilingual span: Indonesian in ID mode, English in EN mode (see <T/>). Without `en` the text is the same in both. */
 export const Bi = ({ id, en, className = "" }: { id: ReactNode; en?: ReactNode; className?: string }) => (
-  <span className={className}>
-    {id}
-    {en && <span className="mb-en">{en}</span>}
-  </span>
+  <span className={className}>{en ? <T id={id} en={en} /> : id}</span>
 );
 
 export const Label = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
@@ -32,7 +34,7 @@ export const Rp = ({
     <span className="mb-amount">{formatRp(value)}</span>
     {words && value !== undefined && (
       <span className="mb-terbilang block">
-        Terbilang: <span>{terbilang(value)}</span>
+        <T id={`Terbilang: ${terbilang(value)}`} en={`In words: ${inWords(value)}`} />
       </span>
     )}
   </span>
@@ -60,11 +62,13 @@ export const ErrorCall = ({ name, args }: { name: string; args: { short: string;
   </span>
 );
 
-const STAMP_WORD: Record<StampKind, string> = {
-  ditolak: "Ditolak",
-  lunas: "Lunas",
-  dikembalikan: "Dikembalikan",
-  simulasi: "Lolos simulasi",
+// DITOLAK / LUNAS / DIKEMBALIKAN are the brand: the same rubber stamp in both languages. Only the neutral dry-run
+// stamp (never a real outcome) is translated.
+const STAMP_WORD: Record<StampKind, { id: string; en: string }> = {
+  ditolak: { id: "Ditolak", en: "Ditolak" },
+  lunas: { id: "Lunas", en: "Lunas" },
+  dikembalikan: { id: "Dikembalikan", en: "Dikembalikan" },
+  simulasi: { id: "Lolos simulasi", en: "Would pass" },
 };
 
 export const Stamp = ({
@@ -80,7 +84,9 @@ export const Stamp = ({
   small?: boolean;
   className?: string;
 }) => {
-  const word = STAMP_WORD[kind];
+  const t = useT();
+  const w = STAMP_WORD[kind];
+  const word = t(w.id, w.en);
   const tone = kind === "ditolak" ? "" : kind === "simulasi" ? "mb-stamp-sim" : "mb-stamp-after";
   return (
     <div
@@ -88,8 +94,14 @@ export const Stamp = ({
       role="status"
       aria-label={error ? `${word}: ${error.name}` : word}
     >
-      <div className="mb-stamp-word">{word}</div>
-      {kind === "simulasi" && <div className="mb-stamp-note">belum dikirim · would pass, not sent</div>}
+      <div className="mb-stamp-word">
+        <T id={w.id} en={w.en} />
+      </div>
+      {kind === "simulasi" && (
+        <div className="mb-stamp-note">
+          <T id="simulasi · belum dikirim" en="dry run · not sent" />
+        </div>
+      )}
       {error && (
         <div className="mb-stamp-error">
           <ErrorCall name={error.name} args={errorArgParts(error)} />
@@ -100,17 +112,28 @@ export const Stamp = ({
   );
 };
 
-/** DITOLAK stamp + error name + Indonesian reason + English line. */
+/** DITOLAK stamp + error name + the reason in the reader's language. */
 export const RevertStamp = ({ d, simulated }: { d: DecodedRevert; simulated?: boolean }) => (
   <div className="flex flex-col gap-2">
     <Stamp kind="ditolak" error={d} />
-    <div>
-      <span className="mb-refused-text font-bold">{d.id}</span>
-      <span className="mb-en">{d.en}</span>
+    <div className="flex flex-col gap-0.5">
+      <span className="mb-refused-text font-bold">
+        <T id={d.id} en={d.en} />
+      </span>
       {simulated && (
-        <span className="mb-en">
-          Pratinjau <span className="mb-data text-sm">simulateContract</span> — tidak ada transaksi dikirim · simulated,
-          nothing sent
+        <span className="text-sm mb-muted">
+          <T
+            id={
+              <>
+                Pratinjau <span className="mb-data text-sm">simulateContract</span> — tidak ada transaksi dikirim
+              </>
+            }
+            en={
+              <>
+                <span className="mb-data text-sm">simulateContract</span> preview — nothing was sent
+              </>
+            }
+          />
         </span>
       )}
     </div>
@@ -128,11 +151,11 @@ export const ClaimBadge = ({ address, topic }: { address?: string; topic: number
   if (isLoading || ok === undefined) return <span className="mb-chip mb-chip-muted">{TOPICS[topic]} …</span>;
   return ok ? (
     <span className="mb-chip mb-chip-ink" title="registry.hasValidClaim = true">
-      {TOPICS[topic] === "PPIU" ? "Berizin PPIU" : TOPICS[topic]} ✓
+      {TOPICS[topic] === "PPIU" ? <T id="Berizin PPIU" en="PPIU licensed" /> : TOPICS[topic]} ✓
     </span>
   ) : (
     <span className="mb-chip mb-chip-muted" title="registry.hasValidClaim = false">
-      tanpa klaim {TOPICS[topic]}
+      <T id={`tanpa klaim ${TOPICS[topic]}`} en={`no ${TOPICS[topic]} claim`} />
     </span>
   );
 };
@@ -180,11 +203,11 @@ export const TxLink = ({ hash }: { hash: string }) => {
   );
 };
 
-export const CopyButton = ({ text, label = "Salin" }: { text: string; label?: string }) => {
+export const CopyButton = ({ text, label }: { text: string; label?: ReactNode }) => {
   const { copyToClipboard, isCopiedToClipboard } = useCopyToClipboard();
   return (
     <button type="button" className="mb-btn mb-btn-ghost mb-btn-sm" onClick={() => copyToClipboard(text)}>
-      {isCopiedToClipboard ? "Tersalin ✓" : label}
+      {isCopiedToClipboard ? <T id="Tersalin ✓" en="Copied ✓" /> : (label ?? <T id="Salin" en="Copy" />)}
     </button>
   );
 };
@@ -195,10 +218,12 @@ export const ContractsGuard = ({ children }: { children: ReactNode }) => {
   if (ready) return <>{children}</>;
   return (
     <div className="mb-sheet max-w-2xl mx-auto mt-10">
-      <Label>Jaringan · network</Label>
+      <Label>
+        <T id="Jaringan" en="Network" />
+      </Label>
       <p className="mb-p mt-2">
         {isLoading ? (
-          "Memuat kontrak… · loading contracts…"
+          <T id="Memuat kontrak…" en="Loading contracts…" />
         ) : (
           <Bi
             id={`Kontrak Mabrur belum ada di ${chainName} (${chainId}). Pindahkan dompet ke jaringan yang didukung.`}

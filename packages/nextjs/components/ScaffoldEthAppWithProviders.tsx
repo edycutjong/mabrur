@@ -18,7 +18,7 @@ const MABRUR_THEME = lightTheme({ accentColor: "#1a2238", accentColorForeground:
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <div className={`flex flex-col min-h-screen `}>
+      <div className="flex flex-col min-h-screen">
         <Header />
         <main className="relative flex flex-col flex-1">{children}</main>
         <Footer />

@@ -134,7 +134,7 @@ describe("app/app/vendor/page", () => {
 
     it("displays vendor label at top", () => {
       render(<VendorPage />);
-      expect(screen.getByText("Vendor berlisensi · licensed vendor")).toBeInTheDocument();
+      expect(screen.getByText("Vendor berlisensi")).toBeInTheDocument();
     });
 
     it("renders grid layout with two columns", () => {
@@ -145,12 +145,12 @@ describe("app/app/vendor/page", () => {
 
     it("renders form section on left", () => {
       render(<VendorPage />);
-      expect(screen.getByText("Kunci vendor · your key")).toBeInTheDocument();
+      expect(screen.getByText("Kunci vendor")).toBeInTheDocument();
       expect(screen.getByText("Id booking")).toBeInTheDocument();
-      expect(screen.getByText("Pos · line")).toBeInTheDocument();
-      expect(screen.getByText("Jumlah · amount")).toBeInTheDocument();
-      expect(screen.getByText("No. faktur · ref")).toBeInTheDocument();
-      expect(screen.getByText("Berlaku s.d. · expiry")).toBeInTheDocument();
+      expect(screen.getByText("Pos")).toBeInTheDocument();
+      expect(screen.getByText("Jumlah")).toBeInTheDocument();
+      expect(screen.getAllByText("No. faktur").length).toBeGreaterThan(0);
+      expect(screen.getByText("Berlaku s.d.")).toBeInTheDocument();
     });
 
     it("renders signed invoice panel on right", () => {
@@ -167,7 +167,7 @@ describe("app/app/vendor/page", () => {
       // Should have a burner address after initialization
       // The page should render with the key management UI
       await waitFor(() => {
-        expect(screen.getByText("Kunci vendor · your key")).toBeInTheDocument();
+        expect(screen.getByText("Kunci vendor")).toBeInTheDocument();
       });
     });
 
@@ -188,7 +188,7 @@ describe("app/app/vendor/page", () => {
 
       // Should render successfully with stored key
       await waitFor(() => {
-        expect(screen.getByText("Kunci vendor · your key")).toBeInTheDocument();
+        expect(screen.getByText("Kunci vendor")).toBeInTheDocument();
       });
     });
 
@@ -381,7 +381,7 @@ describe("app/app/vendor/page", () => {
 
       await waitFor(() => {
         expect(refInput).toHaveAttribute("aria-invalid", "true");
-        expect(screen.getByText(/ref is \d+ byte/)).toBeInTheDocument();
+        expect(screen.getByText(/The invoice no\. is \d+ bytes/)).toBeInTheDocument();
       });
     });
 
@@ -396,7 +396,7 @@ describe("app/app/vendor/page", () => {
       await user.type(refInput, "SHORT-REF");
 
       expect(refInput).not.toHaveAttribute("aria-invalid");
-      expect(screen.queryByText(/ref is \d+ byte/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/The invoice no\. is \d+ bytes/)).not.toBeInTheDocument();
     });
 
     it("accepts valid 0x-prefixed 32-byte hex ref", async () => {
@@ -895,7 +895,7 @@ describe("app/app/vendor/page", () => {
       render(<VendorPage />);
 
       // Should have signer section with claim badges
-      expect(screen.getByText("Alamat penanda tangan · signer")).toBeInTheDocument();
+      expect(screen.getByText("Alamat penanda tangan")).toBeInTheDocument();
     });
 
     it("shows wallet mode prompt when not connected", () => {
@@ -922,7 +922,7 @@ describe("app/app/vendor/page", () => {
     it("displays label for signed invoice section", () => {
       render(<VendorPage />);
 
-      const labels = screen.getAllByText("Faktur bertanda tangan · signed invoice");
+      const labels = screen.getAllByText("Faktur bertanda tangan");
       expect(labels.length).toBeGreaterThan(0);
     });
   });
@@ -1033,7 +1033,7 @@ describe("app/app/vendor/page", () => {
 
       await waitFor(() => {
         // Should still render and generate a burner key
-        expect(screen.getByText("Kunci vendor · your key")).toBeInTheDocument();
+        expect(screen.getByText("Kunci vendor")).toBeInTheDocument();
       });
 
       getItemSpy.mockRestore();
@@ -1048,7 +1048,7 @@ describe("app/app/vendor/page", () => {
 
       await waitFor(() => {
         // Should still render even if storage is blocked
-        expect(screen.getByText("Kunci vendor · your key")).toBeInTheDocument();
+        expect(screen.getByText("Kunci vendor")).toBeInTheDocument();
       });
 
       setItemSpy.mockRestore();
@@ -1124,7 +1124,7 @@ describe("app/app/vendor/page", () => {
       await user.type(bookingInput, "123");
 
       // Form should have valid state
-      expect(screen.getByText("Kunci vendor · your key")).toBeInTheDocument();
+      expect(screen.getByText("Kunci vendor")).toBeInTheDocument();
     });
 
     it("sign button becomes enabled with valid form data", async () => {
@@ -1173,7 +1173,7 @@ describe("app/app/vendor/page", () => {
         // If signing fails or throws, error should be displayed
         await waitFor(() => {
           // Check if error or success message appears
-          expect(screen.getByText("Kunci vendor · your key")).toBeInTheDocument();
+          expect(screen.getByText("Kunci vendor")).toBeInTheDocument();
         });
       }
     });
@@ -1185,7 +1185,7 @@ describe("app/app/vendor/page", () => {
 
       // Component should still render
       render(<VendorPage />);
-      expect(screen.getByText("Kunci vendor · your key")).toBeInTheDocument();
+      expect(screen.getByText("Kunci vendor")).toBeInTheDocument();
     });
 
     it("exercises wallet client signing path", async () => {
@@ -1223,7 +1223,7 @@ describe("app/app/vendor/page", () => {
 
         // Give time for async signing
         await waitFor(() => {
-          expect(screen.getByText("Kunci vendor · your key")).toBeInTheDocument();
+          expect(screen.getByText("Kunci vendor")).toBeInTheDocument();
         });
       }
     });
@@ -1242,7 +1242,7 @@ describe("app/app/vendor/page", () => {
 
       // The component should still render even though privateKeyToAccount threw
       await waitFor(() => {
-        expect(screen.getByText("Kunci vendor · your key")).toBeInTheDocument();
+        expect(screen.getByText("Kunci vendor")).toBeInTheDocument();
       });
     });
 
@@ -1281,7 +1281,7 @@ describe("app/app/vendor/page", () => {
 
         // Should show the error message from InvoiceParseError
         await waitFor(() => {
-          expect(screen.getByText("Invalid invoice structure")).toBeInTheDocument();
+          expect(screen.getByText("Faktur tidak sah: Invalid invoice structure")).toBeInTheDocument();
         });
       }
     });
@@ -1469,7 +1469,7 @@ describe("app/app/vendor/page", () => {
 
       // When pbm is undefined, the page will show a loading/guard state
       // The VendorInner component won't fully render
-      expect(screen.queryByText("Kunci vendor · your key")).not.toBeInTheDocument();
+      expect(screen.queryByText("Kunci vendor")).not.toBeInTheDocument();
     });
 
     it("returns early when bookingId is undefined during sign (line 141)", () => {
@@ -1516,7 +1516,7 @@ describe("app/app/vendor/page", () => {
       // This is genuinely unreachable - a key of 0x0...0 would never pass isHex or length check
       // But we test the logic by understanding it's in the validation chain
       render(<VendorPage />);
-      expect(screen.getByText("Kunci vendor · your key")).toBeInTheDocument();
+      expect(screen.getByText("Kunci vendor")).toBeInTheDocument();
     });
 
     it("covers privateKeyToAccount validation with n >= SECP256K1_N", () => {
@@ -1524,20 +1524,20 @@ describe("app/app/vendor/page", () => {
       // A key like 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141 (SECP256K1_N) or higher
       // This is hard to test without modifying source, but the logic is validated
       render(<VendorPage />);
-      expect(screen.getByText("Kunci vendor · your key")).toBeInTheDocument();
+      expect(screen.getByText("Kunci vendor")).toBeInTheDocument();
     });
 
     it("covers accountFor with null input", () => {
       // Test accountFor returns undefined for null
       // This is tested indirectly when component loads
       render(<VendorPage />);
-      expect(screen.getByText("Kunci vendor · your key")).toBeInTheDocument();
+      expect(screen.getByText("Kunci vendor")).toBeInTheDocument();
     });
 
     it("covers accountFor with undefined input", () => {
       // Test accountFor returns undefined for undefined
       render(<VendorPage />);
-      expect(screen.getByText("Kunci vendor · your key")).toBeInTheDocument();
+      expect(screen.getByText("Kunci vendor")).toBeInTheDocument();
     });
 
     it("covers accountFor with non-hex input", () => {
@@ -1772,7 +1772,7 @@ describe("app/app/vendor/page", () => {
       expect(burnerButton.closest("button")).toHaveAttribute("aria-pressed", "true");
 
       // Both transitions exercised the setSigned paths
-      expect(screen.getByText("Kunci vendor · your key")).toBeInTheDocument();
+      expect(screen.getByText("Kunci vendor")).toBeInTheDocument();
     });
 
     it("conditional branch on burner existence in key replacement (line 243)", async () => {
@@ -1883,7 +1883,7 @@ describe("app/app/vendor/page", () => {
 
         // Wait for signed output to appear
         await waitFor(() => {
-          expect(screen.getByText("No. faktur")).toBeInTheDocument();
+          expect(screen.getByText("JSON untuk konsol agen")).toBeInTheDocument();
         });
 
         // Click burner button again (already active)
@@ -1892,14 +1892,14 @@ describe("app/app/vendor/page", () => {
         await user.click(burnerButton);
 
         // Signed output should still be visible (setSigned NOT called)
-        expect(screen.getByText("No. faktur")).toBeInTheDocument();
+        expect(screen.getByText("JSON untuk konsol agen")).toBeInTheDocument();
 
         // Now click wallet button to test switching mode
         const walletButton = screen.getByText("Dompet terhubung").closest("button");
         await user.click(walletButton);
 
         // Signed output should be cleared now (setSigned called with undefined)
-        expect(screen.queryByText("No. faktur")).not.toBeInTheDocument();
+        expect(screen.queryByText("JSON untuk konsol agen")).not.toBeInTheDocument();
         expect(screen.getByText(/Isi formulir lalu tanda tangani/)).toBeInTheDocument();
       }
     });
@@ -1940,7 +1940,7 @@ describe("app/app/vendor/page", () => {
 
         // Wait for signed output to appear
         await waitFor(() => {
-          expect(screen.getByText("No. faktur")).toBeInTheDocument();
+          expect(screen.getByText("JSON untuk konsol agen")).toBeInTheDocument();
         });
 
         // Click wallet button again (already active)
@@ -1949,14 +1949,14 @@ describe("app/app/vendor/page", () => {
         await user.click(walletButtonPressed);
 
         // Signed output should still be visible (setSigned NOT called)
-        expect(screen.getByText("No. faktur")).toBeInTheDocument();
+        expect(screen.getByText("JSON untuk konsol agen")).toBeInTheDocument();
 
         // Now click burner button to test switching mode
         const burnerButton = screen.getByText("Burner di browser ini");
         await user.click(burnerButton);
 
         // Signed output should be cleared now (setSigned called with undefined)
-        expect(screen.queryByText("No. faktur")).not.toBeInTheDocument();
+        expect(screen.queryByText("JSON untuk konsol agen")).not.toBeInTheDocument();
         expect(screen.getByText(/Isi formulir lalu tanda tangani/)).toBeInTheDocument();
       }
     });
@@ -1995,7 +1995,7 @@ describe("app/app/vendor/page", () => {
         // No signed output, no error message should appear
         await waitFor(
           () => {
-            expect(screen.queryByText("No. faktur")).not.toBeInTheDocument();
+            expect(screen.queryByText("JSON untuk konsol agen")).not.toBeInTheDocument();
           },
           { timeout: 500 },
         );
@@ -2068,7 +2068,7 @@ describe("app/app/vendor/page", () => {
 
         // Signed output should appear
         await waitFor(() => {
-          expect(screen.getByText("No. faktur")).toBeInTheDocument();
+          expect(screen.getByText("JSON untuk konsol agen")).toBeInTheDocument();
         });
 
         // Verify JSON and QR code are generated
@@ -2111,7 +2111,7 @@ describe("app/app/vendor/page", () => {
 
         // Signed output should appear
         await waitFor(() => {
-          expect(screen.getByText("No. faktur")).toBeInTheDocument();
+          expect(screen.getByText("JSON untuk konsol agen")).toBeInTheDocument();
         });
 
         // Verify JSON and QR code are generated
@@ -2152,7 +2152,7 @@ describe("app/app/vendor/page", () => {
         });
 
         // Signed output should NOT appear
-        expect(screen.queryByText("No. faktur")).not.toBeInTheDocument();
+        expect(screen.queryByText("JSON untuk konsol agen")).not.toBeInTheDocument();
       }
     });
 
@@ -2171,7 +2171,7 @@ describe("app/app/vendor/page", () => {
 
       // Even with pbm undefined, if ContractsGuard passes through, VendorInner could render
       // The form labels would be present if the component rendered
-      const formExists = screen.queryByText("Kunci vendor · your key");
+      const formExists = screen.queryByText("Kunci vendor");
 
       if (formExists) {
         // Component rendered despite pbm being undefined
@@ -2192,7 +2192,7 @@ describe("app/app/vendor/page", () => {
             // No signed output should appear
             await waitFor(
               () => {
-                expect(screen.queryByText("No. faktur")).not.toBeInTheDocument();
+                expect(screen.queryByText("JSON untuk konsol agen")).not.toBeInTheDocument();
               },
               { timeout: 500 },
             );
@@ -2265,7 +2265,7 @@ describe("app/app/vendor/page", () => {
         // Should successfully sign and show output
         await waitFor(
           () => {
-            expect(screen.getByText("No. faktur")).toBeInTheDocument();
+            expect(screen.getByText("JSON untuk konsol agen")).toBeInTheDocument();
           },
           { timeout: 1000 },
         );
@@ -2311,7 +2311,7 @@ describe("app/app/vendor/page", () => {
         // Should successfully sign
         await waitFor(
           () => {
-            expect(screen.getByText("No. faktur")).toBeInTheDocument();
+            expect(screen.getByText("JSON untuk konsol agen")).toBeInTheDocument();
           },
           { timeout: 1000 },
         );
@@ -2319,6 +2319,55 @@ describe("app/app/vendor/page", () => {
         // Verify wallet was used for signing
         expect(mockWalletClient.signTypedData).toHaveBeenCalled();
       }
+    });
+  });
+
+  describe("ID/EN language switch", () => {
+    it("shows only Indonesian by default", () => {
+      render(<VendorPage />);
+      expect(screen.getByRole("heading", { level: 1, name: "Tanda tangani faktur" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Tanda tangani faktur" })).toBeInTheDocument();
+      expect(screen.getByRole("textbox", { name: "Id booking" })).toBeInTheDocument();
+      expect(screen.getByRole("combobox", { name: "Pos" })).toBeInTheDocument();
+      expect(screen.getByRole("option", { name: "Hotel" })).toBeInTheDocument();
+      expect(screen.getByRole("option", { name: "Tiket pesawat" })).toBeInTheDocument();
+      expect(screen.getByText("Sign an invoice")).not.toBeVisible();
+      expect(screen.getByText("Kunci vendor")).toBeVisible();
+    });
+
+    it("shows only English under html.lang-en, including attributes and options", async () => {
+      document.documentElement.classList.add("lang-en");
+      render(<VendorPage />);
+      expect(screen.getByRole("heading", { level: 1, name: "Sign an invoice" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Sign the invoice" })).toBeInTheDocument();
+      expect(screen.getByText("Your vendor key")).toBeVisible();
+      expect(screen.getByText("Kunci vendor")).not.toBeVisible();
+      expect(screen.getByText("Sign an invoice with your own key — nobody else chooses the payee.")).toBeVisible();
+      await waitFor(() => expect(screen.getByRole("textbox", { name: "Booking id" })).toBeInTheDocument());
+      expect(screen.getByRole("combobox", { name: "Line" })).toBeInTheDocument();
+      expect(screen.getByRole("option", { name: "Flight ticket" })).toBeInTheDocument();
+      expect(screen.getByLabelText("Import private key")).toHaveAttribute("placeholder", "0x… vendor private key");
+      expect(screen.getByRole("textbox", { name: "Invoice number" })).toBeInTheDocument();
+    });
+
+    it("switches live when the class flips after render", async () => {
+      render(<VendorPage />);
+      expect(screen.getByRole("textbox", { name: "Id booking" })).toBeInTheDocument();
+      document.documentElement.classList.add("lang-en");
+      await waitFor(() => expect(screen.getByRole("textbox", { name: "Booking id" })).toBeInTheDocument());
+      expect(screen.getByRole("button", { name: "Sign the invoice" })).toBeInTheDocument();
+    });
+
+    it("explains an over-long invoice number in both languages", async () => {
+      const user = userEvent.setup();
+      render(<VendorPage />);
+      const ref = screen.getByRole("textbox", { name: "Nomor faktur" });
+      await user.clear(ref);
+      await user.type(ref, "X".repeat(40));
+      expect(screen.getByText("No. faktur 40 byte (UTF-8), maks. 32")).toBeVisible();
+      expect(screen.getByText("The invoice no. is 40 bytes (UTF-8); at most 32 fit")).not.toBeVisible();
+      document.documentElement.classList.add("lang-en");
+      expect(screen.getByText("The invoice no. is 40 bytes (UTF-8); at most 32 fit")).toBeVisible();
     });
   });
 });

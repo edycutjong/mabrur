@@ -55,6 +55,7 @@ vi.mock("~~/utils/mabrur/format", () => ({
     return `Rp ${s}`;
   }),
   terbilang: vi.fn(() => "satu juta"),
+  inWords: vi.fn(() => "one million rupiah"),
   shortHex: vi.fn((hex: string, start?: number, end?: number) => {
     if (start === undefined) return hex.slice(0, 6) + "..." + hex.slice(-4);
     return hex.slice(start, start + end);
@@ -111,11 +112,17 @@ describe("components/mabrur/ui", () => {
       expect(span).toBeInTheDocument();
     });
 
-    it("wraps en text in mb-en class", () => {
+    it("renders the English variant as the EN half of the switch", () => {
       const { container } = render(<Bi id="Jamaah" en="Pilgrim" />);
-      const enSpan = container.querySelector(".mb-en");
-      expect(enSpan).toBeInTheDocument();
+      expect(container.querySelector(".t-id")?.textContent).toBe("Jamaah");
+      const enSpan = container.querySelector(".t-en");
       expect(enSpan?.textContent).toBe("Pilgrim");
+      expect(enSpan).toHaveAttribute("lang", "en");
+      expect(screen.getByText("Jamaah")).toBeVisible();
+      expect(screen.getByText("Pilgrim")).not.toBeVisible();
+      document.documentElement.classList.add("lang-en");
+      expect(screen.getByText("Pilgrim")).toBeVisible();
+      expect(screen.getByText("Jamaah")).not.toBeVisible();
     });
 
     it("renders null en without rendering span", () => {
@@ -178,9 +185,10 @@ describe("components/mabrur/ui", () => {
 
     it("renders terbilang when words=true and value is defined", () => {
       render(<Rp value={BigInt(1000000)} words={true} />);
-      const terbilang = screen.getByText(/Terbilang:/);
-      expect(terbilang).toBeInTheDocument();
-      expect(screen.getByText("satu juta")).toBeInTheDocument();
+      expect(screen.getByText("Terbilang: satu juta")).toBeVisible();
+      expect(screen.getByText("In words: one million rupiah")).not.toBeVisible();
+      document.documentElement.classList.add("lang-en");
+      expect(screen.getByText("In words: one million rupiah")).toBeVisible();
     });
 
     it("does not render terbilang when words=false", () => {
@@ -209,6 +217,7 @@ describe("components/mabrur/ui", () => {
       const { container } = render(<Rp value={BigInt(1000)} words={true} />);
       const terbilang = container.querySelector(".mb-terbilang");
       expect(terbilang).toHaveClass("block");
+      expect(terbilang?.querySelector(".t-id")).toHaveTextContent("Terbilang:");
     });
   });
 
@@ -403,13 +412,17 @@ describe("components/mabrur/ui", () => {
     it("renders error id with mb-refused-text class", () => {
       render(<RevertStamp d={mockError} />);
       const refused = screen.getByText("Nilai tidak sah");
-      expect(refused).toHaveClass("mb-refused-text", "font-bold");
+      expect(refused.closest(".mb-refused-text")).toHaveClass("mb-refused-text", "font-bold");
     });
 
-    it("renders error en with mb-en class", () => {
+    it("renders the English reason only in EN mode", () => {
       render(<RevertStamp d={mockError} />);
       const en = screen.getByText("Invalid value");
-      expect(en).toHaveClass("mb-en");
+      expect(en).toHaveClass("t-en");
+      expect(en).not.toBeVisible();
+      document.documentElement.classList.add("lang-en");
+      expect(en).toBeVisible();
+      expect(screen.getByText("Nilai tidak sah")).not.toBeVisible();
     });
 
     it("does not render simulated message when simulated is undefined", () => {
@@ -424,8 +437,11 @@ describe("components/mabrur/ui", () => {
 
     it("renders simulated message when simulated is true", () => {
       render(<RevertStamp d={mockError} simulated={true} />);
-      expect(screen.getByText(/Pratinjau/)).toBeInTheDocument();
-      expect(screen.getByText(/simulateContract/)).toBeInTheDocument();
+      expect(screen.getByText(/Pratinjau/)).toBeVisible();
+      expect(screen.getByText(/tidak ada transaksi dikirim/)).toBeInTheDocument();
+      expect(screen.getByText(/nothing was sent/)).not.toBeVisible();
+      document.documentElement.classList.add("lang-en");
+      expect(screen.getByText(/nothing was sent/)).toBeVisible();
     });
 
     it("renders flex flex-col gap-2 container", () => {
@@ -457,8 +473,8 @@ describe("components/mabrur/ui", () => {
 
     it("renders success chip with checkmark when ok is true", () => {
       useScaffoldReadContract.mockReturnValue({ data: true, isLoading: false });
-      render(<ClaimBadge address="0x123" topic={1} />);
-      expect(screen.getByText(/PPIU ✓/)).toBeInTheDocument();
+      const { container } = render(<ClaimBadge address="0x123" topic={1} />);
+      expect(container.querySelector(".mb-chip")).toHaveTextContent(/PPIU.*✓/);
     });
 
     it("applies mb-chip-ink class when claim is valid", () => {
@@ -471,7 +487,10 @@ describe("components/mabrur/ui", () => {
     it("renders custom text for PPIU topic when claim is valid", () => {
       useScaffoldReadContract.mockReturnValue({ data: true, isLoading: false });
       render(<ClaimBadge address="0x123" topic={1} />);
-      expect(screen.getByText("Berizin PPIU ✓")).toBeInTheDocument();
+      expect(screen.getByText("Berizin PPIU")).toBeVisible();
+      expect(screen.getByText("PPIU licensed")).not.toBeVisible();
+      document.documentElement.classList.add("lang-en");
+      expect(screen.getByText("PPIU licensed")).toBeVisible();
     });
 
     it("renders topic name for non-PPIU topics when claim is valid", () => {
@@ -613,7 +632,7 @@ describe("components/mabrur/ui", () => {
       useScaffoldReadContract.mockReturnValue({ data: true, isLoading: false });
       explorerAddr.mockReturnValue("https://arbiscan.io/address/0x123");
       render(<AddressChip address="0x123" topic={1} />);
-      expect(screen.getByText(/PPIU/)).toBeInTheDocument();
+      expect(screen.getByText("Berizin PPIU")).toBeInTheDocument();
     });
 
     it("does not render topic badge when topic is undefined", () => {

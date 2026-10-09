@@ -177,7 +177,7 @@ describe("app/app/jamaah/page.tsx", () => {
   it("lookup section", () => {
     s();
     render(<JamaahPage />);
-    expect(screen.getByText("Lihat booking · look up")).toBeTruthy();
+    expect(screen.getByText("Lihat booking")).toBeTruthy();
   });
   it("lookup input", () => {
     s();
@@ -290,7 +290,7 @@ describe("app/app/jamaah/page.tsx", () => {
   it("pilgrim label", () => {
     s();
     render(<JamaahPage />);
-    expect(screen.getByText("Jamaah · pilgrim")).toBeTruthy();
+    expect(screen.getByText("Jamaah")).toBeTruthy();
   });
   it("total", () => {
     s();
@@ -565,7 +565,7 @@ describe("app/app/jamaah/page.tsx behaviour", () => {
       mk.rd.mockImplementation(() => ({ data: 0n }));
       mk.wr.mockReturnValue({ writeContractAsync, isMining: true });
       render(<JamaahPage />);
-      expect((screen.getByText("Ambil tIDR uji") as HTMLButtonElement).disabled).toBe(true);
+      expect((screen.getByRole("button", { name: "Ambil tIDR uji" }) as HTMLButtonElement).disabled).toBe(true);
     });
 
     it("hides the faucet when no wallet is connected", () => {
@@ -1019,14 +1019,14 @@ describe("app/app/jamaah/page.tsx behaviour", () => {
       mk.b.mockReturnValue({ data: baseBooking });
       mk.p.mockReturnValue({ get: (k: string) => (k === "id" ? "1" : null) });
       render(<JamaahPage />);
-      expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Buku Amanah Siti");
+      expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName("Buku Amanah Siti");
     });
 
     it("uses the plain title when the selected booking has no label", () => {
       mk.b.mockReturnValue({ data: baseBooking });
       mk.p.mockReturnValue({ get: (k: string) => (k === "id" ? "1" : null) });
       render(<JamaahPage />);
-      expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Buku Amanah Jamaah");
+      expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName("Buku Amanah Jamaah");
     });
   });
 
@@ -1049,5 +1049,59 @@ describe("app/app/jamaah/page.tsx behaviour", () => {
       render(<JamaahPage />);
       expect(screen.getByTestId("bi").textContent).toBe("Pilih atau buat booking.");
     });
+  });
+});
+
+describe("app/app/jamaah/page.tsx — ID/EN", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+  const setup = () => {
+    (useRouter as any).mockReturnValue({ push: vi.fn(), refresh: vi.fn() });
+    (useSearchParams as any).mockReturnValue({ get: vi.fn(() => null) });
+    (useAccount as any).mockReturnValue({ address: undefined });
+    (useWalletClient as any).mockReturnValue({ data: undefined });
+    (useChainNow as any).mockReturnValue({ now: 1704067200 });
+    (useMabrurContracts as any).mockReturnValue({
+      pbm: undefined,
+      tidr: undefined,
+      publicClient: undefined,
+      chainId: 31337,
+    });
+    (useMabrurTx as any).mockReturnValue({ run: vi.fn(), busy: false });
+    (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
+    (useScaffoldWriteContract as any).mockReturnValue({ writeContractAsync: vi.fn(), isMining: false });
+    (useBooking as any).mockReturnValue({ data: undefined });
+    (useBookingsOf as any).mockReturnValue({ data: { bookings: [] } });
+  };
+
+  it("ID mode: Indonesian title, labels and attributes", () => {
+    setup();
+    render(<JamaahPage />);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName("Buku Amanah Jamaah");
+    expect(screen.getByPlaceholderText("Nama (disimpan di browser ini saja)")).toBeInTheDocument();
+    expect(screen.getByLabelText("Alamat agen")).toBeInTheDocument();
+    expect(screen.getByText("tIDR = token uji, tanpa nilai")).toBeVisible();
+  });
+
+  it("EN mode: English title, labels and attributes; tIDR disclaimer still visible", () => {
+    document.documentElement.classList.add("lang-en");
+    setup();
+    render(<JamaahPage />);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName("Pilgrim's passbook");
+    expect(screen.getByRole("heading", { level: 2 })).toHaveAccessibleName("Book an umrah package");
+    expect(screen.getByPlaceholderText("Name (kept in this browser only)")).toBeInTheDocument();
+    expect(screen.getByLabelText("Agency address")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "View" })).toBeInTheDocument();
+    expect(screen.getByText("tIDR = test token, no value")).toBeVisible();
+    expect(screen.getByText("tIDR = token uji, tanpa nilai")).not.toBeVisible();
+  });
+
+  it("switching language after render updates attributes", async () => {
+    setup();
+    render(<JamaahPage />);
+    expect(screen.getByLabelText("Batas tiket")).toBeInTheDocument();
+    act(() => document.documentElement.classList.add("lang-en"));
+    expect(await screen.findByLabelText("Ticket-by date")).toBeInTheDocument();
   });
 });

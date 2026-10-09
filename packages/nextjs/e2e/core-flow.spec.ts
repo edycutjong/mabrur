@@ -36,7 +36,7 @@ test("vendor → agency round trip: an unlicensed signer is refused with VendorC
   await page.getByRole("button", { name: "Baca faktur" }).click();
 
   // the pasted invoice's booking is added and selected; wait for its four lines to load from chain
-  await expect(page.getByText("booking ini")).toBeVisible();
+  await expect(page.getByText("booking ini", { exact: true })).toBeVisible();
   const simulate = page.getByRole("button", { name: "Simulasi saja" }).first();
   await expect(simulate).toBeEnabled();
   await simulate.click();

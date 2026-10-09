@@ -613,3 +613,39 @@ describe("TOPICS constant", () => {
     expect(keys).toHaveLength(4);
   });
 });
+
+describe("English variants (EN mode)", () => {
+  it("inWords spells rupiah in English", async () => {
+    const { inWords } = await import("~~/utils/mabrur/format");
+    expect(inWords(undefined)).toBe("");
+    expect(inWords(null)).toBe("");
+    expect(inWords(0n)).toBe("zero rupiah");
+    expect(inWords(7)).toBe("seven rupiah");
+    expect(inWords(19)).toBe("nineteen rupiah");
+    expect(inWords(40)).toBe("forty rupiah");
+    expect(inWords(42)).toBe("forty-two rupiah");
+    expect(inWords(100)).toBe("one hundred rupiah");
+    expect(inWords(809)).toBe("eight hundred nine rupiah");
+    expect(inWords(1000)).toBe("one thousand rupiah");
+    expect(inWords(32_000_000n)).toBe("thirty-two million rupiah");
+    expect(inWords(-520)).toBe("five hundred twenty rupiah");
+    expect(inWords(1_002_003_004_005n)).toBe("one trillion two billion three million four thousand five rupiah");
+  });
+
+  it("formatDateWIB uses English months and a colon in EN", async () => {
+    const { formatDateWIB } = await import("~~/utils/mabrur/format");
+    const t = Date.UTC(2026, 9, 11, 3, 4) / 1000; // 10:04 WIB
+    expect(formatDateWIB(t)).toBe("11 Okt 2026, 10.04 WIB");
+    expect(formatDateWIB(t, true, "en")).toBe("11 Oct 2026, 10:04 WIB");
+    expect(formatDateWIB(t, false, "en")).toBe("11 Oct 2026");
+    expect(formatDateWIB(Date.UTC(2026, 4, 2) / 1000, false, "en")).toBe("2 May 2026");
+  });
+
+  it("formatCountdown says day/days in EN", async () => {
+    const { formatCountdown } = await import("~~/utils/mabrur/format");
+    expect(formatCountdown(86400 + 3661)).toBe("1 hari 01:01:01");
+    expect(formatCountdown(86400 + 3661, "en")).toBe("1 day 01:01:01");
+    expect(formatCountdown(2 * 86400, "en")).toBe("2 days 00:00:00");
+    expect(formatCountdown(65, "en")).toBe("01:05");
+  });
+});

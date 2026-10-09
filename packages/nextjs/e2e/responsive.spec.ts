@@ -16,7 +16,7 @@ test.describe("no horizontal overflow", () => {
         await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
         if (route.includes("jamaah")) {
           // the passbook (the widest thing on the site) must be rendered before measuring
-          await expect(page.getByText("No. kuitansi · booking id")).toBeVisible();
+          await expect(page.getByText("No. kuitansi", { exact: true })).toBeVisible();
           await expect(page.getByText(/Buku Amanah Pak Ahmad/)).toBeVisible();
         }
         await page.waitForTimeout(1_000);

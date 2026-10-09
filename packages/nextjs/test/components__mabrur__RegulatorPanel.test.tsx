@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { RegulatorPanel } from "~~/components/mabrur/RegulatorPanel";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
@@ -17,7 +17,8 @@ vi.mock("~~/hooks/scaffold-eth", () => ({
 }));
 
 // Mock UI components
-vi.mock("~~/components/mabrur/ui", () => ({
+vi.mock("~~/components/mabrur/ui", async () => ({
+  T: ((await vi.importActual("~~/components/mabrur/T")) as any).T,
   AddressChip: ({ address, topic }: { address?: string; topic?: number }) => (
     <span data-testid="address-chip">
       AddressChip: {address || "none"} topic={topic}
@@ -42,6 +43,7 @@ vi.mock("~~/utils/mabrur/format", () => ({
     if (value === undefined) return "";
     return `${value} (words)`;
   },
+  inWords: (value?: bigint) => `${value} (in words)`,
 }));
 
 describe("RegulatorPanel component", () => {
@@ -65,7 +67,7 @@ describe("RegulatorPanel component", () => {
       (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel />);
-      expect(screen.getByText("Panel regulator · regulator view")).toBeInTheDocument();
+      expect(screen.getByText("Panel regulator")).toBeInTheDocument();
       expect(screen.getByText("regulatorView")).toBeInTheDocument();
       expect(screen.getByText("conservation()")).toBeInTheDocument();
     });
@@ -74,7 +76,7 @@ describe("RegulatorPanel component", () => {
       (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
 
       render(<RegulatorPanel />);
-      expect(screen.getByText(/dibaca langsung dari kontrak · read live from chain/i)).toBeInTheDocument();
+      expect(screen.getByText(/dibaca langsung dari kontrak/i)).toBeInTheDocument();
     });
 
     it("renders Agen section label", () => {
@@ -167,7 +169,7 @@ describe("RegulatorPanel component", () => {
       expect(notBackedDiv).toBeInTheDocument();
 
       // Check for "not fully backed" text
-      expect(screen.getByText(/Tidak seimbang · not fully backed/)).toBeInTheDocument();
+      expect(screen.getByText(/Tidak seimbang/)).toBeInTheDocument();
     });
 
     it("calculates surplus correctly when underlyingHeld > wrappedSupply", () => {
@@ -222,13 +224,13 @@ describe("RegulatorPanel component", () => {
       render(<RegulatorPanel />);
 
       expect(screen.getByText(/Rupiah di kontrak/)).toBeInTheDocument();
-      expect(screen.getAllByText(/held in-contract/).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Rupiah held in-contract/).length).toBeGreaterThan(0);
       expect(screen.getByText(/mUMRAH beredar/)).toBeInTheDocument();
-      expect(screen.getAllByText(/wrapped supply/).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/mUMRAH supply \(wrapped\)/).length).toBeGreaterThan(0);
       expect(screen.getByText(/Σ pos tersimpan/)).toBeInTheDocument();
       expect(screen.getAllByText(/Σ earmarks/).length).toBeGreaterThan(0);
       expect(screen.getAllByText(/Surplus/).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(/direct donations/).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Surplus \(direct donations\)/).length).toBeGreaterThan(0);
     });
   });
 
@@ -333,11 +335,11 @@ describe("RegulatorPanel component", () => {
 
       expect(screen.getByText("5")).toBeInTheDocument();
       expect(screen.getByText(/Booking terbuka/)).toBeInTheDocument();
-      expect(screen.getByText(/open bookings/)).toBeInTheDocument();
+      expect(screen.getByText("Open bookings")).toBeInTheDocument();
       expect(screen.getByText(/Kewajiban ke jamaah/)).toBeInTheDocument();
-      expect(screen.getByText(/liabilities/)).toBeInTheDocument();
+      expect(screen.getByText("Liabilities to pilgrims")).toBeInTheDocument();
       expect(screen.getByText(/Tersimpan per pos/)).toBeInTheDocument();
-      expect(screen.getByText(/earmarked/)).toBeInTheDocument();
+      expect(screen.getByText("Earmarked per line")).toBeInTheDocument();
     });
 
     it("renders AddressChip with agency when provided", () => {
@@ -632,7 +634,7 @@ describe("RegulatorPanel component", () => {
       render(<RegulatorPanel agency={validAgency} />);
 
       // Check not backed state
-      expect(screen.getByText(/Tidak seimbang · not fully backed/)).toBeInTheDocument();
+      expect(screen.getByText(/Tidak seimbang/)).toBeInTheDocument();
     });
 
     it("renders agent details with dash values when regulatorView returns undefined data", () => {
@@ -782,7 +784,25 @@ describe("RegulatorPanel component", () => {
 
       const notBackedDiv = container.querySelector(".mb-wash-refused");
       expect(notBackedDiv).toBeInTheDocument();
-      expect(screen.getByText(/Tidak seimbang · not fully backed/)).toBeInTheDocument();
+      expect(screen.getByText(/Tidak seimbang/)).toBeInTheDocument();
+    });
+  });
+
+  describe("ID / EN", () => {
+    it("labels the panel and its rows in the active language", async () => {
+      (useScaffoldReadContract as any).mockImplementation(({ functionName }: { functionName: string }) =>
+        functionName === "conservation" ? { data: [100n, 100n, 100n] } : { data: [1n, 100n, 100n] },
+      );
+      const { container } = render(<RegulatorPanel agency="0x1234567890123456789012345678901234567890" />);
+      expect(screen.getByText("Rupiah di kontrak")).toBeVisible();
+      expect(screen.getByText("Rupiah held in-contract")).not.toBeVisible();
+      expect(screen.getByText("100 (words)")).toBeVisible();
+
+      document.documentElement.classList.add("lang-en");
+      expect(screen.getByText("Rupiah held in-contract")).toBeVisible();
+      expect(screen.getByText("100 (in words)")).toBeVisible();
+      expect(screen.getByText(/test token, no value/)).toBeVisible();
+      await waitFor(() => expect(container.querySelector("aside")).toHaveAttribute("aria-label", "Regulator panel"));
     });
   });
 });

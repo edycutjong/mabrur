@@ -56,7 +56,8 @@ vi.mock("~~/hooks/mabrur/useMabrur", () => ({
   eventsFrom: vi.fn(() => []),
 }));
 
-vi.mock("~~/components/mabrur/ui", () => ({
+vi.mock("~~/components/mabrur/ui", async () => ({
+  T: ((await vi.importActual("~~/components/mabrur/T")) as any).T,
   AddressChip: ({ address }: any) => <span data-testid={`chip-${address}`}>{address}</span>,
   Bi: ({ id }: any) => <span>{id}</span>,
   ContractsGuard: ({ children }: any) => <div>{children}</div>,
@@ -252,7 +253,7 @@ describe("app/app/agen/page.tsx", () => {
         return def;
       });
       render(<AgenPage />);
-      expect(screen.getByText(/Ujrah agen · releaseMargin/)).toBeInTheDocument();
+      expect(screen.getByText(/· releaseMargin/)).toBeInTheDocument();
     });
 
     it("renders attempts ledger section", () => {
@@ -282,7 +283,7 @@ describe("app/app/agen/page.tsx", () => {
       expect(screen.getByText("Tiket pesawat")).toBeInTheDocument();
       expect(screen.getByText("Hotel")).toBeInTheDocument();
       expect(screen.getByText("Visa")).toBeInTheDocument();
-      expect(screen.getByText("Ujrah agen")).toBeInTheDocument();
+      expect(screen.getAllByText("Ujrah agen").length).toBeGreaterThan(0);
     });
 
     it("displays booking details correctly", () => {
@@ -301,7 +302,7 @@ describe("app/app/agen/page.tsx", () => {
         return def;
       });
       render(<AgenPage />);
-      expect(screen.getByText("Tambah · add booking")).toBeInTheDocument();
+      expect(screen.getByText("Tambah booking")).toBeInTheDocument();
     });
 
     it("renders pilgrim address input", () => {
@@ -618,7 +619,7 @@ describe("app/app/agen/page.tsx", () => {
       // Check all major sections
       expect(screen.getByText("Booking agen")).toBeInTheDocument();
       expect(screen.getByText(/Faktur vendor/)).toBeInTheDocument();
-      expect(screen.getByText(/Ujrah agen · releaseMargin/)).toBeInTheDocument();
+      expect(screen.getByText(/· releaseMargin/)).toBeInTheDocument();
       expect(screen.getByText(/Catatan percobaan/)).toBeInTheDocument();
     });
 
@@ -711,7 +712,7 @@ describe("app/app/agen/page.tsx", () => {
       expect(screen.getByText("Tiket pesawat")).toBeInTheDocument();
       expect(screen.getByText("Hotel")).toBeInTheDocument();
       expect(screen.getByText("Visa")).toBeInTheDocument();
-      expect(screen.getByText("Ujrah agen")).toBeInTheDocument();
+      expect(screen.getAllByText("Ujrah agen").length).toBeGreaterThan(0);
     });
 
     it("displays booking countdown when deadline approaching", () => {
@@ -1215,7 +1216,7 @@ describe("app/app/agen/page.tsx", () => {
         expect(screen.getByText("Expired")).toBeInTheDocument();
         expect(screen.getByText("NotSigner()")).toBeInTheDocument();
         expect(screen.getByText(/\(Pak Budi\)/)).toBeInTheDocument();
-        expect(screen.getByText(/simulateContract/)).toBeInTheDocument();
+        expect(screen.getByText("simulateContract — tidak ada transaksi dikirim")).toBeInTheDocument();
         expect(screen.getAllByText(/Kedaluwarsa|Bukan penanda tangan/)).toHaveLength(2);
       });
 
@@ -1385,7 +1386,7 @@ describe("app/app/agen/page.tsx", () => {
       it("records a simulated rejection when the dry run reverts", async () => {
         run.mockResolvedValue({ kind: "reverted", decoded });
         const result = await pressRefund();
-        expect(within(result).getByText("Kedaluwarsa")).toBeInTheDocument();
+        expect(within(result).getByText("Kedaluwarsa · simulasi, tidak ada transaksi dikirim")).toBeInTheDocument();
         expect(within(result).getByText(/Expired invoice · simulated, nothing sent/)).toBeInTheDocument();
         expect(within(result).getByTestId("stamp-ditolak")).toHaveTextContent("Expired");
       });
@@ -1493,7 +1494,7 @@ describe("app/app/agen/page.tsx", () => {
         });
         fireEvent.change(screen.getByLabelText("Tempel faktur"), { target: { value: "{}" } });
         await user.click(screen.getByRole("button", { name: /Baca faktur/ }));
-        expect(screen.getByText("Faktur ditolak · invoice rejected: bad signature")).toBeInTheDocument();
+        expect(screen.getByText("Faktur ditolak: bad signature")).toBeInTheDocument();
       });
 
       it("shows a JSON error when the text cannot be parsed", async () => {
@@ -1565,7 +1566,8 @@ describe("app/app/agen/page.tsx", () => {
         render(<AgenPage />);
         await loadInvoices(user, [mkInvoice()]);
         expect(screen.getByRole("button", { name: "Bayar faktur" })).toBeDisabled();
-        expect(screen.queryByText(/booking ini|booking lain/)).not.toBeInTheDocument();
+        expect(screen.queryByText("booking ini")).not.toBeInTheDocument();
+        expect(screen.queryByText("booking lain")).not.toBeInTheDocument();
       });
 
       it("shows a dash when the signer cannot be recovered", async () => {
@@ -1828,6 +1830,71 @@ describe("app/app/agen/page.tsx", () => {
         (useAccount as any).mockReturnValue({ address: undefined });
         render(<AgenPage />);
         expect(panel().textContent).toBe("");
+      });
+    });
+
+    describe("ID / EN", () => {
+      it("shows only Indonesian by default and only English with html.lang-en", async () => {
+        render(<AgenPage />);
+        expect(screen.getByRole("heading", { level: 1, name: "Konsol Agen" })).toBeInTheDocument();
+        expect(screen.getByLabelText("Tempel faktur")).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Baca faktur" })).toBeInTheDocument();
+        expect(screen.getByText("Catatan percobaan")).toBeVisible();
+        expect(screen.getByText("Attempt ledger")).not.toBeVisible();
+
+        document.documentElement.classList.add("lang-en");
+        expect(screen.getByRole("heading", { level: 1, name: "Agency console" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Read invoice" })).toBeInTheDocument();
+        expect(screen.getByText("Attempt ledger")).toBeVisible();
+        expect(screen.getByText("Catatan percobaan")).not.toBeVisible();
+        // attributes follow the <html> class through useT
+        expect(await screen.findByLabelText("Paste invoice")).toBeInTheDocument();
+        expect(screen.getByPlaceholderText("pilgrim address 0x…")).toBeInTheDocument();
+      });
+
+      it("names the simulate and pay buttons in both languages", async () => {
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice()]);
+        expect(screen.getAllByRole("button", { name: "Simulasi saja" }).length).toBe(2);
+        expect(screen.getByRole("button", { name: "Bayar faktur" })).toBeInTheDocument();
+        document.documentElement.classList.add("lang-en");
+        expect(screen.getAllByRole("button", { name: "Simulate only" }).length).toBe(2);
+        expect(screen.getByRole("button", { name: "Pay invoice" })).toBeInTheDocument();
+        expect(screen.getByText("this booking")).toBeVisible();
+      });
+
+      it("renders a passing dry run's action per language and leaves legacy rows as stored", () => {
+        seedStore({
+          attempts: [
+            { at: 1, kind: "lunas", action: "spend · INV-1", bookingId: "0xb1", simulated: true },
+            {
+              at: 2,
+              kind: "lunas",
+              action: "simulasi · INV-0 lolos (belum dikirim)",
+              bookingId: "0xb1",
+              simulated: true,
+            },
+          ],
+        });
+        render(<AgenPage />);
+        expect(screen.getByText(/simulasi · spend · INV-1 lolos \(belum dikirim\)/)).toBeVisible();
+        expect(screen.getByText(/dry run · spend · INV-1 would pass \(not sent\)/)).not.toBeVisible();
+        expect(screen.getAllByText(/simulasi · INV-0 lolos \(belum dikirim\)/).length).toBe(2);
+        document.documentElement.classList.add("lang-en");
+        expect(screen.getByText(/dry run · spend · INV-1 would pass \(not sent\)/)).toBeVisible();
+      });
+
+      it("translates parse errors", async () => {
+        (parseInvoices as any).mockImplementation(() => {
+          throw new InvoiceParseError("bad signature");
+        });
+        render(<AgenPage />);
+        fireEvent.change(screen.getByLabelText("Tempel faktur"), { target: { value: "{}" } });
+        fireEvent.click(screen.getByRole("button", { name: "Baca faktur" }));
+        expect(screen.getByText("Faktur ditolak: bad signature")).toBeVisible();
+        document.documentElement.classList.add("lang-en");
+        expect(screen.getByText("Invoice rejected: bad signature")).toBeVisible();
       });
     });
   });

@@ -5,7 +5,9 @@ import { QRCodeSVG } from "qrcode.react";
 import { Hex, isHex } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { useAccount, useWalletClient } from "wagmi";
+import { T } from "~~/components/mabrur/T";
 import { AddressChip, Bi, ClaimBadge, ContractsGuard, CopyButton, Label, PageShell, Rp } from "~~/components/mabrur/ui";
+import { useT } from "~~/hooks/mabrur/useLang";
 import { useMabrurContracts } from "~~/hooks/mabrur/useMabrur";
 import { decodeRevert } from "~~/utils/mabrur/errors";
 import {
@@ -18,6 +20,7 @@ import {
   shortHex,
   toLocalInput,
 } from "~~/utils/mabrur/format";
+import type { Bilingual } from "~~/utils/mabrur/i18n";
 import {
   INVOICE_TYPES,
   InvoiceParseError,
@@ -59,6 +62,7 @@ const VendorInner = () => {
   const { pbm, chainId } = useMabrurContracts();
   const { address: walletAddr } = useAccount();
   const { data: walletClient } = useWalletClient();
+  const t = useT();
 
   const [mode, setMode] = useState<"burner" | "wallet">("burner");
   const [pk, setPk] = useState<Hex | undefined>();
@@ -69,8 +73,8 @@ const VendorInner = () => {
   const [ref, setRef] = useState("INV-HTL-0001");
   const [expiry, setExpiry] = useState(0);
   const [signed, setSigned] = useState<SignedInvoice | undefined>();
-  const [err, setErr] = useState("");
-  const [keyNote, setKeyNote] = useState("");
+  const [err, setErr] = useState<Bilingual | undefined>();
+  const [keyNote, setKeyNote] = useState<Bilingual | undefined>();
   // a destructive key action waiting for confirmation (the old key is gone for good once replaced or cleared)
   const [pending, setPending] = useState<"new" | "clear" | undefined>();
 
@@ -84,9 +88,10 @@ const VendorInner = () => {
     if (stored && accountFor(stored)) setPk(stored as Hex);
     else {
       if (stored)
-        setKeyNote(
-          "Kunci burner tersimpan tidak sah dan sudah dihapus; burner baru dibuat. · The stored burner key was invalid and has been cleared; a new burner was created.",
-        );
+        setKeyNote({
+          id: "Kunci burner tersimpan tidak sah dan sudah dihapus; burner baru dibuat.",
+          en: "The stored burner key was invalid and has been cleared; a new burner was created.",
+        });
       const fresh = generatePrivateKey();
       setPk(fresh);
       storeSet(fresh);
@@ -104,16 +109,17 @@ const VendorInner = () => {
     const v = importPk.trim();
     const hex = (v.startsWith("0x") ? v : `0x${v}`) as Hex;
     if (!accountFor(hex)) {
-      setKeyNote(
-        "Kunci tidak sah: harus 32 byte hex, bukan nol, di bawah orde kurva secp256k1. · Invalid key: 32-byte hex, non-zero, below the secp256k1 curve order.",
-      );
+      setKeyNote({
+        id: "Kunci tidak sah: harus 32 byte hex, bukan nol, di bawah orde kurva secp256k1.",
+        en: "Invalid key: it must be 32 bytes of hex, non-zero, below the secp256k1 curve order.",
+      });
       return;
     }
     setPk(hex);
     storeSet(hex);
     setImportPk("");
-    setKeyNote("");
-    setErr("");
+    setKeyNote(undefined);
+    setErr(undefined);
     setPending(undefined);
     setSigned(undefined);
   };
@@ -124,19 +130,26 @@ const VendorInner = () => {
     storeSet(fresh);
     // the old output was signed by the old key: never leave it on screen under the new signer
     setSigned(undefined);
-    setErr("");
-    setKeyNote(next === "clear" ? "Burner dihapus dari browser ini. · Burner cleared from this browser." : "");
+    setErr(undefined);
+    setKeyNote(
+      next === "clear"
+        ? { id: "Burner dihapus dari browser ini.", en: "Burner cleared from this browser." }
+        : undefined,
+    );
     setPending(undefined);
   };
 
   const refBytes = utf8Length(ref);
-  const refErr =
+  const refErr: Bilingual | undefined =
     refBytes > 32 && !(isHex(ref) && ref.length === 66)
-      ? `No. faktur ${refBytes} byte (UTF-8), maks. 32 · ref is ${refBytes} bytes, at most 32 fit`
-      : "";
+      ? {
+          id: `No. faktur ${refBytes} byte (UTF-8), maks. 32`,
+          en: `The invoice no. is ${refBytes} bytes (UTF-8); at most 32 fit`,
+        }
+      : undefined;
 
   const sign = async () => {
-    setErr("");
+    setErr(undefined);
     setSigned(undefined);
     if (!pbm || id === undefined || amt === undefined) return;
     try {
@@ -157,7 +170,12 @@ const VendorInner = () => {
       }
       setSigned({ invoice, signature, refLabel: ref, signer: signerAddr });
     } catch (e) {
-      setErr(e instanceof InvoiceParseError ? e.message : decodeRevert(e).id);
+      if (e instanceof InvoiceParseError)
+        setErr({ id: `Faktur tidak sah: ${e.message}`, en: `Invalid invoice: ${e.message}` });
+      else {
+        const d = decodeRevert(e);
+        setErr({ id: d.id, en: d.en });
+      }
     }
   };
 
@@ -167,15 +185,26 @@ const VendorInner = () => {
   return (
     <PageShell>
       <header className="mb-6">
-        <Label>Vendor berlisensi · licensed vendor</Label>
-        <h1 className="mb-title">Tanda tangani faktur</h1>
-        <span className="mb-en">Sign an invoice with your own key — nobody else chooses the payee.</span>
+        <Label>
+          <T id="Vendor berlisensi" en="Licensed vendor" />
+        </Label>
+        <h1 className="mb-title">
+          <T id="Tanda tangani faktur" en="Sign an invoice" />
+        </h1>
+        <p className="mb-p mb-muted mt-1">
+          <T
+            id="Tanda tangani faktur dengan kunci Anda sendiri — tidak ada orang lain yang memilih penerima uang."
+            en="Sign an invoice with your own key — nobody else chooses the payee."
+          />
+        </p>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-2 max-w-6xl">
         <div className="mb-sheet flex flex-col gap-4">
           <div>
-            <Label>Kunci vendor · your key</Label>
+            <Label>
+              <T id="Kunci vendor" en="Your vendor key" />
+            </Label>
             <div className="flex gap-2 mt-2">
               <button
                 className={`mb-btn mb-btn-sm ${mode === "burner" ? "" : "mb-btn-ghost"}`}
@@ -185,7 +214,7 @@ const VendorInner = () => {
                   setMode("burner");
                 }}
               >
-                Burner di browser ini
+                <T id="Burner di browser ini" en="Burner in this browser" />
               </button>
               <button
                 className={`mb-btn mb-btn-sm ${mode === "wallet" ? "" : "mb-btn-ghost"}`}
@@ -195,17 +224,23 @@ const VendorInner = () => {
                   setMode("wallet");
                 }}
               >
-                Dompet terhubung
+                <T id="Dompet terhubung" en="Connected wallet" />
               </button>
             </div>
           </div>
           <div>
-            <Label>Alamat penanda tangan · signer</Label>
+            <Label>
+              <T id="Alamat penanda tangan" en="Signer address" />
+            </Label>
             {signerAddr ? (
               <AddressChip address={signerAddr} />
             ) : (
               <span className="mb-muted">
-                {mode === "burner" ? "Belum ada burner · no burner key" : "Hubungkan dompet"}
+                {mode === "burner" ? (
+                  <T id="Belum ada burner" en="No burner key yet" />
+                ) : (
+                  <T id="Hubungkan dompet" en="Connect a wallet" />
+                )}
               </span>
             )}
             {signerAddr && (
@@ -218,9 +253,14 @@ const VendorInner = () => {
           </div>
           {mode === "burner" && (
             <details>
-              <summary className="cursor-pointer text-sm font-bold">Ganti / impor kunci burner</summary>
+              <summary className="cursor-pointer text-sm font-bold">
+                <T id="Ganti / impor kunci burner" en="Replace / import the burner key" />
+              </summary>
               <p className="mb-p text-sm mb-muted mt-2">
-                Kunci hanya disimpan di localStorage browser ini, tidak pernah dikirim. · Stored only in this browser.
+                <T
+                  id="Kunci hanya disimpan di localStorage browser ini, tidak pernah dikirim."
+                  en="The key is kept only in this browser's localStorage and is never sent anywhere."
+                />
               </p>
               <div className="flex gap-2 mt-2">
                 <input
@@ -228,12 +268,12 @@ const VendorInner = () => {
                   className="mb-input mb-data text-sm"
                   value={importPk}
                   onChange={e => setImportPk(e.target.value)}
-                  placeholder="0x… kunci privat vendor"
-                  aria-label="Impor kunci privat"
+                  placeholder={t("0x… kunci privat vendor", "0x… vendor private key")}
+                  aria-label={t("Impor kunci privat", "Import private key")}
                   autoComplete="off"
                 />
                 <button className="mb-btn mb-btn-ghost mb-btn-sm" onClick={doImport}>
-                  Impor
+                  <T id="Impor" en="Import" />
                 </button>
               </div>
               {!pending ? (
@@ -242,30 +282,33 @@ const VendorInner = () => {
                     className="mb-link text-sm"
                     onClick={() => (burner ? setPending("new") : replaceBurner("new"))}
                   >
-                    Buat burner baru
+                    <T id="Buat burner baru" en="Create a new burner" />
                   </button>
                   {burner && (
                     <button className="mb-link text-sm" onClick={() => setPending("clear")}>
-                      Hapus burner
+                      <T id="Hapus burner" en="Clear burner" />
                     </button>
                   )}
                 </div>
               ) : (
                 <div className="mt-2 flex flex-col gap-2 rounded-[10px] p-3 mb-wash-before" role="alertdialog">
                   <p className="mb-p text-sm font-bold">
-                    {pending === "new" ? "Ganti kunci burner?" : "Hapus kunci burner?"} Kunci lama hilang selamanya dari
-                    browser ini — salin dulu jika masih perlu.
-                    <span className="mb-en">
-                      The current key is gone for good from this browser — copy it first if you still need it.
-                    </span>
+                    <T
+                      id={`${pending === "new" ? "Ganti kunci burner?" : "Hapus kunci burner?"} Kunci lama hilang selamanya dari browser ini — salin dulu jika masih perlu.`}
+                      en={`${pending === "new" ? "Replace the burner key?" : "Clear the burner key?"} The current key is gone for good from this browser — copy it first if you still need it.`}
+                    />
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {pk && <CopyButton text={pk} label="Salin kunci lama" />}
+                    {pk && <CopyButton text={pk} label={<T id="Salin kunci lama" en="Copy the old key" />} />}
                     <button className="mb-btn mb-btn-sm" onClick={() => replaceBurner(pending)}>
-                      {pending === "new" ? "Ya, buat burner baru" : "Ya, hapus burner"}
+                      {pending === "new" ? (
+                        <T id="Ya, buat burner baru" en="Yes, create a new burner" />
+                      ) : (
+                        <T id="Ya, hapus burner" en="Yes, clear the burner" />
+                      )}
                     </button>
                     <button className="mb-btn mb-btn-ghost mb-btn-sm" onClick={() => setPending(undefined)}>
-                      Batal
+                      <T id="Batal" en="Cancel" />
                     </button>
                   </div>
                 </div>
@@ -274,80 +317,93 @@ const VendorInner = () => {
           )}
           {keyNote && (
             <p className="mb-p text-sm mb-refused-text" role="status">
-              {keyNote}
+              <T id={keyNote.id} en={keyNote.en} />
             </p>
           )}
 
           <div className="mb-perforation" />
 
           <div>
-            <Label>Id booking</Label>
+            <Label>
+              <T id="Id booking" en="Booking id" />
+            </Label>
             <input
               className="mb-input mb-data"
               value={bookingId}
               onChange={e => setBookingId(e.target.value.trim())}
               placeholder="0x…"
-              aria-label="Id booking"
+              aria-label={t("Id booking", "Booking id")}
             />
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <Label>Pos · line</Label>
+              <Label>
+                <T id="Pos" en="Line" />
+              </Label>
               <select
                 className="mb-select"
                 value={line}
                 onChange={e => setLine(Number(e.target.value))}
-                aria-label="Pos"
+                aria-label={t("Pos", "Line")}
               >
                 {LINES.slice(0, 3).map((x, i) => (
                   <option key={x.key} value={i}>
-                    {x.id} · {x.en}
+                    {t(x.id, x.en)}
                   </option>
                 ))}
               </select>
             </div>
             <div>
-              <Label>Jumlah · amount</Label>
+              <Label>
+                <T id="Jumlah" en="Amount" />
+              </Label>
               <input
                 className="mb-input mb-num text-right"
                 inputMode="numeric"
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
-                aria-label="Jumlah"
+                aria-label={t("Jumlah", "Amount")}
               />
             </div>
           </div>
           {line === 0 && (
             <p className="mb-p text-sm mb-muted">
-              Faktur tiket harus melunasi seluruh pos tiket · a flight invoice must pay the whole flight line.
+              <T
+                id="Faktur tiket harus melunasi seluruh pos tiket pesawat."
+                en="A flight invoice must pay the whole flight line."
+              />
             </p>
           )}
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <Label>No. faktur · ref</Label>
+              <Label>
+                <T id="No. faktur" en="Invoice no." />
+              </Label>
               <input
                 className="mb-input mb-data"
                 value={ref}
                 maxLength={66}
                 onChange={e => setRef(e.target.value)}
-                aria-label="Nomor faktur"
+                aria-label={t("Nomor faktur", "Invoice number")}
                 aria-invalid={refErr ? true : undefined}
                 aria-describedby={refErr ? "ref-err" : undefined}
               />
               {refErr && (
                 <p id="ref-err" className="mb-p text-sm mb-refused-text mt-1">
-                  {refErr}
+                  <T id={refErr.id} en={refErr.en} />
                 </p>
               )}
             </div>
             <div>
-              <Label>Berlaku s.d. · expiry</Label>
+              <Label>
+                <T id="Berlaku s.d." en="Valid until" />
+              </Label>
               <input
                 type="datetime-local"
                 className="mb-input"
                 value={expiry ? toLocalInput(expiry) : ""}
                 onChange={e => setExpiry(fromLocalInput(e.target.value))}
-                aria-label="Kedaluwarsa"
+                aria-label={t("Kedaluwarsa", "Expiry")}
               />
             </div>
           </div>
@@ -363,13 +419,19 @@ const VendorInner = () => {
             disabled={id === undefined || amt === undefined || !signerAddr || !expiry || Boolean(refErr)}
             onClick={sign}
           >
-            Tanda tangani faktur
+            <T id="Tanda tangani faktur" en="Sign the invoice" />
           </button>
-          {err && <p className="mb-p mb-refused-text text-sm">{err}</p>}
+          {err && (
+            <p className="mb-p mb-refused-text text-sm">
+              <T id={err.id} en={err.en} />
+            </p>
+          )}
         </div>
 
         <div className="mb-sheet flex flex-col gap-4">
-          <Label>Faktur bertanda tangan · signed invoice</Label>
+          <Label>
+            <T id="Faktur bertanda tangan" en="Signed invoice" />
+          </Label>
           {!signed ? (
             <p className="mb-p mb-muted">
               <Bi id="Isi formulir lalu tanda tangani." en="Fill the form, then sign." />
@@ -377,7 +439,9 @@ const VendorInner = () => {
           ) : (
             <>
               <div className="grid grid-cols-[120px_minmax(0,1fr)] gap-x-3 gap-y-1">
-                <span className="mb-label">No. faktur</span>
+                <span className="mb-label">
+                  <T id="No. faktur" en="Invoice no." />
+                </span>
                 <span className="mb-data">{signed.refLabel}</span>
                 <span className="mb-label">Booking</span>
                 <span
@@ -386,15 +450,27 @@ const VendorInner = () => {
                 >
                   {shortHex(idHex(signed.invoice.bookingId), 8, 6)}
                 </span>
-                <span className="mb-label">Pos</span>
-                <span>{L.id}</span>
-                <span className="mb-label">Jumlah</span>
+                <span className="mb-label">
+                  <T id="Pos" en="Line" />
+                </span>
+                <span>
+                  <T id={L.id} en={L.en} />
+                </span>
+                <span className="mb-label">
+                  <T id="Jumlah" en="Amount" />
+                </span>
                 <Rp value={signed.invoice.amount} words />
-                <span className="mb-label">Berlaku s.d.</span>
-                <span className="mb-num">{formatDateWIB(signed.invoice.expiry)}</span>
+                <span className="mb-label">
+                  <T id="Berlaku s.d." en="Valid until" />
+                </span>
+                <span className="mb-num">
+                  <T id={formatDateWIB(signed.invoice.expiry)} en={formatDateWIB(signed.invoice.expiry, true, "en")} />
+                </span>
               </div>
               <div className="flex items-center gap-2">
-                <Label>JSON untuk konsol agen</Label>
+                <Label>
+                  <T id="JSON untuk konsol agen" en="JSON for the agency console" />
+                </Label>
                 <CopyButton text={json} />
               </div>
               <pre

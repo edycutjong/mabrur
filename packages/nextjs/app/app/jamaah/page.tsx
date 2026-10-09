@@ -5,7 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Address, isAddress, parseSignature } from "viem";
 import { useAccount, useWalletClient } from "wagmi";
 import { Passbook } from "~~/components/mabrur/Passbook";
+import { T } from "~~/components/mabrur/T";
 import { AddressChip, Bi, ContractsGuard, Label, PageShell, RevertStamp, Rp, TxLink } from "~~/components/mabrur/ui";
+import { useT } from "~~/hooks/mabrur/useLang";
 import {
   Booking,
   ZERO,
@@ -30,6 +32,7 @@ import {
   shortHex,
   toLocalInput,
 } from "~~/utils/mabrur/format";
+import type { Bilingual } from "~~/utils/mabrur/i18n";
 import { PERMIT_TYPES } from "~~/utils/mabrur/invoice";
 import { defaultAgency, getLabel, loadJson, saveJson, setLabel } from "~~/utils/mabrur/names";
 
@@ -41,6 +44,7 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
   const { data: walletClient } = useWalletClient();
   const { pbm, tidr, publicClient, chainId } = useMabrurContracts();
   const { run, busy } = useMabrurTx();
+  const t = useT();
 
   const [name, setName] = useState("");
   const [agency, setAgency] = useState("");
@@ -49,7 +53,7 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
   const [ticketBy, setTicketBy] = useState(0);
   const [pre, setPre] = useState<DecodedRevert | undefined>();
   const [err, setErr] = useState<DecodedRevert | undefined>();
-  const [step, setStep] = useState<string>("");
+  const [step, setStep] = useState<Bilingual | undefined>();
   const [lastTx, setLastTx] = useState<string | undefined>();
 
   useEffect(() => {
@@ -129,7 +133,7 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
     try {
       saveJson(`mabrur.agency.${chainId}`, agency);
       if (name) setLabel(address, name);
-      setStep("Menandatangani permit…");
+      setStep({ id: "Menandatangani permit…", en: "Signing the permit…" });
       const [, tokenName, version, domainChainId, verifyingContract] = (await publicClient.readContract({
         address: tidr.address,
         abi: tidr.abi,
@@ -150,7 +154,7 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
       });
       const { r, s, v, yParity } = parseSignature(sig);
       const vNum = v !== undefined ? Number(v) : 27 + (yParity ?? 0);
-      setStep("Mengirim book()…");
+      setStep({ id: "Mengirim book()…", en: "Sending book()…" });
       const out = await run({
         address: pbm.address,
         abi: pbm.abi,
@@ -169,7 +173,7 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
     } catch (e) {
       setErr(decodeRevert(e));
     } finally {
-      setStep("");
+      setStep(undefined);
     }
   };
 
@@ -179,11 +183,14 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
     <div className="mb-sheet">
       <div className="flex flex-wrap justify-between gap-3 items-start">
         <div>
-          <h2 className="mb-title">Pesan paket umrah</h2>
-          <span className="mb-en">Book an umrah package — one permit signature</span>
+          <h2 className="mb-title">
+            <T id="Pesan paket umrah" en="Book an umrah package" />
+          </h2>
         </div>
         <div className="text-right">
-          <Label>No. kuitansi (berikutnya)</Label>
+          <Label>
+            <T id="No. kuitansi (berikutnya)" en="Next receipt no." />
+          </Label>
           <span className="mb-data" title={nextId !== undefined ? idHex(nextId) : ""}>
             {address && nextId !== undefined ? shortHex(idHex(nextId), 8, 6) : "—"}
           </span>
@@ -194,18 +201,28 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <Label>Sudah terima dari · pilgrim</Label>
-          {address ? <AddressChip address={address} /> : <span className="mb-muted">Hubungkan dompet</span>}
+          <Label>
+            <T id="Sudah terima dari" en="Received from (pilgrim)" />
+          </Label>
+          {address ? (
+            <AddressChip address={address} />
+          ) : (
+            <span className="mb-muted">
+              <T id="Hubungkan dompet" en="Connect a wallet" />
+            </span>
+          )}
           <input
             className="mb-input mt-2"
-            placeholder="Nama (disimpan di browser ini saja)"
+            placeholder={t("Nama (disimpan di browser ini saja)", "Name (kept in this browser only)")}
             value={name}
             onChange={e => setName(e.target.value)}
-            aria-label="Nama jamaah"
+            aria-label={t("Nama jamaah", "Pilgrim name")}
           />
         </div>
         <div>
-          <Label>Saldo tIDR Anda</Label>
+          <Label>
+            <T id="Saldo tIDR Anda" en="Your tIDR balance" />
+          </Label>
           <div className="flex flex-wrap items-center gap-3">
             <Rp value={address ? (balance ?? 0n) : undefined} />
             {needFaucet && (
@@ -214,34 +231,42 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
                 disabled={fauceting}
                 onClick={() => writeTidr({ functionName: "faucet", args: [address] })}
               >
-                Ambil tIDR uji
+                <T id="Ambil tIDR uji" en="Get test tIDR" />
               </button>
             )}
           </div>
-          <div className="text-sm mb-muted">tIDR = token uji, tanpa nilai · test token, no value</div>
+          <div className="text-sm mb-muted">
+            <T id="tIDR = token uji, tanpa nilai" en="tIDR = test token, no value" />
+          </div>
         </div>
       </div>
 
       <div className="mt-4">
-        <Label>Agen (PPIU) · agency address</Label>
+        <Label>
+          <T id="Agen (PPIU)" en="Agency (PPIU) address" />
+        </Label>
         <input
           className="mb-input mb-data"
-          placeholder="0x… alamat agen"
+          placeholder={t("0x… alamat agen", "0x… agency address")}
           value={agency}
           onChange={e => setAgency(e.target.value.trim())}
-          aria-label="Alamat agen"
+          aria-label={t("Alamat agen", "Agency address")}
         />
         <div className="mt-2">{agencyOk && <AddressChip address={agency} topic={1} />}</div>
       </div>
 
       <div className="mt-5">
-        <Label>Untuk pembayaran · the four earmarked lines</Label>
+        <Label>
+          <T id="Untuk pembayaran" en="The four earmarked lines" />
+        </Label>
         {LINES.map((L, i) => (
           <div key={L.key} className="mb-row grid gap-2 sm:grid-cols-[1fr_200px] items-center">
             <div>
-              <span className="font-bold">{L.id}</span>
-              <span className="mb-en">
-                {L.ruleId} · {L.ruleEn}
+              <span className="font-bold">
+                <T id={L.id} en={L.en} />
+              </span>
+              <span className="block text-sm mb-muted">
+                <T id={L.ruleId} en={L.ruleEn} />
               </span>
             </div>
             <input
@@ -249,52 +274,62 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
               inputMode="numeric"
               value={lineStr[i]}
               onChange={e => setLineStr(s => s.map((x, j) => (j === i ? e.target.value : x)))}
-              aria-label={`Jumlah ${L.id}`}
+              aria-label={t(`Jumlah ${L.id}`, `Amount for ${L.en}`)}
             />
           </div>
         ))}
         <div className="flex flex-wrap justify-between items-baseline gap-2 mt-3">
-          <Label>Jumlah</Label>
+          <Label>
+            <T id="Jumlah" en="Total" />
+          </Label>
           <Rp value={total} words />
         </div>
-        <div className="text-sm mb-muted">Ujrah agen maksimal 20% dari paket · fee capped at 20%</div>
+        <div className="text-sm mb-muted">
+          <T id="Ujrah agen maksimal 20% dari paket" en="The agency fee is capped at 20% of the package" />
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 mt-5">
         <div>
-          <Label>Batas tiket · ticket by</Label>
+          <Label>
+            <T id="Batas tiket" en="Ticket by" />
+          </Label>
           <input
             type="datetime-local"
             className="mb-input"
             value={ticketBy ? toLocalInput(ticketBy) : ""}
             onChange={e => setTicketBy(fromLocalInput(e.target.value))}
-            aria-label="Batas tiket"
+            aria-label={t("Batas tiket", "Ticket-by date")}
           />
           <button
             className="mb-chip mb-chip-ink mt-2 cursor-pointer"
             onClick={() => setTicketBy(Math.floor(Date.now() / 1000) + 600)}
           >
-            Demo: 10 menit
+            <T id="Demo: 10 menit" en="Demo: 10 minutes" />
           </button>
           <p className="mb-p text-sm mt-2">
-            Jika tiket pesawat belum dibayar sampai tanggal ini, siapa pun bisa mengembalikan sisa dana ke Anda.
-            <span className="mb-en">
-              If no flight ticket is paid by this date, anyone can return your remaining money.
-            </span>
+            <T
+              id="Jika tiket pesawat belum dibayar sampai tanggal ini, siapa pun bisa mengembalikan sisa dana ke Anda."
+              en="If no flight ticket is paid by this date, anyone can return your remaining money."
+            />
           </p>
         </div>
         <div>
-          <Label>Berangkat paling lambat · depart by</Label>
+          <Label>
+            <T id="Berangkat paling lambat" en="Depart by" />
+          </Label>
           <input
             type="datetime-local"
             className="mb-input"
             value={departBy ? toLocalInput(departBy) : ""}
             onChange={e => setDepartBy(fromLocalInput(e.target.value))}
-            aria-label="Batas berangkat"
+            aria-label={t("Batas berangkat", "Depart-by date")}
           />
           <p className="mb-p text-sm mt-2">
-            Jika belum berangkat sampai tanggal ini, siapa pun bisa mengembalikan sisa dana ke Anda. Maks. 180 hari.
-            <span className="mb-en">If you have not departed by this date, anyone can refund you. Max 180 days.</span>
+            <T
+              id="Jika belum berangkat sampai tanggal ini, siapa pun bisa mengembalikan sisa dana ke Anda. Maks. 180 hari."
+              en="If you have not departed by this date, anyone can refund you. At most 180 days."
+            />
           </p>
         </div>
       </div>
@@ -311,15 +346,21 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
           disabled={!walletClient || !agencyOk || total === undefined || !!pre || busy || !!step || Boolean(needFaucet)}
           onClick={book}
         >
-          Tanda tangani & bayar {formatRp(total)}
+          <T id={`Tanda tangani & bayar ${formatRp(total)}`} en={`Sign & pay ${formatRp(total)}`} />
         </button>
         <span className="text-sm mb-muted">
-          1 tanda tangan (permit) · tanpa approve terpisah · one signature, no separate approve
+          <T id="1 tanda tangan (permit), tanpa approve terpisah" en="One signature (permit), no separate approve" />
         </span>
-        {step && <span className="text-sm">{step}</span>}
+        {step && (
+          <span className="text-sm">
+            <T id={step.id} en={step.en} />
+          </span>
+        )}
         {lastTx && <TxLink hash={lastTx} />}
         {!address && (
-          <span className="text-sm mb-muted">Hubungkan dompet untuk memesan · connect a wallet to book</span>
+          <span className="text-sm mb-muted">
+            <T id="Hubungkan dompet untuk memesan" en="Connect a wallet to book" />
+          </span>
         )}
       </div>
 
@@ -345,13 +386,24 @@ const BookingTab = ({ b, active, onClick }: { b: Booking; active: boolean; onCli
   const total = b.remaining.reduce((x, y) => x + y, 0n);
   const name = getLabel(idHex(b.id), chainId) ?? getLabel(b.pilgrim, chainId);
   const chip = b.refunded ? (
-    <span className="mb-chip mb-chip-after">Dikembalikan</span>
+    <span className="mb-chip mb-chip-after">
+      <T id="Dikembalikan" en="Refunded" />
+    </span>
   ) : b.refundable && total > 0n ? (
-    <span className="mb-chip mb-chip-refused">Bisa refund</span>
+    <span className="mb-chip mb-chip-refused">
+      <T id="Bisa refund" en="Refundable" />
+    </span>
   ) : b.flightVendor !== ZERO ? (
-    <span className="mb-chip mb-chip-after">Tiket lunas</span>
+    <span className="mb-chip mb-chip-after">
+      <T id="Tiket lunas" en="Ticket paid" />
+    </span>
   ) : (
-    <span className="mb-chip mb-chip-before">Batas tiket {formatCountdown(Number(b.ticketBy) - now)}</span>
+    <span className="mb-chip mb-chip-before">
+      <T
+        id={`Batas tiket ${formatCountdown(Number(b.ticketBy) - now)}`}
+        en={`Ticket by ${formatCountdown(Number(b.ticketBy) - now, "en")}`}
+      />
+    </span>
   );
   return (
     <button
@@ -363,7 +415,12 @@ const BookingTab = ({ b, active, onClick }: { b: Booking; active: boolean; onCli
       <span className="font-bold">{name ?? shortHex(idHex(b.id), 8, 6)}</span>
       <span className="mb-data text-sm">{shortHex(idHex(b.id), 8, 6)}</span>
       <span className="mb-num font-bold">{formatRp(total)}</span>
-      <span className="text-sm mb-muted">berangkat ≤ {formatDateWIB(b.departBy, false)}</span>
+      <span className="text-sm mb-muted">
+        <T
+          id={`berangkat ≤ ${formatDateWIB(b.departBy, false)}`}
+          en={`depart ≤ ${formatDateWIB(b.departBy, false, "en")}`}
+        />
+      </span>
       <span>{chip}</span>
     </button>
   );
@@ -374,6 +431,7 @@ const JamaahInner = () => {
   const { chainId } = useMabrurContracts();
   const router = useRouter();
   const params = useSearchParams();
+  const t = useT();
   const idParam = params.get("id") ?? "";
   const pilgrimParam = params.get("pilgrim") ?? "";
 
@@ -413,21 +471,36 @@ const JamaahInner = () => {
   return (
     <PageShell>
       <header className="mb-6">
-        <Label>Jamaah · pilgrim</Label>
-        <h1 className="mb-title">{name ? `Buku Amanah ${name}` : "Buku Amanah Jamaah"}</h1>
-        <span className="mb-en">
-          Your prepayment, earmarked line by line. Only a licensed vendor&apos;s invoice can move it.
-        </span>
+        <Label>
+          <T id="Jamaah" en="Pilgrim" />
+        </Label>
+        <h1 className="mb-title">
+          {name ? (
+            <T id={`Buku Amanah ${name}`} en={`${name}'s passbook`} />
+          ) : (
+            <T id="Buku Amanah Jamaah" en="Pilgrim's passbook" />
+          )}
+        </h1>
+        <p className="mb-p mt-2 mb-muted">
+          <T
+            id="Uang muka Anda, disimpan per pos. Hanya faktur vendor berlisensi yang bisa memindahkannya."
+            en="Your prepayment, earmarked line by line. Only a licensed vendor's invoice can move it."
+          />
+        </p>
       </header>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,560px)_minmax(0,1fr)]">
         <div className="flex flex-col gap-6 min-w-0">
           <BookForm onBooked={id => setSelected(id)} />
           <div className="mb-sheet">
-            <Label>Lihat booking · look up</Label>
+            <Label>
+              <T id="Lihat booking" en="Look up a booking" />
+            </Label>
             <p className="mb-p text-sm mb-muted mt-1">
-              Alamat jamaah atau id booking. Refund boleh ditekan siapa pun.
-              <span className="mb-en">A pilgrim address or a booking id. Anyone may press refund.</span>
+              <T
+                id="Alamat jamaah atau id booking. Refund boleh ditekan siapa pun."
+                en="A pilgrim address or a booking id. Anyone may press refund."
+              />
             </p>
             <div className="flex gap-2 mt-2">
               <input
@@ -435,10 +508,10 @@ const JamaahInner = () => {
                 value={lookup}
                 onChange={e => setLookup(e.target.value)}
                 placeholder="0x…"
-                aria-label="Alamat atau id booking"
+                aria-label={t("Alamat atau id booking", "Pilgrim address or booking id")}
               />
               <button className="mb-btn mb-btn-ghost" onClick={go}>
-                Lihat
+                <T id="Lihat" en="View" />
               </button>
             </div>
             {mine && mine.bookings.length > 0 && (
@@ -454,7 +527,12 @@ const JamaahInner = () => {
               </div>
             )}
             {pilgrim && mine && mine.bookings.length === 0 && (
-              <p className="mb-p mt-3 text-sm mb-muted">Belum ada booking untuk {shortHex(pilgrim)}.</p>
+              <p className="mb-p mt-3 text-sm mb-muted">
+                <T
+                  id={`Belum ada booking untuk ${shortHex(pilgrim)}.`}
+                  en={`No bookings yet for ${shortHex(pilgrim)}.`}
+                />
+              </p>
             )}
           </div>
         </div>

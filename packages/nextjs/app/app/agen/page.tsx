@@ -4,7 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import { Address, Hex, isAddress, isHex, recoverTypedDataAddress } from "viem";
 import { useAccount } from "wagmi";
 import { RegulatorPanel } from "~~/components/mabrur/RegulatorPanel";
-import { AddressChip, Bi, ContractsGuard, ErrorCall, Label, PageShell, Stamp, TxLink } from "~~/components/mabrur/ui";
+import {
+  AddressChip,
+  Bi,
+  ContractsGuard,
+  ErrorCall,
+  Label,
+  PageShell,
+  Stamp,
+  T,
+  TxLink,
+} from "~~/components/mabrur/ui";
+import { useT } from "~~/hooks/mabrur/useLang";
 import {
   Booking,
   ZERO,
@@ -25,6 +36,7 @@ import {
   parseBookingId,
   shortHex,
 } from "~~/utils/mabrur/format";
+import { Bilingual } from "~~/utils/mabrur/i18n";
 import {
   INVOICE_TYPES,
   InvoiceParseError,
@@ -87,14 +99,23 @@ const AttemptStamp = ({ a }: { a: Attempt }) =>
   );
 
 /** One-line reason under an attempt stamp. */
-const attemptReason = (a: Attempt): { id: string; en: string } =>
+const attemptReason = (a: Attempt): Bilingual =>
   a.kind === "ditolak"
-    ? { id: a.error?.id ?? "Ditolak", en: `${a.error?.en ?? ""}${a.simulated ? " · simulated, nothing sent" : ""}` }
+    ? {
+        id: `${a.error?.id ?? "Ditolak"}${a.simulated ? " · simulasi, tidak ada transaksi dikirim" : ""}`,
+        en: `${a.error?.en ?? "Rejected"}${a.simulated ? " · simulated, nothing sent" : ""}`,
+      }
     : a.simulated
       ? { id: "Simulasi lolos — belum ada transaksi dikirim.", en: "The contract would accept this; nothing was sent." }
       : a.action === "refund"
         ? { id: "Sisa dana dikembalikan ke jamaah.", en: "Remaining money returned to the pilgrim." }
         : { id: "Dibayar ke penanda tangan.", en: "Paid to the signer." };
+
+/** The attempt's action as shown: a dry run that passed says so; legacy rows already carry their Indonesian label. */
+const actionLabel = (a: Attempt): Bilingual =>
+  a.simulated && a.kind === "lunas" && !a.action.startsWith("simulasi · ")
+    ? { id: `simulasi · ${a.action} lolos (belum dikirim)`, en: `dry run · ${a.action} would pass (not sent)` }
+    : { id: a.action, en: a.action };
 
 /** The result of the last click, shown right next to the button that triggered it (the ledger keeps the history). */
 const InlineResult = ({ a }: { a?: Attempt }) => {
@@ -108,8 +129,9 @@ const InlineResult = ({ a }: { a?: Attempt }) => {
     <div ref={ref} className="mt-3 flex flex-col gap-4 items-start" aria-live="polite" data-testid="inline-result">
       <AttemptStamp a={a} />
       <div className="text-sm">
-        <span className={`font-bold ${a.kind === "ditolak" ? "mb-refused-text" : ""}`}>{r.id}</span>
-        <span className="mb-en">{r.en}</span>
+        <span className={`font-bold ${a.kind === "ditolak" ? "mb-refused-text" : ""}`}>
+          <T id={r.id} en={r.en} />
+        </span>{" "}
         {a.hash && <TxLink hash={a.hash} />}
       </div>
     </div>
@@ -134,6 +156,7 @@ const BookingRow = ({
   const { now } = useChainNow();
   const { pbm } = useMabrurContracts();
   const { run, busy, walletClient } = useMabrurTx();
+  const t = useT();
   const [last, setLast] = useState<Attempt | undefined>();
   const report = (a: Attempt) => {
     setLast(a);
@@ -145,23 +168,25 @@ const BookingRow = ({
   if (b === null)
     return (
       <div className="mb-sheet text-sm" style={{ padding: 12 }}>
-        <span className="mb-data">{shortHex(idHex(id), 8, 6)}</span> — tidak ditemukan
+        <span className="mb-data">{shortHex(idHex(id), 8, 6)}</span> — <T id="tidak ditemukan" en="not found" />
         <button className="mb-link ml-2" onClick={onRemove}>
-          hapus
+          <T id="hapus" en="remove" />
         </button>
       </div>
     );
   if (!b)
     return (
       <div className="mb-sheet text-sm" style={{ padding: 12 }}>
-        Memuat…
+        <T id="Memuat…" en="Loading…" />
       </div>
     );
 
   const total = b.remaining.reduce((x, y) => x + y, 0n);
   const flightPaid = b.flightVendor !== ZERO;
   const deadline = !flightPaid ? Number(b.ticketBy) : Number(b.departBy);
-  const deadlineName = !flightPaid ? "batas tiket" : "batas berangkat";
+  const deadlineName: Bilingual = !flightPaid
+    ? { id: "batas tiket", en: "ticket-by date" }
+    : { id: "batas berangkat", en: "depart-by date" };
   const left = deadline - now;
   // nothing left to refund or the trip is under way: the deadline no longer matters (no stale chip / countdown)
   const settled = b.refunded || b.departed || b.marginReleased || total === 0n;
@@ -209,51 +234,80 @@ const BookingRow = ({
         <span className="mb-num font-bold">{formatRp(total)}</span>
         <span>
           {b.refunded ? (
-            <span className="mb-chip mb-chip-after">Dikembalikan</span>
+            <span className="mb-chip mb-chip-after">
+              <T id="Dikembalikan" en="Refunded" />
+            </span>
           ) : canRefund ? (
-            <span className="mb-chip mb-chip-refused">Bisa refund</span>
+            <span className="mb-chip mb-chip-refused">
+              <T id="Bisa refund" en="Refundable" />
+            </span>
           ) : flightPaid ? (
-            <span className="mb-chip mb-chip-after">Tiket lunas</span>
+            <span className="mb-chip mb-chip-after">
+              <T id="Tiket lunas" en="Ticket paid" />
+            </span>
           ) : (
-            <span className="mb-chip mb-chip-before">Disimpan</span>
+            <span className="mb-chip mb-chip-before">
+              <T id="Disimpan" en="Earmarked" />
+            </span>
           )}
         </span>
       </button>
       {showCountdown && (
         <div className="mt-1">
-          <Label>{deadlineName}</Label>
-          <div className={`mb-countdown ${left <= 0 ? "mb-refused-text" : ""}`}>{formatCountdown(left)}</div>
-          {left <= 0 && <div className="mb-refused-text font-bold text-sm">lewat — siapa pun bisa refund</div>}
+          <Label>
+            <T id={deadlineName.id} en={deadlineName.en} />
+          </Label>
+          <div className={`mb-countdown ${left <= 0 ? "mb-refused-text" : ""}`}>
+            <T id={formatCountdown(left)} en={formatCountdown(left, "en")} />
+          </div>
+          {left <= 0 && (
+            <div className="mb-refused-text font-bold text-sm">
+              <T id="lewat — siapa pun bisa refund" en="passed — anyone can refund" />
+            </div>
+          )}
         </div>
       )}
       {!showCountdown && !settled && (
         <span className="text-sm mb-muted">
-          {deadlineName} {formatDateWIB(deadline)}
+          <T
+            id={`${deadlineName.id} ${formatDateWIB(deadline)}`}
+            en={`${deadlineName.en} ${formatDateWIB(deadline, true, "en")}`}
+          />
         </span>
       )}
       {(canRefund || (showCountdown && left <= 0)) && (
         <button className="mb-btn mb-btn-sm mt-1" disabled={!canRefund || busy || !walletClient} onClick={doRefund}>
-          {canRefund ? `Kembalikan ${formatRp(total)}` : "Menunggu blok berikutnya…"}
+          {canRefund ? (
+            <T id={`Kembalikan ${formatRp(total)}`} en={`Refund ${formatRp(total)}`} />
+          ) : (
+            <T id="Menunggu blok berikutnya…" en="Waiting for the next block…" />
+          )}
         </button>
       )}
       {canRefund && !walletClient && (
-        <div className="text-sm mb-muted">Hubungkan dompet apa saja untuk menekan · connect any wallet to press</div>
+        <div className="text-sm mb-muted">
+          <T id="Hubungkan dompet apa saja untuk menekan." en="Connect any wallet to press it." />
+        </div>
       )}
       <InlineResult a={last} />
       <div className="flex gap-2 mt-1">
         <input
           className="mb-input text-sm"
           style={{ minHeight: 32, padding: "4px 8px" }}
-          placeholder="nama"
+          placeholder={t("nama", "name")}
           value={label}
           onChange={e => {
             setLabelState(e.target.value);
             setLabel(idHex(b.id), e.target.value);
           }}
-          aria-label="Nama booking"
+          aria-label={t("Nama booking", "Booking name")}
         />
-        <button className="mb-link text-sm mb-muted" onClick={onRemove} aria-label="Hapus dari daftar">
-          hapus
+        <button
+          className="mb-link text-sm mb-muted"
+          onClick={onRemove}
+          aria-label={t("Hapus dari daftar", "Remove from the list")}
+        >
+          <T id="hapus" en="remove" />
         </button>
       </div>
     </div>
@@ -337,7 +391,7 @@ const InvoiceRow = ({
       report({
         at: nowMs(),
         kind: "lunas",
-        action: `simulasi · ${refLabel} lolos (belum dikirim)`,
+        action: `spend · ${refLabel}`,
         bookingId: idHex(booking.id),
         simulated: true,
         vendor: signer,
@@ -351,7 +405,10 @@ const InvoiceRow = ({
   if (!L)
     return (
       <div className="mb-row mb-refused-text text-sm">
-        Pos tidak dikenal ({String(inv.invoice.line)}) · unknown invoice line — faktur ini diabaikan.
+        <T
+          id={`Pos tidak dikenal (${String(inv.invoice.line)}) — faktur ini diabaikan.`}
+          en={`Unknown invoice line (${String(inv.invoice.line)}) — this invoice is ignored.`}
+        />
       </div>
     );
 
@@ -371,29 +428,44 @@ const InvoiceRow = ({
           {getLabel(idHex(inv.invoice.bookingId)) && <span>({getLabel(idHex(inv.invoice.bookingId))})</span>}{" "}
           {booking &&
             (forThis ? (
-              <span className="mb-chip mb-chip-ink">booking ini</span>
+              <span className="mb-chip mb-chip-ink">
+                <T id="booking ini" en="this booking" />
+              </span>
             ) : (
-              <span className="mb-chip mb-chip-muted">booking lain</span>
+              <span className="mb-chip mb-chip-muted">
+                <T id="booking lain" en="another booking" />
+              </span>
             ))}
         </dd>
-        <dt className="mb-label">Pos</dt>
+        <dt className="mb-label">
+          <T id="Pos" en="Line" />
+        </dt>
         <dd>
-          {L.id} <span className="mb-muted">· {L.en}</span>
+          <T id={L.id} en={L.en} />
         </dd>
-        <dt className="mb-label">Berlaku s.d.</dt>
-        <dd className="mb-num">{formatDateWIB(inv.invoice.expiry)}</dd>
-        <dt className="mb-label">Penanda tangan</dt>
+        <dt className="mb-label">
+          <T id="Berlaku s.d." en="Valid until" />
+        </dt>
+        <dd className="mb-num">
+          <T id={formatDateWIB(inv.invoice.expiry)} en={formatDateWIB(inv.invoice.expiry, true, "en")} />
+        </dd>
+        <dt className="mb-label">
+          <T id="Penanda tangan" en="Signer" />
+        </dt>
         <dd>{signer ? <AddressChip address={signer} topic={L.topic} /> : <span className="mb-muted">–</span>}</dd>
       </dl>
       <div className="text-sm mb-muted">
-        Penerima = penanda tangan. Tidak ada kolom alamat penerima. · The payee is the signer; there is no payee field.
+        <T
+          id="Penerima = penanda tangan. Tidak ada kolom alamat penerima."
+          en="The payee is the signer; there is no payee field."
+        />
       </div>
       <div className="flex flex-wrap gap-2">
         <button className="mb-btn" disabled={!booking || busy} onClick={() => pay(false)}>
-          Bayar faktur
+          <T id="Bayar faktur" en="Pay invoice" />
         </button>
         <button className="mb-btn mb-btn-ghost" disabled={!booking || busy} onClick={() => pay(true)}>
-          Simulasi saja
+          <T id="Simulasi saja" en="Simulate only" />
         </button>
       </div>
       <InlineResult a={last} />
@@ -401,56 +473,72 @@ const InvoiceRow = ({
   );
 };
 
-const AttemptRow = ({ a }: { a: Attempt }) => (
-  <div
-    className={`mb-row flex flex-col gap-2 px-3 rounded-[10px] ${a.kind === "ditolak" ? "mb-wash-refused" : a.simulated ? "bg-[var(--bg)]" : "mb-wash-after"}`}
-  >
-    <div className="flex flex-wrap items-start justify-between gap-3">
-      <div className="flex flex-col gap-1">
-        <span className="mb-label">
-          {new Date(a.at).toLocaleTimeString("id-ID")} · {a.action}
-        </span>
-        <span className="text-sm">
-          booking <span className="mb-data text-sm">{shortHex(a.bookingId, 8, 6)}</span>
-          {getLabel(a.bookingId) && ` (${getLabel(a.bookingId)})`}
-        </span>
+const AttemptRow = ({ a }: { a: Attempt }) => {
+  const act = actionLabel(a);
+  return (
+    <div
+      className={`mb-row flex flex-col gap-2 px-3 rounded-[10px] ${a.kind === "ditolak" ? "mb-wash-refused" : a.simulated ? "bg-[var(--bg)]" : "mb-wash-after"}`}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <span className="mb-label">
+            <T
+              id={`${new Date(a.at).toLocaleTimeString("id-ID")} · ${act.id}`}
+              en={`${new Date(a.at).toLocaleTimeString("en-GB")} · ${act.en}`}
+            />
+          </span>
+          <span className="text-sm">
+            booking <span className="mb-data text-sm">{shortHex(a.bookingId, 8, 6)}</span>
+            {getLabel(a.bookingId) && ` (${getLabel(a.bookingId)})`}
+          </span>
+        </div>
+        <AttemptStamp a={a} />
       </div>
-      <AttemptStamp a={a} />
+      {a.kind === "ditolak" && a.error && (
+        <div>
+          <span className="mb-refused-text font-bold">
+            <T id={a.error.id} en={a.error.en} />
+          </span>
+          {a.simulated && (
+            <span className="block text-sm mb-muted">
+              <T id="simulateContract — tidak ada transaksi dikirim" en="simulateContract — nothing was sent" />
+            </span>
+          )}
+        </div>
+      )}
+      {a.kind === "lunas" && (
+        <div className="flex flex-wrap gap-2 items-center text-sm">
+          {a.line !== undefined && LINES[a.line] && (
+            <span>
+              <T id={LINES[a.line].id} en={LINES[a.line].en} />
+            </span>
+          )}
+          {a.vendor && (
+            <>
+              <span>→</span>
+              <AddressChip address={a.vendor} />
+            </>
+          )}
+          {a.hash && <TxLink hash={a.hash} />}
+        </div>
+      )}
     </div>
-    {a.kind === "ditolak" && a.error && (
-      <div>
-        <span className="mb-refused-text font-bold">{a.error.id}</span>
-        <span className="mb-en">{a.error.en}</span>
-        {a.simulated && <span className="mb-en">simulateContract — tidak ada transaksi dikirim · nothing sent</span>}
-      </div>
-    )}
-    {a.kind === "lunas" && (
-      <div className="flex flex-wrap gap-2 items-center text-sm">
-        {a.line !== undefined && LINES[a.line] && <span>{LINES[a.line].id}</span>}
-        {a.vendor && (
-          <>
-            <span>→</span>
-            <AddressChip address={a.vendor} />
-          </>
-        )}
-        {a.hash && <TxLink hash={a.hash} />}
-      </div>
-    )}
-  </div>
-);
+  );
+};
 
 const ConsoleInner = () => {
   const { address } = useAccount();
   const { pbm, chainId } = useMabrurContracts();
   const { run, busy } = useMabrurTx();
   const fileRef = useRef<HTMLInputElement>(null);
+  const t = useT();
 
   const [ids, setIds] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | undefined>();
   const [attempts, setAttempts] = useState<Attempt[]>([]);
   const [paste, setPaste] = useState("");
   const [invoices, setInvoices] = useState<SignedInvoice[]>([]);
-  const [parseErr, setParseErr] = useState("");
+  const [parseErr, setParseErr] = useState<Bilingual | undefined>();
   const [addPilgrim, setAddPilgrim] = useState("");
   const [addNonce, setAddNonce] = useState("0");
   const [addId, setAddId] = useState("");
@@ -491,7 +579,7 @@ const ConsoleInner = () => {
   const regulatorAgency = agencyOverride || booking?.agency || defaultAgency(chainId) || address || "";
 
   const loadText = (text: string) => {
-    setParseErr("");
+    setParseErr(undefined);
     try {
       const list = parseInvoices(text);
       // script/out/invoices.json (SeedDemo) also names the two demo bookings and the agency
@@ -510,22 +598,29 @@ const ConsoleInner = () => {
       if (meta?.agency && isAddress(meta.agency) && !getLabel(meta.agency))
         setLabel(meta.agency, "PT Amanah Contoh Wisata");
       if (meta?.chainId !== undefined && Number(meta.chainId) !== chainId)
-        setParseErr(`Peringatan: file untuk chain ${meta.chainId}, dompet di chain ${chainId}`);
+        setParseErr({
+          id: `Peringatan: file untuk chain ${meta.chainId}, dompet di chain ${chainId}`,
+          en: `Warning: file is for chain ${meta.chainId}, wallet is on chain ${chainId}`,
+        });
       if (seeded.length) {
         addIds(seeded);
         setSelected(seeded[0]);
       }
       if (!list.length) {
-        setParseErr("Tidak ada faktur bertanda tangan di JSON ini · no signed invoice found");
+        setParseErr({
+          id: "Tidak ada faktur bertanda tangan di JSON ini",
+          en: "No signed invoice found in this JSON",
+        });
         return;
       }
       setInvoices(list);
       addIds([...seeded, ...list.map(i => idHex(i.invoice.bookingId))]);
     } catch (e) {
+      const msg = (e as Error).message;
       setParseErr(
         e instanceof InvoiceParseError
-          ? `Faktur ditolak · invoice rejected: ${e.message}`
-          : `JSON tidak sah: ${(e as Error).message}`,
+          ? { id: `Faktur ditolak: ${msg}`, en: `Invoice rejected: ${msg}` }
+          : { id: `JSON tidak sah: ${msg}`, en: `Invalid JSON: ${msg}` },
       );
     }
   };
@@ -533,7 +628,10 @@ const ConsoleInner = () => {
   const onFile = async (f: File | undefined) => {
     if (!f) return;
     if (f.size > MAX_INVOICE_FILE_BYTES) {
-      setParseErr(`File terlalu besar (maks. ${MAX_INVOICE_FILE_BYTES / 1024} KB) · file too large`);
+      setParseErr({
+        id: `File terlalu besar (maks. ${MAX_INVOICE_FILE_BYTES / 1024} KB)`,
+        en: `File too large (max. ${MAX_INVOICE_FILE_BYTES / 1024} KB)`,
+      });
       return;
     }
     loadText(await f.text());
@@ -604,7 +702,7 @@ const ConsoleInner = () => {
       reportRelease({
         at: nowMs(),
         kind: "lunas",
-        action: "simulasi · releaseMargin lolos (belum dikirim)",
+        action: "releaseMargin",
         bookingId: idHex(booking.id),
         simulated: true,
         line: 3,
@@ -616,25 +714,43 @@ const ConsoleInner = () => {
     <PageShell>
       <header className="mb-6 flex flex-wrap justify-between gap-4 items-end">
         <div>
-          <Label>Agen · agency</Label>
-          <h1 className="mb-title">Konsol Agen</h1>
-          <span className="mb-en">The agency can only pay a vendor-signed invoice for this booking.</span>
+          <Label>
+            <T id="Agen" en="Agency" />
+          </Label>
+          <h1 className="mb-title">
+            <T id="Konsol Agen" en="Agency console" />
+          </h1>
+          <p className="mb-p mt-1 mb-muted">
+            <T
+              id="Agen hanya bisa membayar faktur bertanda tangan vendor untuk booking ini."
+              en="The agency can only pay a vendor-signed invoice for this booking."
+            />
+          </p>
         </div>
         <div className="flex flex-col items-end gap-1">
           {address ? (
             <AddressChip address={address} topic={1} />
           ) : (
-            <span className="mb-muted text-sm">Tanpa dompet: simulasi sebagai agen booking</span>
+            <span className="mb-muted text-sm">
+              <T id="Tanpa dompet: simulasi sebagai agen booking" en="No wallet: simulating as the booking's agency" />
+            </span>
           )}
         </div>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)_380px]">
         {/* Left: bookings */}
-        <section className="flex flex-col gap-3" aria-label="Booking">
-          <Label>Booking agen</Label>
+        <section className="flex flex-col gap-3" aria-label={t("Booking agen", "Agency bookings")}>
+          <Label>
+            <T id="Booking agen" en="Agency bookings" />
+          </Label>
           {ids.length === 0 && (
-            <p className="mb-p text-sm mb-muted">Muat invoices.json atau tambah booking di bawah.</p>
+            <p className="mb-p text-sm mb-muted">
+              <T
+                id="Muat invoices.json atau tambah booking di bawah."
+                en="Load invoices.json or add a booking below."
+              />
+            </p>
           )}
           {ids.map(id => {
             const big = parseBookingId(id);
@@ -654,13 +770,15 @@ const ConsoleInner = () => {
             );
           })}
           <div className="mb-sheet flex flex-col gap-2" style={{ padding: 14 }}>
-            <Label>Tambah · add booking</Label>
+            <Label>
+              <T id="Tambah booking" en="Add a booking" />
+            </Label>
             <input
               className="mb-input mb-data text-sm"
-              placeholder="alamat jamaah 0x…"
+              placeholder={t("alamat jamaah 0x…", "pilgrim address 0x…")}
               value={addPilgrim}
               onChange={e => setAddPilgrim(e.target.value.trim())}
-              aria-label="Alamat jamaah"
+              aria-label={t("Alamat jamaah", "Pilgrim address")}
             />
             <div className="flex gap-2">
               <input
@@ -668,23 +786,26 @@ const ConsoleInner = () => {
                 style={{ width: 90 }}
                 value={addNonce}
                 onChange={e => setAddNonce(e.target.value.replace(/\D/g, ""))}
-                aria-label="Booking ke- (nonce, mulai 0)"
-                title="Booking ke berapa dari jamaah ini (nonce, mulai 0) · the pilgrim's booking number, from 0"
+                aria-label={t("Booking ke- (nonce, mulai 0)", "Booking number (nonce, from 0)")}
+                title={t(
+                  "Booking ke berapa dari jamaah ini (nonce, mulai 0)",
+                  "The pilgrim's booking number (nonce, from 0)",
+                )}
               />
               <button
                 className="mb-btn mb-btn-ghost mb-btn-sm grow"
                 onClick={addByPilgrim}
                 disabled={!isAddress(addPilgrim)}
               >
-                Tambah dari alamat
+                <T id="Tambah dari alamat" en="Add from address" />
               </button>
             </div>
             <input
               className="mb-input mb-data text-sm"
-              placeholder="atau id booking 0x…"
+              placeholder={t("atau id booking 0x…", "or booking id 0x…")}
               value={addId}
               onChange={e => setAddId(e.target.value.trim())}
-              aria-label="Id booking"
+              aria-label={t("Id booking", "Booking id")}
             />
             <button
               className="mb-btn mb-btn-ghost mb-btn-sm"
@@ -696,7 +817,7 @@ const ConsoleInner = () => {
                 setAddId("");
               }}
             >
-              Tambah id
+              <T id="Tambah id" en="Add id" />
             </button>
           </div>
         </section>
@@ -704,8 +825,13 @@ const ConsoleInner = () => {
         {/* Centre: pay from the selected booking */}
         <section className="flex flex-col gap-6 min-w-0">
           <div className="mb-sheet">
-            <Label>Bayar dari booking</Label>
-            <h2 className="mb-h2 mt-1">{bookingName ?? (selected ? shortHex(selected, 8, 6) : "— pilih booking —")}</h2>
+            <Label>
+              <T id="Bayar dari booking" en="Pay from booking" />
+            </Label>
+            <h2 className="mb-h2 mt-1">
+              {bookingName ??
+                (selected ? shortHex(selected, 8, 6) : <T id="— pilih booking —" en="— pick a booking —" />)}
+            </h2>
             {booking && (
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 2xl:grid-cols-4 gap-3 mt-4">
                 {LINES.map((L, i) => (
@@ -713,7 +839,9 @@ const ConsoleInner = () => {
                     key={L.key}
                     className={`rounded-[10px] p-3 ${booking.remaining[i] > 0n ? "mb-wash-before" : "mb-wash-after"}`}
                   >
-                    <div className="text-sm font-bold">{L.id}</div>
+                    <div className="text-sm font-bold">
+                      <T id={L.id} en={L.en} />
+                    </div>
                     <div className="mb-num font-bold whitespace-nowrap">{formatRp(booking.remaining[i])}</div>
                   </div>
                 ))}
@@ -722,30 +850,41 @@ const ConsoleInner = () => {
             {booking && (
               <div className="text-sm mt-3 flex flex-wrap gap-3">
                 <span>
-                  Jamaah: <AddressChip address={booking.pilgrim} />
+                  <T id="Jamaah:" en="Pilgrim:" /> <AddressChip address={booking.pilgrim} />
                 </span>
                 <span>
-                  Agen: <AddressChip address={booking.agency} topic={1} />
+                  <T id="Agen:" en="Agency:" /> <AddressChip address={booking.agency} topic={1} />
                 </span>
               </div>
             )}
 
             <div className="mb-perforation" />
 
-            <Label>Faktur vendor · signed invoice</Label>
+            <Label>
+              <T id="Faktur vendor" en="Signed vendor invoice" />
+            </Label>
             <p className="mb-p text-sm mb-muted mt-1">
-              Tempel JSON dari halaman vendor, atau pilih <span className="mb-data text-sm">invoices.json</span>. Tidak
-              ada yang diambil dari server.
-              <span className="mb-en">
-                Paste the vendor page&apos;s JSON or pick invoices.json — nothing is fetched from a server.
-              </span>
+              <T
+                id={
+                  <>
+                    Tempel JSON dari halaman vendor, atau pilih <span className="mb-data text-sm">invoices.json</span>.
+                    Tidak ada yang diambil dari server.
+                  </>
+                }
+                en={
+                  <>
+                    Paste the vendor page&apos;s JSON or pick <span className="mb-data text-sm">invoices.json</span> —
+                    nothing is fetched from a server.
+                  </>
+                }
+              />
             </p>
             <textarea
               className="mb-textarea mt-2"
               value={paste}
               onChange={e => setPaste(e.target.value)}
               placeholder='{"invoice": {...}, "signature": "0x…"}'
-              aria-label="Tempel faktur"
+              aria-label={t("Tempel faktur", "Paste invoice")}
             />
             <div className="flex flex-wrap gap-2 mt-2">
               <button
@@ -753,10 +892,10 @@ const ConsoleInner = () => {
                 onClick={() => loadText(paste)}
                 disabled={!paste.trim()}
               >
-                Baca faktur
+                <T id="Baca faktur" en="Read invoice" />
               </button>
               <button className="mb-btn mb-btn-ghost mb-btn-sm" onClick={() => fileRef.current?.click()}>
-                Pilih invoices.json
+                <T id="Pilih invoices.json" en="Pick invoices.json" />
               </button>
               <input
                 ref={fileRef}
@@ -764,15 +903,19 @@ const ConsoleInner = () => {
                 accept=".json,application/json"
                 className="hidden"
                 onChange={e => onFile(e.target.files?.[0])}
-                aria-label="File faktur"
+                aria-label={t("File faktur", "Invoice file")}
               />
               {invoices.length > 0 && (
                 <button className="mb-link text-sm" onClick={() => setInvoices([])}>
-                  kosongkan
+                  <T id="kosongkan" en="clear" />
                 </button>
               )}
             </div>
-            {parseErr && <p className="mb-p mt-2 mb-refused-text text-sm">{parseErr}</p>}
+            {parseErr && (
+              <p className="mb-p mt-2 mb-refused-text text-sm">
+                <T id={parseErr.id} en={parseErr.en} />
+              </p>
+            )}
             <div className="mt-3">
               {invoices.map((inv, i) => (
                 <InvoiceRow key={`${inv.signature}-${i}`} inv={inv} booking={booking} onAttempt={pushAttempt} />
@@ -781,7 +924,9 @@ const ConsoleInner = () => {
           </div>
 
           <div className="mb-sheet">
-            <Label>Ujrah agen · releaseMargin</Label>
+            <Label>
+              <T id="Ujrah agen" en="Agency fee" /> · releaseMargin
+            </Label>
             <p className="mb-p text-sm mt-1">
               <Bi
                 id="Tempel tanda tangan keberangkatan (Departure) dari jamaah atau maskapai."
@@ -793,8 +938,8 @@ const ConsoleInner = () => {
               style={{ minHeight: 80 }}
               value={depPaste}
               onChange={e => setDepPaste(e.target.value)}
-              placeholder="0x… atau JSON"
-              aria-label="Tanda tangan keberangkatan"
+              placeholder={t("0x… atau JSON", "0x… or JSON")}
+              aria-label={t("Tanda tangan keberangkatan", "Departure signature")}
             />
             <div className="flex flex-wrap gap-2 mt-2">
               <button
@@ -802,14 +947,17 @@ const ConsoleInner = () => {
                 disabled={!booking || !depPaste.trim() || busy}
                 onClick={() => releaseMargin(false)}
               >
-                Buka ujrah {booking ? formatRp(booking.remaining[3]) : ""}
+                <T
+                  id={`Buka ujrah ${booking ? formatRp(booking.remaining[3]) : ""}`}
+                  en={`Release the fee ${booking ? formatRp(booking.remaining[3]) : ""}`}
+                />
               </button>
               <button
                 className="mb-btn mb-btn-ghost"
                 disabled={!booking || !depPaste.trim() || busy}
                 onClick={() => releaseMargin(true)}
               >
-                Simulasi saja
+                <T id="Simulasi saja" en="Simulate only" />
               </button>
             </div>
             <InlineResult a={lastRelease} />
@@ -817,7 +965,9 @@ const ConsoleInner = () => {
 
           <div className="mb-sheet">
             <div className="flex justify-between items-center">
-              <Label>Catatan percobaan · attempt ledger</Label>
+              <Label>
+                <T id="Catatan percobaan" en="Attempt ledger" />
+              </Label>
               {attempts.length > 0 && (
                 <button
                   className="mb-link text-sm mb-muted"
@@ -826,12 +976,14 @@ const ConsoleInner = () => {
                     saveJson(storeKey(ATTEMPTS_KEY), []);
                   }}
                 >
-                  bersihkan
+                  <T id="bersihkan" en="clear" />
                 </button>
               )}
             </div>
             {attempts.length === 0 ? (
-              <p className="mb-p text-sm mb-muted mt-2">Belum ada percobaan · no attempts yet</p>
+              <p className="mb-p text-sm mb-muted mt-2">
+                <T id="Belum ada percobaan" en="No attempts yet" />
+              </p>
             ) : (
               <div className="flex flex-col gap-2 mt-2">
                 {attempts.map(a => (
@@ -847,10 +999,10 @@ const ConsoleInner = () => {
           <RegulatorPanel agency={regulatorAgency} />
           <input
             className="mb-input mb-data text-sm"
-            placeholder="alamat agen lain (opsional)"
+            placeholder={t("alamat agen lain (opsional)", "another agency address (optional)")}
             value={agencyOverride}
             onChange={e => setAgencyOverride(e.target.value.trim())}
-            aria-label="Alamat agen untuk panel regulator"
+            aria-label={t("Alamat agen untuk panel regulator", "Agency address for the regulator panel")}
           />
         </section>
       </div>

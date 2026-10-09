@@ -5,6 +5,7 @@ import { ScaffoldEthAppWithProviders } from "~~/components/ScaffoldEthAppWithPro
 import { ThemeProvider } from "~~/components/ThemeProvider";
 import "~~/styles/globals.css";
 import "~~/styles/mabrur.css";
+import { LANG_BOOT_SCRIPT } from "~~/utils/mabrur/i18n";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
 const zilla = Zilla_Slab({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-zilla", display: "swap" });
@@ -31,6 +32,10 @@ export const metadata = getMetadata({
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
     <html suppressHydrationWarning lang="id" className={`${zilla.variable} ${jakarta.variable} ${courier.variable}`}>
+      <head>
+        {/* Before first paint: apply the visitor's ID/EN choice (shared with the landing) so nothing flashes. */}
+        <script dangerouslySetInnerHTML={{ __html: LANG_BOOT_SCRIPT }} />
+      </head>
       <body className="mabrur">
         <ThemeProvider forcedTheme="light" enableSystem={false}>
           <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>

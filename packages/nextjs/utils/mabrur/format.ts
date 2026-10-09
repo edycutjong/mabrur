@@ -1,4 +1,5 @@
 // Formatting helpers. tIDR has decimals = 0, so every amount is whole rupiah.
+import type { Lang } from "~~/utils/mabrur/i18n";
 
 export const LINES = [
   {
@@ -99,17 +100,72 @@ export const terbilang = (v: bigint | number | undefined | null): string => {
   return `${parts.join(" ")} rupiah`;
 };
 
-const BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+const ONES = [
+  "",
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+  "six",
+  "seven",
+  "eight",
+  "nine",
+  "ten",
+  "eleven",
+  "twelve",
+  "thirteen",
+  "fourteen",
+  "fifteen",
+  "sixteen",
+  "seventeen",
+  "eighteen",
+  "nineteen",
+];
+const TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
 
-/** Unix seconds → "11 Okt 2026, 10.04 WIB" (Asia/Jakarta). */
-export const formatDateWIB = (unix: bigint | number | undefined, withTime = true): string => {
+const enBelow1000 = (n: number): string => {
+  if (n < 20) return ONES[n];
+  if (n < 100) return `${TENS[Math.floor(n / 10)]}${n % 10 ? "-" + ONES[n % 10] : ""}`;
+  const r = n % 100;
+  return `${ONES[Math.floor(n / 100)]} hundred${r ? " " + enBelow1000(r) : ""}`;
+};
+
+/** English amount in words, the kuitansi's Terbilang for EN readers: 32000000 → "thirty-two million rupiah". */
+export const inWords = (v: bigint | number | undefined | null): string => {
+  if (v === undefined || v === null) return "";
+  let n = BigInt(v);
+  if (n === 0n) return "zero rupiah";
+  if (n < 0n) n = -n;
+  const units: [bigint, string][] = [
+    [1_000_000_000_000n, "trillion"],
+    [1_000_000_000n, "billion"],
+    [1_000_000n, "million"],
+    [1_000n, "thousand"],
+  ];
+  const parts: string[] = [];
+  for (const [size, name] of units) {
+    if (n >= size) {
+      parts.push(`${enBelow1000(Number(n / size))} ${name}`);
+      n = n % size;
+    }
+  }
+  if (n > 0n) parts.push(enBelow1000(Number(n)));
+  return `${parts.join(" ")} rupiah`;
+};
+
+const BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** Unix seconds → "11 Okt 2026, 10.04 WIB" (Asia/Jakarta); in English "11 Oct 2026, 10:04 WIB". */
+export const formatDateWIB = (unix: bigint | number | undefined, withTime = true, lang: Lang = "id"): string => {
   if (unix === undefined) return "–";
   const d = new Date(Number(unix) * 1000 + 7 * 3600 * 1000); // shift to UTC+7, read UTC fields
-  const date = `${d.getUTCDate()} ${BULAN[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+  const date = `${d.getUTCDate()} ${(lang === "en" ? MONTHS : BULAN)[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
   if (!withTime) return date;
   const hh = String(d.getUTCHours()).padStart(2, "0");
   const mm = String(d.getUTCMinutes()).padStart(2, "0");
-  return `${date}, ${hh}.${mm} WIB`;
+  return `${date}, ${hh}${lang === "en" ? ":" : "."}${mm} WIB`;
 };
 
 export const shortHex = (h: string | undefined, head = 6, tail = 4): string => {
@@ -122,14 +178,15 @@ export const shortHex = (h: string | undefined, head = 6, tail = 4): string => {
 export const idHex = (id: bigint | undefined): string =>
   id === undefined ? "–" : `0x${id.toString(16).padStart(64, "0")}`;
 
-export const formatCountdown = (secs: number): string => {
+/** "2 hari 03:04:05" / "2 days 03:04:05", "03:04:05", "04:05". */
+export const formatCountdown = (secs: number, lang: Lang = "id"): string => {
   const s = Math.max(0, Math.floor(secs));
   const d = Math.floor(s / 86400);
   const h = Math.floor((s % 86400) / 3600);
   const m = Math.floor((s % 3600) / 60);
   const ss = s % 60;
   const mmss = `${String(m).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
-  if (d > 0) return `${d} hari ${String(h).padStart(2, "0")}:${mmss}`;
+  if (d > 0) return `${d} ${lang === "en" ? (d === 1 ? "day" : "days") : "hari"} ${String(h).padStart(2, "0")}:${mmss}`;
   if (h > 0) return `${String(h).padStart(2, "0")}:${mmss}`;
   return mmss;
 };

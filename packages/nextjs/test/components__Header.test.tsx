@@ -212,7 +212,7 @@ describe("Header component", () => {
 
       render(<Header />);
 
-      expect(screen.getByText(/Sepolia · tIDR tanpa nilai/i)).toBeInTheDocument();
+      expect(document.querySelector(".mb-chip")).toHaveTextContent(/Sepolia · tIDR tanpa nilai/);
     });
 
     it("displays hardhat network name when on local network", () => {
@@ -223,7 +223,7 @@ describe("Header component", () => {
 
       render(<Header />);
 
-      expect(screen.getByText(/Hardhat · tIDR tanpa nilai/i)).toBeInTheDocument();
+      expect(document.querySelector(".mb-chip")).toHaveTextContent(/Hardhat · tIDR tanpa nilai/);
     });
 
     it("displays network info with title attribute", () => {
@@ -235,7 +235,7 @@ describe("Header component", () => {
       const { container } = render(<Header />);
       const chip = container.querySelector(".mb-chip");
 
-      expect(chip).toHaveAttribute("title", "tIDR is a test token with no value");
+      expect(chip).toHaveAttribute("title", "tIDR adalah token uji tanpa nilai");
     });
   });
 
@@ -385,7 +385,7 @@ describe("Header component", () => {
       expect(screen.getByRole("link", { name: /Untuk juri/i })).toBeInTheDocument();
 
       // Check network info
-      expect(screen.getByText(/Hardhat · tIDR tanpa nilai/i)).toBeInTheDocument();
+      expect(document.querySelector(".mb-chip")).toHaveTextContent(/Hardhat · tIDR tanpa nilai/);
 
       // Check buttons
       expect(screen.getByTestId("rainbow-button")).toBeInTheDocument();
@@ -412,11 +412,36 @@ describe("Header component", () => {
       expect(screen.getByRole("link", { name: /Untuk juri/i })).not.toHaveAttribute("aria-current");
 
       // Check network info
-      expect(screen.getByText(/Sepolia · tIDR tanpa nilai/i)).toBeInTheDocument();
+      expect(document.querySelector(".mb-chip")).toHaveTextContent(/Sepolia · tIDR tanpa nilai/);
 
       // Check buttons - only wallet, no faucet
       expect(screen.getByTestId("rainbow-button")).toBeInTheDocument();
       expect(screen.queryByTestId("faucet-button")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("ID/EN switch", () => {
+    it("renders the shared ID | EN toggle, Indonesian by default", () => {
+      (usePathname as any).mockReturnValue("/app");
+      (useTargetNetwork as any).mockReturnValue({ targetNetwork: { id: 1, name: "Sepolia" } });
+      render(<Header />);
+      const toggle = screen.getByRole("button", { name: /Ganti bahasa/ });
+      expect(toggle).toHaveAttribute("aria-pressed", "false");
+      expect(toggle).toHaveTextContent("ID EN");
+    });
+
+    it("shows English labels, names and titles in EN mode", () => {
+      document.documentElement.classList.add("lang-en");
+      (usePathname as any).mockReturnValue("/judge");
+      (useTargetNetwork as any).mockReturnValue({ targetNetwork: { id: 1, name: "Sepolia" } });
+      render(<Header />);
+      expect(screen.getByRole("navigation", { name: "Roles" })).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: "Mabrur — app home" })).toHaveAttribute("href", "/app");
+      for (const l of menuLinks) expect(screen.getByRole("link", { name: l.en })).toHaveAttribute("href", l.href);
+      expect(screen.getByRole("link", { name: "For judges" })).toHaveAttribute("aria-current", "page");
+      expect(screen.queryByRole("link", { name: /Untuk juri/ })).not.toBeInTheDocument();
+      expect(document.querySelector(".mb-chip")).toHaveAttribute("title", "tIDR is a test token with no value");
+      expect(screen.getByRole("button", { name: /switch language/ })).toHaveAttribute("aria-pressed", "true");
     });
   });
 });

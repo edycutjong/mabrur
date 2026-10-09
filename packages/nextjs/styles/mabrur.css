@@ -42,6 +42,17 @@ body.mabrur {
   outline-offset: 2px;
 }
 
+/* ── One ID/EN switch, shared with the landing: <T/> renders both, html.lang-en picks one ── */
+.t-en {
+  display: none;
+}
+html.lang-en .t-en {
+  display: revert;
+}
+html.lang-en .t-id {
+  display: none;
+}
+
 /* ── Type roles ─────────────────────────────────────────── */
 .mb-label {
   font-family: var(--font-display);
@@ -74,13 +85,6 @@ body.mabrur {
   font-size: 22px;
   line-height: 1.15;
   margin: 0;
-}
-.mb-en {
-  color: var(--muted);
-  font-weight: 400;
-  font-size: 0.8em;
-  display: block;
-  margin-top: 2px;
 }
 .mb-data {
   font-family: var(--font-data);
@@ -384,6 +388,27 @@ body.mabrur {
   background: var(--paper);
 }
 
+/* ID | EN toggle (same control as the landing's .lang); the active half is drawn from the <html> class, so it is right before hydration */
+.mb-lang {
+  font: 700 13px/1.4 var(--font-display);
+  letter-spacing: 0.1em;
+  border: 1.5px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 6px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.mb-lang span {
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+html:not(.lang-en) .mb-lang [data-l="id"],
+html.lang-en .mb-lang [data-l="en"] {
+  color: var(--paper);
+  background: var(--ink);
+}
 /* A dry run that would pass: neutral ink, dashed — never the blue LUNAS (paid) stamp. */
 .mb-stamp-sim {
   --stamp-color: var(--muted);
@@ -477,10 +502,13 @@ body.mabrur {
     padding: 2px 0;
     border: 0;
   }
-  .mb-receipts td[data-label="Mined tx"]::before {
-    content: "Mined tx · ";
+  .mb-receipts td[data-label-id]::before {
+    content: attr(data-label-id) " · ";
     color: var(--muted);
     font-weight: 700;
+  }
+  html.lang-en .mb-receipts td[data-label-en]::before {
+    content: attr(data-label-en) " · ";
   }
 }
 

@@ -55,13 +55,13 @@ describe("app/app/page", () => {
     it("renders all three role links with correct hrefs", () => {
       render(<AppHome />);
 
-      const jamaahLink = screen.getByRole("link", { name: /Jamaah · pilgrim/ });
+      const jamaahLink = screen.getByRole("link", { name: /^Jamaah/ });
       expect(jamaahLink).toHaveAttribute("href", "/app/jamaah");
 
-      const agenLink = screen.getByRole("link", { name: /Agen · agency/ });
+      const agenLink = screen.getByRole("link", { name: /^Agen/ });
       expect(agenLink).toHaveAttribute("href", "/app/agen");
 
-      const vendorLink = screen.getByRole("link", { name: /Vendor · licensed vendor/ });
+      const vendorLink = screen.getByRole("link", { name: /^Vendor berlisensi/ });
       expect(vendorLink).toHaveAttribute("href", "/app/vendor");
     });
 
@@ -134,9 +134,9 @@ describe("app/app/page", () => {
 
     it("renders all role eyebrows (role labels)", () => {
       render(<AppHome />);
-      expect(screen.getByText("Jamaah · pilgrim")).toBeInTheDocument();
-      expect(screen.getByText("Agen · agency")).toBeInTheDocument();
-      expect(screen.getByText("Vendor · licensed vendor")).toBeInTheDocument();
+      expect(screen.getByText("Jamaah")).toBeVisible();
+      expect(screen.getByText("Agen")).toBeVisible();
+      expect(screen.getByText("Vendor berlisensi")).toBeVisible();
     });
 
     it("renders all role titles", () => {
@@ -184,6 +184,26 @@ describe("app/app/page", () => {
 
     it("metadata is exported as named export", () => {
       expect(metadata).toBeDefined();
+    });
+  });
+
+  describe("EN mode", () => {
+    it("shows only English: heading, roles, CTA and the honesty line", () => {
+      document.documentElement.classList.add("lang-en");
+      render(<AppHome />);
+      expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName(
+        "Your umrah money can only be spent on your umrah.",
+      );
+      expect(screen.getByRole("link", { name: /^Pilgrim\s*Book & passbook/ })).toHaveAttribute("href", "/app/jamaah");
+      expect(screen.getByRole("link", { name: /^Agency\s*Agency console/ })).toHaveAttribute("href", "/app/agen");
+      expect(screen.getByRole("link", { name: /^Licensed vendor\s*Sign an invoice/ })).toHaveAttribute(
+        "href",
+        "/app/vendor",
+      );
+      expect(screen.getAllByText("Open →")[0]).toBeVisible();
+      expect(screen.getByText(/tIDR is a test token with no value/)).toBeVisible();
+      expect(screen.getByText(/tIDR adalah token uji tanpa nilai/)).not.toBeVisible();
+      expect(screen.getByText("Mabrur · purpose-bound umrah prepayment")).toBeVisible();
     });
   });
 });

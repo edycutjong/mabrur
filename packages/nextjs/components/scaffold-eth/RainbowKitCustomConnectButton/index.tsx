@@ -9,6 +9,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Balance } from "@scaffold-ui/components";
 import { getBlockExplorerAddressLink } from "@scaffold-ui/hooks";
 import { Address } from "viem";
+import { T } from "~~/components/mabrur/T";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 
@@ -33,7 +34,13 @@ export const RainbowKitCustomConnectButton = () => {
               if (!connected) {
                 return (
                   <button className="mb-btn mb-btn-sm" onClick={openConnectModal} type="button">
-                    Connect wallet
+                    {/* short on a phone so logo · ID|EN · wallet fit one row at 375px */}
+                    <span className="sm:hidden">
+                      <T id="Dompet" en="Wallet" />
+                    </span>
+                    <span className="hidden sm:inline">
+                      <T id="Hubungkan dompet" en="Connect wallet" />
+                    </span>
                   </button>
                 );
               }

@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Hex } from "viem";
 import { useAccount, useWalletClient } from "wagmi";
+import { T } from "~~/components/mabrur/T";
 import { AddressChip, Bi, CopyButton, Label, RevertStamp, Rp, Stamp, TxLink } from "~~/components/mabrur/ui";
 import { deriveLines, useBookingLedger } from "~~/hooks/mabrur/useLedger";
 import { Booking, ZERO, eventsFrom, useChainNow, useMabrurContracts, useMabrurTx } from "~~/hooks/mabrur/useMabrur";
@@ -20,17 +21,23 @@ const LineCard = ({ i, st }: { i: number; st: ReturnType<typeof deriveLines>[num
       <div className="flex items-start justify-between gap-2">
         <Bi id={<span className="font-bold">{L.id}</span>} en={L.en !== L.id ? L.en : undefined} />
         {(st.state === "earmarked" || st.state === "partial") && (
-          <span className="mb-chip mb-chip-before">Disimpan</span>
+          <span className="mb-chip mb-chip-before">
+            <T id="Disimpan" en="Earmarked" />
+          </span>
         )}
       </div>
       <div className="text-sm">
         <Bi id={L.ruleId} en={L.ruleEn} />
       </div>
       <div className="mt-auto">
-        <Label>Sisa · remaining</Label>
+        <Label>
+          <T id="Sisa" en="Remaining" />
+        </Label>
         <Rp value={st.remaining} />
         {st.original !== undefined && st.original !== st.remaining && (
-          <div className="text-sm mb-muted mb-num">dari {formatRp(st.original)}</div>
+          <div className="text-sm mb-muted mb-num">
+            <T id={`dari ${formatRp(st.original)}`} en={`of ${formatRp(st.original)}`} />
+          </div>
         )}
       </div>
       {st.state === "lunas" && (
@@ -49,7 +56,10 @@ const LineCard = ({ i, st }: { i: number; st: ReturnType<typeof deriveLines>[num
       )}
       {st.state === "returned" && (
         <div className="mb-after-text font-bold text-sm">
-          Dikembalikan {st.refunded !== undefined ? formatRp(st.refunded) : ""} · returned
+          <T
+            id={`Dikembalikan ${st.refunded !== undefined ? formatRp(st.refunded) : ""}`.trim()}
+            en={`Returned ${st.refunded !== undefined ? formatRp(st.refunded) : ""}`.trim()}
+          />
         </div>
       )}
     </div>
@@ -64,7 +74,8 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
   const { run, busy } = useMabrurTx();
   const { data: ledger, isError: ledgerError } = useBookingLedger(b);
   const lines = useMemo(() => deriveLines(b, ledger), [b, ledger]);
-  const who = name ?? getLabel(b.pilgrim, chainId) ?? "Jamaah";
+  const named = name ?? getLabel(b.pilgrim, chainId);
+  const who = { id: named ?? "Jamaah", en: named ?? "the pilgrim" };
 
   const [depSig, setDepSig] = useState<Hex | undefined>();
   const [depErr, setDepErr] = useState<DecodedRevert | undefined>();
@@ -81,6 +92,7 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
   const canRefund = b.refundable && !b.refunded && total > 0n;
   const isPilgrim = address?.toLowerCase() === b.pilgrim.toLowerCase();
   const refundRow = ledger?.find(r => r.kind === "Refunded");
+  const flightVendor = flightPaid ? (getLabel(b.flightVendor, chainId) ?? shortHex(b.flightVendor)) : "";
 
   const signDeparture = async () => {
     setDepErr(undefined);
@@ -126,65 +138,93 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
       <div className="mb-sheet">
         <div className="grid gap-4 md:grid-cols-[1fr_auto]">
           <div>
-            <Label>No. kuitansi · booking id</Label>
+            <Label>
+              <T id="No. kuitansi" en="Receipt no. (booking id)" />
+            </Label>
             <div className="mb-data" title={idHex(b.id)}>
-              {shortHex(idHex(b.id), 10, 8)} <CopyButton text={idHex(b.id)} label="Salin id" />
+              {shortHex(idHex(b.id), 10, 8)} <CopyButton text={idHex(b.id)} label={<T id="Salin id" en="Copy id" />} />
             </div>
           </div>
           <div className="md:text-right">
-            <Label>Sudah terima dari</Label>
+            <Label>
+              <T id="Sudah terima dari" en="Received from" />
+            </Label>
             <AddressChip address={b.pilgrim} name={name} />
           </div>
         </div>
         <div className="mt-3">
-          <Label>Agen</Label>
+          <Label>
+            <T id="Agen" en="Agency" />
+          </Label>
           <AddressChip address={b.agency} topic={1} />
         </div>
         <div className="mb-perforation" />
 
-        <Label>Berangkat paling lambat · depart by</Label>
-        <div className={`mb-big-date ${departPassed ? "mb-strike" : ""}`}>{formatDateWIB(b.departBy, false)}</div>
+        <Label>
+          <T id="Berangkat paling lambat" en="Depart by" />
+        </Label>
+        <div className={`mb-big-date ${departPassed ? "mb-strike" : ""}`}>
+          <T id={formatDateWIB(b.departBy, false)} en={formatDateWIB(b.departBy, false, "en")} />
+        </div>
         <div className="mt-1">
           {b.refunded ? (
             <span className="mb-muted font-bold">
-              Dana sudah dikembalikan ke {who} <span className="mb-en">Refunded — this booking is closed</span>
+              <T id={`Dana sudah dikembalikan ke ${who.id}`} en={`Refunded to ${who.en} — this booking is closed`} />
             </span>
           ) : departed ? (
-            <span className="mb-chip mb-chip-after">Sudah berangkat · departed</span>
+            <span className="mb-chip mb-chip-after">
+              <T id="Sudah berangkat" en="Departed" />
+            </span>
           ) : departPassed ? (
-            <span className="mb-refused-text font-bold">Batas berangkat lewat — siapa pun bisa refund</span>
+            <span className="mb-refused-text font-bold">
+              <T id="Batas berangkat lewat — siapa pun bisa refund" en="Depart-by date passed — anyone can refund" />
+            </span>
           ) : (
             <span className="mb-num">
-              {formatDateWIB(b.departBy)} · {daysLeft} hari lagi <span className="mb-en">{daysLeft} days left</span>
+              <T
+                id={`${formatDateWIB(b.departBy)} · ${daysLeft} hari lagi`}
+                en={`${formatDateWIB(b.departBy, true, "en")} · ${daysLeft} days left`}
+              />
             </span>
           )}
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          <Label>Batas tiket · ticket by</Label>
-          <span className={`mb-num ${ticketPassed ? "mb-strike" : ""}`}>{formatDateWIB(b.ticketBy)}</span>
+          <Label>
+            <T id="Batas tiket" en="Ticket by" />
+          </Label>
+          <span className={`mb-num ${ticketPassed ? "mb-strike" : ""}`}>
+            <T id={formatDateWIB(b.ticketBy)} en={formatDateWIB(b.ticketBy, true, "en")} />
+          </span>
           {flightPaid ? (
             <span className="mb-chip mb-chip-wrap mb-chip-after">
-              Tiket dibayar {lines[0].spent[0] ? formatRp(lines[0].spent[0].amount) : ""} ke{" "}
-              {getLabel(b.flightVendor, chainId) ?? shortHex(b.flightVendor)}
+              <T
+                id={`Tiket dibayar ${lines[0].spent[0] ? formatRp(lines[0].spent[0].amount) : ""} ke ${flightVendor}`}
+                en={`Ticket paid ${lines[0].spent[0] ? formatRp(lines[0].spent[0].amount) : ""} to ${flightVendor}`}
+              />
             </span>
           ) : b.refunded ? (
-            <span className="mb-chip mb-chip-wrap mb-chip-muted">Tiket tidak dibeli · dana dikembalikan</span>
+            <span className="mb-chip mb-chip-wrap mb-chip-muted">
+              <T id="Tiket tidak dibeli · dana dikembalikan" en="No ticket bought · money returned" />
+            </span>
           ) : ticketPassed ? (
-            <span className="mb-chip mb-chip-wrap mb-chip-refused">Batas tiket lewat — tiket belum dibayar</span>
+            <span className="mb-chip mb-chip-wrap mb-chip-refused">
+              <T id="Batas tiket lewat — tiket belum dibayar" en="Ticket-by date passed — no ticket paid" />
+            </span>
           ) : (
             <span className="mb-chip mb-chip-wrap mb-chip-before">
-              Tiket belum dibayar · {formatCountdown(Number(b.ticketBy) - now)}
+              <T
+                id={`Tiket belum dibayar · ${formatCountdown(Number(b.ticketBy) - now)}`}
+                en={`Ticket not paid yet · ${formatCountdown(Number(b.ticketBy) - now, "en")}`}
+              />
             </span>
           )}
         </div>
         <p className="mb-p mt-2 text-sm mb-muted">
-          Jika tiket pesawat belum dibayar sampai batas tiket, atau belum berangkat sampai batas berangkat, siapa pun
-          bisa mengembalikan sisa dana ke jamaah.
-          <span className="mb-en">
-            If no ticket is paid by the ticket-by date, or no departure by the depart-by date, anyone can return the
-            remaining money.
-          </span>
+          <T
+            id="Jika tiket pesawat belum dibayar sampai batas tiket, atau belum berangkat sampai batas berangkat, siapa pun bisa mengembalikan sisa dana ke jamaah."
+            en="If no flight ticket is paid by the ticket-by date, or there is no departure by the depart-by date, anyone can return the remaining money to the pilgrim."
+          />
         </p>
       </div>
 
@@ -195,14 +235,18 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
         ))}
       </div>
       <div className="flex flex-wrap items-baseline gap-3">
-        <Label>Total sisa dana amanah</Label>
+        <Label>
+          <T id="Total sisa dana amanah" en="Total remaining prepayment" />
+        </Label>
         <Rp value={total} words />
       </div>
 
       {/* Refund */}
       {(canRefund || b.refunded || refundOutcome) && (
         <div className={`mb-sheet ${b.refunded ? "mb-wash-after" : ""}`}>
-          <Label>Pengembalian dana · refund</Label>
+          <Label>
+            <T id="Pengembalian dana" en="Refund" />
+          </Label>
           {canRefund && !refundOutcome && (
             <>
               <p className="mb-p mt-2">
@@ -212,18 +256,27 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
                 />
               </p>
               <button className="mb-btn mt-3" disabled={busy || !walletClient} onClick={doRefund}>
-                Kembalikan {formatRp(total)} ke {who}
+                <T id={`Kembalikan ${formatRp(total)} ke ${who.id}`} en={`Return ${formatRp(total)} to ${who.en}`} />
               </button>
-              {!walletClient && <div className="text-sm mb-muted mt-1">Hubungkan dompet apa saja untuk menekan.</div>}
+              {!walletClient && (
+                <div className="text-sm mb-muted mt-1">
+                  <T id="Hubungkan dompet apa saja untuk menekan." en="Connect any wallet to press it." />
+                </div>
+              )}
             </>
           )}
           {(refundOutcome || refundRow) && (
             <div className="mt-3 flex flex-col gap-2 items-start">
               <Stamp kind="dikembalikan">
-                {formatRp(refundOutcome?.amount ?? refundRow?.amount)} ke {who}
+                <T
+                  id={`${formatRp(refundOutcome?.amount ?? refundRow?.amount)} ke ${who.id}`}
+                  en={`${formatRp(refundOutcome?.amount ?? refundRow?.amount)} to ${who.en}`}
+                />
               </Stamp>
               <div className="text-sm flex flex-wrap gap-2 items-center">
-                <span>Ditekan oleh · pressed by</span>
+                <span>
+                  <T id="Ditekan oleh" en="Pressed by" />
+                </span>
                 <AddressChip address={refundOutcome?.caller ?? refundRow?.counterparty} />
                 <TxLink hash={(refundOutcome?.hash ?? refundRow?.hash) as string} />
               </div>
@@ -231,7 +284,9 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
           )}
           {b.refunded && !refundOutcome && !refundRow && (
             <div className="mt-3">
-              <Stamp kind="dikembalikan">ke {who}</Stamp>
+              <Stamp kind="dikembalikan">
+                <T id={`ke ${who.id}`} en={`to ${who.en}`} />
+              </Stamp>
             </div>
           )}
           {refundErr && (
@@ -245,7 +300,9 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
       {/* Departure signature — only after FLIGHT is paid */}
       {!b.refunded && (
         <div className="mb-sheet">
-          <Label>Tanda tangan keberangkatan · departure signature</Label>
+          <Label>
+            <T id="Tanda tangan keberangkatan" en="Departure signature" />
+          </Label>
           {b.marginReleased ? (
             <p className="mb-p mt-2">
               <Bi id="Ujrah agen sudah dibuka setelah keberangkatan." en="The agency fee was released on departure." />
@@ -259,26 +316,30 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
               <p className="mb-p mt-2">
                 <Bi
                   id={`Tanda tangani keberangkatan — membuka ujrah agen ${formatRp(b.remaining[3])}`}
-                  en="Sign your departure — this unlocks the agency fee"
+                  en={`Sign your departure — this unlocks the agency fee of ${formatRp(b.remaining[3])}`}
                 />
               </p>
               <div className="flex flex-wrap gap-3 mt-3">
                 <button className="mb-btn" disabled={!isPilgrim || busy} onClick={signDeparture}>
-                  Tanda tangani keberangkatan
+                  <T id="Tanda tangani keberangkatan" en="Sign departure" />
                 </button>
                 {depSig && (
                   <button className="mb-btn mb-btn-ghost" disabled={busy} onClick={submitRelease}>
-                    Kirim releaseMargin
+                    <T id="Kirim releaseMargin" en="Send releaseMargin" />
                   </button>
                 )}
               </div>
               {!isPilgrim && (
-                <div className="text-sm mb-muted mt-1">Hanya dompet jamaah ini yang bisa menandatangani.</div>
+                <div className="text-sm mb-muted mt-1">
+                  <T id="Hanya dompet jamaah ini yang bisa menandatangani." en="Only this pilgrim's wallet can sign." />
+                </div>
               )}
               {depSig && (
                 <div className="mt-3">
                   <div className="flex items-center gap-2 mb-1">
-                    <Label>Tanda tangan · paste into the agency console</Label>
+                    <Label>
+                      <T id="Tanda tangan — tempel di konsol agen" en="Signature — paste into the agency console" />
+                    </Label>
                     <CopyButton text={depJson} />
                   </div>
                   <pre className="mb-textarea whitespace-pre-wrap [overflow-wrap:anywhere]" style={{ minHeight: 0 }}>
@@ -289,7 +350,7 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
               {releaseHash && (
                 <div className="mt-3 flex items-center gap-3">
                   <Stamp kind="lunas" small>
-                    ujrah
+                    <T id="ujrah" en="agency fee" />
                   </Stamp>
                   <TxLink hash={releaseHash} />
                 </div>
@@ -306,22 +367,37 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
 
       {/* Ledger */}
       <div className="mb-sheet">
-        <Label>Buku tabungan amanah · passbook</Label>
+        <Label>
+          <T id="Buku tabungan amanah" en="Passbook" />
+        </Label>
         {ledgerError || !ledger ? (
           <p className="mb-p mt-2 text-sm mb-muted">
-            {ledgerError
-              ? "Riwayat event tidak tersedia dari RPC ini — saldo di atas dibaca langsung dari kontrak."
-              : "Memuat riwayat…"}
+            {ledgerError ? (
+              <T
+                id="Riwayat event tidak tersedia dari RPC ini — saldo di atas dibaca langsung dari kontrak."
+                en="Event history is not available from this RPC — the balances above are read straight from the contract."
+              />
+            ) : (
+              <T id="Memuat riwayat…" en="Loading history…" />
+            )}
           </p>
         ) : (
           <div className="overflow-x-auto -mx-1 px-1">
             <table className="w-full min-w-[480px] mt-2 text-left">
               <thead>
                 <tr className="mb-label">
-                  <th className="py-2 pr-2">Tanggal</th>
-                  <th className="py-2 pr-2">Keterangan</th>
-                  <th className="py-2 pr-2 text-right">Keluar</th>
-                  <th className="py-2 text-right">Sisa</th>
+                  <th className="py-2 pr-2">
+                    <T id="Tanggal" en="Date" />
+                  </th>
+                  <th className="py-2 pr-2">
+                    <T id="Keterangan" en="Description" />
+                  </th>
+                  <th className="py-2 pr-2 text-right">
+                    <T id="Keluar" en="Out" />
+                  </th>
+                  <th className="py-2 text-right">
+                    <T id="Sisa" en="Balance" />
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -330,17 +406,30 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
                   return ledger.map(r => {
                     if (r.kind === "Booked") bal = r.amount;
                     else bal -= r.amount;
+                    const spentTo = (): string =>
+                      `${getLabel(r.counterparty, chainId) ?? shortHex(r.counterparty)}${r.ref ? ` · ${refToLabel(r.ref)}` : ""}`;
                     const desc =
-                      r.kind === "Booked"
-                        ? "Pemesanan · booked"
-                        : r.kind === "Spent"
-                          ? `${LINES[r.line ?? 0].id} → ${getLabel(r.counterparty, chainId) ?? shortHex(r.counterparty)}${r.ref ? ` · ${refToLabel(r.ref)}` : ""}`
-                          : r.kind === "MarginReleased"
-                            ? "Ujrah agen setelah berangkat"
-                            : `Dikembalikan ke ${who}`;
+                      r.kind === "Booked" ? (
+                        <T id="Pemesanan" en="Booked" />
+                      ) : r.kind === "Spent" ? (
+                        <T
+                          id={`${LINES[r.line ?? 0].id} → ${spentTo()}`}
+                          en={`${LINES[r.line ?? 0].en} → ${spentTo()}`}
+                        />
+                      ) : r.kind === "MarginReleased" ? (
+                        <T id="Ujrah agen setelah berangkat" en="Agency fee after departure" />
+                      ) : (
+                        <T id={`Dikembalikan ke ${who.id}`} en={`Returned to ${who.en}`} />
+                      );
                     return (
                       <tr key={`${r.hash}-${r.logIndex}`} className="border-t border-[var(--rule)] align-top">
-                        <td className="py-2 pr-2 text-sm mb-num">{r.timestamp ? formatDateWIB(r.timestamp) : "–"}</td>
+                        <td className="py-2 pr-2 text-sm mb-num">
+                          {r.timestamp ? (
+                            <T id={formatDateWIB(r.timestamp)} en={formatDateWIB(r.timestamp, true, "en")} />
+                          ) : (
+                            "–"
+                          )}
+                        </td>
                         <td className="py-2 pr-2 text-sm">
                           {desc} <TxLink hash={r.hash} />
                         </td>
@@ -357,8 +446,10 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
           </div>
         )}
         <p className="mb-p mt-3 text-sm mb-muted">
-          Saldo mUMRAH Anda = sisa dana amanah Anda. Tidak bisa dipindah ke orang lain.
-          <span className="mb-en">Your mUMRAH balance is your remaining prepayment. It cannot be transferred.</span>
+          <T
+            id="Saldo mUMRAH Anda = sisa dana amanah Anda. Tidak bisa dipindah ke orang lain."
+            en="Your mUMRAH balance is your remaining prepayment. It cannot be transferred."
+          />
         </p>
       </div>
     </article>

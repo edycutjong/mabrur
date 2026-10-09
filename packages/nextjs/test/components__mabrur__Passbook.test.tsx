@@ -292,7 +292,7 @@ describe("Passbook component", () => {
       const booking = createBooking();
       render(<Passbook b={booking} />);
 
-      expect(screen.getByText("Batas tiket · ticket by")).toBeInTheDocument();
+      expect(screen.getByText("Batas tiket")).toBeInTheDocument();
     });
 
     it("displays paid ticket chip with vendor name and amount", () => {
@@ -371,7 +371,7 @@ describe("Passbook component", () => {
       const booking = createBooking();
       render(<Passbook b={booking} />);
 
-      const cards = screen.getAllByText(/Sisa · remaining/);
+      const cards = screen.getAllByText(/^Sisa$/);
       expect(cards).toHaveLength(4);
     });
 
@@ -495,7 +495,7 @@ describe("Passbook component", () => {
       const booking = createBooking();
       render(<Passbook b={booking} />);
 
-      expect(screen.getAllByText(/Sisa · remaining/).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/^Sisa$/).length).toBeGreaterThan(0);
     });
 
     it("shows original amount when different from remaining", () => {
@@ -551,7 +551,7 @@ describe("Passbook component", () => {
       const booking = createBooking({ refundable: true, remaining: [100n, 200n, 300n, 400n] });
       render(<Passbook b={booking} />);
 
-      expect(screen.getByText(/Kembalikan/)).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Kembalikan/ })).toBeInTheDocument();
     });
 
     it("disables refund button when busy", () => {
@@ -568,7 +568,7 @@ describe("Passbook component", () => {
       const booking = createBooking({ refundable: true });
       render(<Passbook b={booking} />);
 
-      const refundBtn = screen.getByText(/Kembalikan/);
+      const refundBtn = screen.getByRole("button", { name: /Kembalikan/ });
       expect(refundBtn).toBeDisabled();
     });
 
@@ -580,7 +580,7 @@ describe("Passbook component", () => {
       const booking = createBooking({ refundable: true });
       render(<Passbook b={booking} />);
 
-      const refundBtn = screen.getByText(/Kembalikan/);
+      const refundBtn = screen.getByRole("button", { name: /Kembalikan/ });
       expect(refundBtn).toBeDisabled();
     });
 
@@ -625,7 +625,7 @@ describe("Passbook component", () => {
       const booking = createBooking({ refundable: true, id: 42n });
       render(<Passbook b={booking} />);
 
-      const refundBtn = screen.getByText(/Kembalikan/);
+      const refundBtn = screen.getByRole("button", { name: /Kembalikan/ });
       await userEvent.click(refundBtn);
 
       expect(mockRun).toHaveBeenCalled();
@@ -662,7 +662,7 @@ describe("Passbook component", () => {
       const booking = createBooking({ refundable: true });
       render(<Passbook b={booking} />);
 
-      const refundBtn = screen.getByText(/Kembalikan/);
+      const refundBtn = screen.getByRole("button", { name: /Kembalikan/ });
       await userEvent.click(refundBtn);
 
       await waitFor(() => {
@@ -697,7 +697,7 @@ describe("Passbook component", () => {
       const booking = createBooking({ refundable: true });
       render(<Passbook b={booking} />);
 
-      const refundBtn = screen.getByText(/Kembalikan/);
+      const refundBtn = screen.getByRole("button", { name: /Kembalikan/ });
       await userEvent.click(refundBtn);
 
       await waitFor(() => {
@@ -868,7 +868,7 @@ describe("Passbook component", () => {
       await userEvent.click(signBtn);
 
       await waitFor(() => {
-        expect(screen.getByText(/Tanda tangan · paste into the agency console/)).toBeInTheDocument();
+        expect(screen.getByText(/Tanda tangan — tempel di konsol agen/)).toBeInTheDocument();
       });
     });
 
@@ -1158,7 +1158,7 @@ describe("Passbook component", () => {
       await userEvent.click(signBtn);
 
       await waitFor(() => {
-        expect(screen.getByText(/Tanda tangan · paste into the agency console/)).toBeInTheDocument();
+        expect(screen.getByText(/Tanda tangan — tempel di konsol agen/)).toBeInTheDocument();
       });
 
       // Now try submitRelease
@@ -1330,7 +1330,7 @@ describe("Passbook component", () => {
       const booking = createBooking();
       render(<Passbook b={booking} />);
 
-      expect(screen.getByText(/Pemesanan · booked/)).toBeInTheDocument();
+      expect(screen.getByText(/^Pemesanan$/)).toBeInTheDocument();
     });
 
     it("renders spent row in ledger with vendor and ref", () => {
@@ -1367,7 +1367,7 @@ describe("Passbook component", () => {
       const booking = createBooking();
       render(<Passbook b={booking} />);
 
-      expect(screen.getByText(/ref-0xref123/)).toBeInTheDocument();
+      expect(screen.getAllByText(/ref-0xref123/)[0]).toBeInTheDocument();
     });
 
     it("renders margin released row in ledger", () => {
@@ -1565,7 +1565,7 @@ describe("Passbook component", () => {
       render(<Passbook b={booking} />);
 
       expect(screen.getByText(/No. kuitansi/)).toBeInTheDocument();
-      expect(screen.getAllByText(/Sisa · remaining/).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/^Sisa$/).length).toBeGreaterThan(0);
       expect(screen.getByText(/Pengembalian dana/)).toBeInTheDocument();
       expect(screen.getByText(/Tanda tangan keberangkatan/)).toBeInTheDocument();
       expect(screen.getByText(/Buku tabungan amanah/)).toBeInTheDocument();
@@ -1622,7 +1622,7 @@ describe("Passbook component", () => {
       const booking = createBooking({ refundable: true });
       render(<Passbook b={booking} />);
 
-      const refundBtn = screen.getByText(/Kembalikan/);
+      const refundBtn = screen.getByRole("button", { name: /Kembalikan/ });
       await userEvent.click(refundBtn);
 
       // Should return early without calling run
@@ -1657,7 +1657,7 @@ describe("Passbook component", () => {
       const booking = createBooking({ refundable: true });
       render(<Passbook b={booking} />);
 
-      const refundBtn = screen.getByText(/Kembalikan/);
+      const refundBtn = screen.getByRole("button", { name: /Kembalikan/ });
       await userEvent.click(refundBtn);
 
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -1803,7 +1803,7 @@ describe("Passbook component", () => {
       render(<Passbook b={booking} />);
 
       // Should display the ledger without ref suffix
-      expect(screen.getByText(/Flight Vendor/)).toBeInTheDocument();
+      expect(screen.getAllByText(/Flight Vendor/)[0]).toBeInTheDocument();
     });
   });
 
@@ -1857,7 +1857,7 @@ describe("Passbook component", () => {
       const booking = createBooking({ refundable: true, remaining: [100n, 200n, 300n, 400n] });
       render(<Passbook b={booking} />);
 
-      const refundBtn = screen.getByText(/Kembalikan/);
+      const refundBtn = screen.getByRole("button", { name: /Kembalikan/ });
       await userEvent.click(refundBtn);
 
       await waitFor(() => {
@@ -1922,7 +1922,7 @@ describe("Passbook component", () => {
 
       // Should not set depSig since walletClient is null
       await new Promise(resolve => setTimeout(resolve, 50));
-      expect(screen.queryByText(/Tanda tangan · paste into the agency console/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Tanda tangan — tempel di konsol agen/)).not.toBeInTheDocument();
     });
 
     it("signDeparture guard: returns early when pbm is null", async () => {
@@ -1952,7 +1952,7 @@ describe("Passbook component", () => {
 
       // Should not set depSig since pbm is null
       await new Promise(resolve => setTimeout(resolve, 50));
-      expect(screen.queryByText(/Tanda tangan · paste into the agency console/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Tanda tangan — tempel di konsol agen/)).not.toBeInTheDocument();
     });
 
     it("submitRelease guard: returns early when pbm becomes null during execution", async () => {
@@ -1992,7 +1992,7 @@ describe("Passbook component", () => {
       await userEvent.click(signBtn);
 
       await waitFor(() => {
-        expect(screen.getByText(/Tanda tangan · paste into the agency console/)).toBeInTheDocument();
+        expect(screen.getByText(/Tanda tangan — tempel di konsol agen/)).toBeInTheDocument();
       });
 
       // Now change pbm to null and rerender
@@ -2079,7 +2079,7 @@ describe("Passbook component", () => {
       const booking = createBooking({ refundable: true });
       render(<Passbook b={booking} />);
 
-      const refundBtn = screen.getByText(/Kembalikan/);
+      const refundBtn = screen.getByRole("button", { name: /Kembalikan/ });
       await userEvent.click(refundBtn);
 
       await waitFor(() => {
@@ -2276,7 +2276,7 @@ describe("Passbook component", () => {
       const booking = createBooking({ refundable: true });
       render(<Passbook b={booking} />);
 
-      const refundBtn = screen.getByText(/Kembalikan/);
+      const refundBtn = screen.getByRole("button", { name: /Kembalikan/ });
       await userEvent.click(refundBtn);
 
       await waitFor(() => {
@@ -2312,7 +2312,7 @@ describe("Passbook component", () => {
       const booking = createBooking({ refundable: true });
       render(<Passbook b={booking} />);
 
-      const refundBtn = screen.getByText(/Kembalikan/);
+      const refundBtn = screen.getByRole("button", { name: /Kembalikan/ });
       await userEvent.click(refundBtn);
 
       await waitFor(() => {
@@ -2348,7 +2348,7 @@ describe("Passbook component", () => {
       const booking = createBooking({ refundable: true });
       render(<Passbook b={booking} />);
 
-      const refundBtn = screen.getByText(/Kembalikan/);
+      const refundBtn = screen.getByRole("button", { name: /Kembalikan/ });
       await userEvent.click(refundBtn);
 
       await waitFor(() => {
@@ -2376,7 +2376,7 @@ describe("Passbook component", () => {
       const booking = createBooking({ refundable: true });
       render(<Passbook b={booking} />);
 
-      const refundBtn = screen.getByText(/Kembalikan/);
+      const refundBtn = screen.getByRole("button", { name: /Kembalikan/ });
       await userEvent.click(refundBtn);
 
       // Should call run but not set outcome or error
@@ -2423,7 +2423,43 @@ describe("Passbook component", () => {
 
       // Should use line 0 (Tiket pesawat) when line is undefined
       // The description should show the ticket line name
-      expect(screen.getByText(/Flight Vendor/)).toBeInTheDocument();
+      expect(screen.getAllByText(/Flight Vendor/)[0]).toBeInTheDocument();
     });
+  });
+});
+
+describe("Passbook — ID/EN", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    setupMocks();
+  });
+
+  it("ID mode shows only Indonesian: labels, refund button, footnote", () => {
+    mockUseWalletClient.mockReturnValue({ data: { signTypedData: vi.fn() } });
+    render(<Passbook b={createBooking({ refundable: true })} name="Pak Ahmad" />);
+    expect(screen.getByRole("button", { name: /^Kembalikan Rp \d+ ke Pak Ahmad$/ })).toBeInTheDocument();
+    expect(screen.getByText("Sudah terima dari")).toBeVisible();
+    expect(screen.getByText("Received from")).not.toBeVisible();
+    expect(screen.getByText(/Saldo mUMRAH Anda/)).toBeVisible();
+    expect(screen.getByText(/Your mUMRAH balance/)).not.toBeVisible();
+  });
+
+  it("EN mode shows only English, with the same names and amounts", () => {
+    document.documentElement.classList.add("lang-en");
+    mockUseWalletClient.mockReturnValue({ data: { signTypedData: vi.fn() } });
+    render(<Passbook b={createBooking({ refundable: true })} name="Pak Ahmad" />);
+    expect(screen.getByRole("button", { name: /^Return Rp \d+ to Pak Ahmad$/ })).toBeInTheDocument();
+    expect(screen.getByText("Received from")).toBeVisible();
+    expect(screen.getByText("Sudah terima dari")).not.toBeVisible();
+    expect(screen.getByText("Depart by")).toBeVisible();
+    expect(screen.getAllByText("Remaining")[0]).toBeVisible();
+    expect(screen.getByText(/Your mUMRAH balance is your remaining prepayment/)).toBeVisible();
+  });
+
+  it("EN fallback name for an unlabelled pilgrim is 'the pilgrim'", () => {
+    document.documentElement.classList.add("lang-en");
+    mockUseWalletClient.mockReturnValue({ data: { signTypedData: vi.fn() } });
+    render(<Passbook b={createBooking({ refundable: true })} />);
+    expect(screen.getByRole("button", { name: /to the pilgrim$/ })).toBeInTheDocument();
   });
 });
