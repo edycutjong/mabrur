@@ -86,27 +86,47 @@ const readBooking = async (client: PublicClient, pbm: { address: Address; abi: A
   return { id, ...b, remaining: b.remaining as Booking["remaining"], refundable } as Booking;
 };
 
-/** One booking by id, refreshed every block. Returns null when the id has no booking. */
+/** An open booking is re-read at least this often (another device may refund it; the block-keyed read can stall). */
+export const BOOKING_REFETCH_MS = 5000;
+/** After a ticketBy / departBy deadline passes, re-read every second for this long, until refundable flips true. */
+export const DEADLINE_WATCH_S = 30;
+
+/**
+ * One booking by id, refreshed every block, polled every BOOKING_REFETCH_MS until it is refunded, and re-read every
+ * second right after a deadline lapses so the refund button appears without a reload. Null when the id has no booking.
+ */
 export const useBooking = (id: bigint | undefined) => {
   const { pbm, publicClient, chainId } = useMabrurContracts();
-  const { blockNumber } = useChainNow();
-  return useQuery({
+  const { blockNumber, now } = useChainNow();
+  const query = useQuery({
     queryKey: ["mabrur-booking", chainId, pbm?.address, id?.toString(), blockNumber?.toString()],
     enabled: Boolean(pbm && publicClient && id !== undefined),
     placeholderData: prev => prev,
+    refetchInterval: q => (q.state.data?.refunded ? false : BOOKING_REFETCH_MS),
     queryFn: async () => {
       const b = await readBooking(publicClient as PublicClient, pbm as any, id as bigint);
       return b.pilgrim === ZERO ? null : b;
     },
   });
+  const b = query.data;
+  const refetch = query.refetch;
+  const lapsing =
+    !!b &&
+    !b.refunded &&
+    !b.refundable &&
+    [b.ticketBy, b.departBy].some(d => now >= Number(d) && now - Number(d) <= DEADLINE_WATCH_S);
+  useEffect(() => {
+    if (lapsing) void refetch();
+  }, [lapsing, now, refetch]);
+  return query;
 };
 
 /** bookingIdOf(pilgrim, nonce) is pure — keccak256(abi.encode(pilgrim, nonce)) — so it is computed locally, not read. */
 export const bookingIdOf = (pilgrim: Address, nonce: bigint): bigint =>
   BigInt(keccak256(encodeAbiParameters([{ type: "address" }, { type: "uint256" }], [pilgrim, nonce])));
 
-/** How often a pilgrim's booking list is re-read (a new booking or a payout is rare; a mined tx invalidates at once). */
-export const BOOKINGS_OF_REFETCH_MS = 12_000;
+/** How often a pilgrim's booking list is re-read (a deadline lapsing or someone else's refund must show within seconds; a mined tx invalidates at once). */
+export const BOOKINGS_OF_REFETCH_MS = 6000;
 
 /** Every booking of one pilgrim: ids are bookingIdOf(pilgrim, 0..bookingNonce-1). No log scan, one nonce read. */
 export const useBookingsOf = (pilgrim: Address | undefined) => {

@@ -5,6 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useAccount, useBlock, usePublicClient, useWalletClient } from "wagmi";
 import {
   BOOKINGS_OF_REFETCH_MS,
+  BOOKING_REFETCH_MS,
+  DEADLINE_WATCH_S,
   ZERO,
   bookingIdOf,
   eventsFrom,
@@ -470,6 +472,105 @@ describe("useMabrur.ts", () => {
         expect(result.pilgrim).toBe(mockAddress);
         expect(result.refundable).toBe(true);
       }
+    });
+  });
+
+  describe("useBooking live refresh", () => {
+    const addr = "0x1234567890123456789012345678901234567890" as Address;
+    const NOW = 1_800_000_000;
+    const bk = (over: Record<string, unknown> = {}) => ({
+      id: 1n,
+      pilgrim: addr,
+      ticketBy: BigInt(NOW + 3),
+      departBy: BigInt(NOW + 100_000),
+      refunded: false,
+      refundable: false,
+      ...over,
+    });
+    const setup = (data: any) => {
+      const refetch = vi.fn();
+      (useTargetNetwork as any).mockReturnValue({ targetNetwork: { id: 31337, name: "hardhat" } });
+      (useDeployedContractInfo as any).mockImplementation(({ contractName }: any) =>
+        contractName === "MabrurPBM"
+          ? { data: { address: "0x111", abi: [] }, isLoading: false }
+          : { data: undefined, isLoading: false },
+      );
+      (usePublicClient as any).mockReturnValue({});
+      (useBlock as any).mockReturnValue({ data: undefined });
+      (useQuery as any).mockImplementation(() => ({ data, refetch }));
+      return refetch;
+    };
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(NOW * 1000);
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("polls while open and stops once refunded", () => {
+      setup(undefined);
+      renderHook(() => useBooking(1n));
+      const fn = (useQuery as any).mock.calls[0][0].refetchInterval;
+      expect(BOOKING_REFETCH_MS).toBe(5000);
+      expect(fn({ state: { data: undefined } })).toBe(BOOKING_REFETCH_MS);
+      expect(fn({ state: { data: bk() } })).toBe(BOOKING_REFETCH_MS);
+      expect(fn({ state: { data: bk({ refunded: true }) } })).toBe(false);
+    });
+
+    it("re-reads every second once the ticket-by deadline passes, until refundable flips", () => {
+      const refetch = setup(bk());
+      renderHook(() => useBooking(1n));
+      act(() => {
+        vi.advanceTimersByTime(2000); // now = deadline - 1
+      });
+      expect(refetch).not.toHaveBeenCalled();
+      act(() => {
+        vi.advanceTimersByTime(1000); // now = deadline
+      });
+      expect(refetch).toHaveBeenCalled();
+      const n = refetch.mock.calls.length;
+      act(() => {
+        vi.advanceTimersByTime(2000);
+      });
+      expect(refetch.mock.calls.length).toBeGreaterThan(n);
+    });
+
+    it("stops re-reading after the watch window", () => {
+      const refetch = setup(bk({ ticketBy: BigInt(NOW - DEADLINE_WATCH_S - 5) }));
+      renderHook(() => useBooking(1n));
+      act(() => {
+        vi.advanceTimersByTime(3000);
+      });
+      expect(refetch).not.toHaveBeenCalled();
+    });
+
+    it("does not re-read a booking that is already refundable or refunded or missing", () => {
+      const lapsed = { ticketBy: BigInt(NOW - 1) };
+      for (const data of [bk({ ...lapsed, refundable: true }), bk({ ...lapsed, refunded: true }), null]) {
+        const refetch = setup(data);
+        const { unmount } = renderHook(() => useBooking(1n));
+        act(() => {
+          vi.advanceTimersByTime(3000);
+        });
+        expect(refetch).not.toHaveBeenCalled();
+        unmount();
+      }
+    });
+
+    it("re-reads at the depart-by deadline too", () => {
+      const refetch = setup(bk({ ticketBy: BigInt(NOW - 100_000), departBy: BigInt(NOW + 2) }));
+      renderHook(() => useBooking(1n));
+      // ticket-by lapsed long ago (outside the window) so only departBy can trigger
+      act(() => {
+        vi.advanceTimersByTime(1000);
+      });
+      expect(refetch).not.toHaveBeenCalled();
+      act(() => {
+        vi.advanceTimersByTime(1000);
+      });
+      expect(refetch).toHaveBeenCalled();
     });
   });
 
@@ -1208,8 +1309,8 @@ describe("useMabrur.ts", () => {
   });
 
   describe("BOOKINGS_OF_REFETCH_MS constant", () => {
-    it("is set to 12000 milliseconds", () => {
-      expect(BOOKINGS_OF_REFETCH_MS).toBe(12_000);
+    it("is set to 6000 milliseconds", () => {
+      expect(BOOKINGS_OF_REFETCH_MS).toBe(6000);
     });
   });
 
