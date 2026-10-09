@@ -28,3 +28,6 @@ packages/foundry/script/out/
 .env.local
 .env.*
 !.env.example
+.agents/
+.opencode/
+.mcp.json
