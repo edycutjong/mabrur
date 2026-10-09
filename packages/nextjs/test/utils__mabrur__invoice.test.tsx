@@ -405,6 +405,20 @@ describe("toLine direct tests", () => {
       expect(toLine(i)).toBe(i);
     }
   });
+
+  it("rejects a function (tests JSON.stringify fallback to String())", () => {
+    const fn = () => {};
+    expect(() => toLine(fn)).toThrow(/line must be an integer 0\.\.3/);
+  });
+
+  it("rejects a symbol (tests JSON.stringify fallback to String())", () => {
+    const sym = Symbol("test");
+    expect(() => toLine(sym)).toThrow(/line must be an integer 0\.\.3/);
+  });
+
+  it("rejects undefined (tests JSON.stringify fallback to String())", () => {
+    expect(() => toLine(undefined)).toThrow(/line must be an integer 0\.\.3/);
+  });
 });
 
 describe("refToBytes32", () => {

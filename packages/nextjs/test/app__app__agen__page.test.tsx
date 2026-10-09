@@ -1,14 +1,21 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { Address } from "viem";
-import { isAddress } from "viem";
+import { isAddress, isHex, recoverTypedDataAddress } from "viem";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useAccount, useWalletClient } from "wagmi";
 import AgenPage from "~~/app/app/agen/page";
-import { useBooking, useChainNow, useMabrurContracts, useMabrurTx } from "~~/hooks/mabrur/useMabrur";
+import {
+  bookingIdOf,
+  eventsFrom,
+  useBooking,
+  useChainNow,
+  useMabrurContracts,
+  useMabrurTx,
+} from "~~/hooks/mabrur/useMabrur";
+import { errorArgParts } from "~~/utils/mabrur/errors";
 import { formatRp, idHex } from "~~/utils/mabrur/format";
-import { parseInvoices } from "~~/utils/mabrur/invoice";
-import { getLabel, loadJson, saveJson, setLabel } from "~~/utils/mabrur/names";
+import { InvoiceParseError, parseInvoices } from "~~/utils/mabrur/invoice";
+import { defaultAgency, getLabel, loadJson, saveJson, setLabel } from "~~/utils/mabrur/names";
 
 // ── Mocks ──
 vi.mock("next/navigation", () => ({
@@ -45,7 +52,7 @@ vi.mock("~~/hooks/mabrur/useMabrur", () => ({
   useMabrurContracts: vi.fn(),
   useMabrurTx: vi.fn(),
   useBooking: vi.fn(),
-  bookingIdOf: vi.fn((pilgrim: Address, nonce: bigint) => 1n),
+  bookingIdOf: vi.fn(() => 1n),
   eventsFrom: vi.fn(() => []),
 }));
 
@@ -914,7 +921,6 @@ describe("app/app/agen/page.tsx", () => {
         if (key.includes("bookings")) return [];
         return def;
       });
-      const user = userEvent.setup();
       render(<AgenPage />);
 
       const fileBtn = screen.getByRole("button", { name: /Pilih invoices.json/ });
@@ -1105,7 +1111,6 @@ describe("app/app/agen/page.tsx", () => {
         if (key.includes("bookings")) return ["0x1"];
         return def;
       });
-      const user = userEvent.setup();
       render(<AgenPage />);
 
       // Booking row should be clickable
@@ -1122,6 +1127,708 @@ describe("app/app/agen/page.tsx", () => {
       render(<AgenPage />);
 
       expect(screen.getByText(/tidak ditemukan/)).toBeInTheDocument();
+    });
+  });
+
+  describe("agency console behaviour", () => {
+    const PILGRIM = "0x1111111111111111111111111111111111111111";
+    const AGENCY = "0x2222222222222222222222222222222222222222";
+    const WALLET = "0xuser1111111111111111111111111111111111";
+    const HASH = "0xhash123456789";
+    const nowSec = () => Math.floor(Date.now() / 1000);
+
+    const mkBooking = (over: Record<string, unknown> = {}) => ({
+      id: 1n,
+      pilgrim: PILGRIM,
+      agency: AGENCY,
+      ticketBy: nowSec() + 86400,
+      departBy: nowSec() + 172800,
+      flightVendor: "0x0000000000000000000000000000000000000000",
+      remaining: [1000n, 2000n, 3000n, 4000n],
+      refunded: false,
+      departed: false,
+      marginReleased: false,
+      refundable: true,
+      ...over,
+    });
+    const mkInvoice = (invOver: Record<string, unknown> = {}, over: Record<string, unknown> = {}) => ({
+      invoice: { bookingId: 1n, line: 0, ref: "0xref", amount: 1000n, expiry: 1900000000, ...invOver },
+      signature: "0xsig1",
+      ...over,
+    });
+    const decoded = { name: "Expired", id: "Kedaluwarsa", en: "Expired invoice" };
+
+    let run: ReturnType<typeof vi.fn>;
+    const seedStore = ({ bookings = [] as string[], attempts = [] as unknown[] } = {}) =>
+      (loadJson as any).mockImplementation((key: string, def: unknown) =>
+        key.includes("bookings") ? bookings : key.includes("attempts") ? attempts : def,
+      );
+    const useTx = (over: Record<string, unknown> = {}) =>
+      (useMabrurTx as any).mockReturnValue({ run, busy: false, walletClient: { account: {} }, ...over });
+    const loadInvoices = async (user: ReturnType<typeof userEvent.setup>, list: unknown[], text = "{}") => {
+      (parseInvoices as any).mockReturnValue(list);
+      fireEvent.change(screen.getByLabelText("Tempel faktur"), { target: { value: text } });
+      await user.click(screen.getByRole("button", { name: /Baca faktur/ }));
+    };
+
+    beforeEach(() => {
+      Element.prototype.scrollIntoView = vi.fn();
+      run = vi.fn();
+      useTx();
+      seedStore({ bookings: ["0x1"] });
+      (useBooking as any).mockReturnValue({ data: mkBooking() });
+      (parseInvoices as any).mockImplementation(() => []);
+      (recoverTypedDataAddress as any).mockImplementation(() => Promise.resolve("0xsigner"));
+      (errorArgParts as any).mockImplementation(() => []);
+      (eventsFrom as any).mockImplementation(() => []);
+      (bookingIdOf as any).mockImplementation(() => 1n);
+      (defaultAgency as any).mockImplementation(() => "0xdefault");
+      (isHex as any).mockImplementation((v: unknown) => typeof v === "string" && v.startsWith("0x"));
+      (getLabel as any).mockImplementation(() => null);
+    });
+
+    describe("ledger rows from storage", () => {
+      it("renders rejected attempts with the decoded call or the argument breakdown", () => {
+        (getLabel as any).mockImplementation((k: string) => (k === "0xb1" ? "Pak Budi" : null));
+        seedStore({
+          attempts: [
+            {
+              at: 1,
+              kind: "ditolak",
+              action: "spend",
+              bookingId: "0xb1",
+              error: { name: "Expired", call: "Expired(1)", id: "Kedaluwarsa", en: "Expired invoice", args: [] },
+            },
+            {
+              at: 2,
+              kind: "ditolak",
+              action: "spend 2",
+              bookingId: "0xb2",
+              simulated: true,
+              error: { name: "NotSigner", call: "NotSigner()", id: "Bukan penanda tangan", en: "Not the signer" },
+            },
+            { at: 3, kind: "ditolak", action: "spend 3", bookingId: "0xb3" },
+          ],
+        });
+        render(<AgenPage />);
+        expect(screen.getAllByTestId("stamp-ditolak")).toHaveLength(3);
+        expect(screen.getByText("Expired")).toBeInTheDocument();
+        expect(screen.getByText("NotSigner()")).toBeInTheDocument();
+        expect(screen.getByText(/\(Pak Budi\)/)).toBeInTheDocument();
+        expect(screen.getByText(/simulateContract/)).toBeInTheDocument();
+        expect(screen.getAllByText(/Kedaluwarsa|Bukan penanda tangan/)).toHaveLength(2);
+      });
+
+      it("renders passing dry runs as neutral simulation stamps", () => {
+        seedStore({
+          attempts: [
+            { at: 1, kind: "lunas", action: "sim a", bookingId: "0xb1", simulated: true, amount: "250" },
+            { at: 2, kind: "lunas", action: "sim b", bookingId: "0xb1", simulated: true, amount: "0" },
+            { at: 3, kind: "lunas", action: "sim c", bookingId: "0xb1", simulated: true },
+          ],
+        });
+        render(<AgenPage />);
+        const stamps = screen.getAllByTestId("stamp-simulasi");
+        expect(stamps.map(s => s.textContent)).toEqual(["Rp 250", "", ""]);
+      });
+
+      it("renders paid and refunded attempts with line, vendor and tx link", () => {
+        seedStore({
+          attempts: [
+            { at: 1, kind: "lunas", action: "refund", bookingId: "0xb1", amount: "300" },
+            { at: 2, kind: "lunas", action: "refund", bookingId: "0xb1" },
+            {
+              at: 3,
+              kind: "lunas",
+              action: "spend",
+              bookingId: "0xb1",
+              line: 1,
+              vendor: "0xvendor",
+              hash: HASH,
+              amount: "900",
+            },
+            { at: 4, kind: "lunas", action: "spend", bookingId: "0xb1" },
+            { at: 5, kind: "lunas", action: "spend", bookingId: "0xb1", line: 9 },
+          ],
+        });
+        render(<AgenPage />);
+        expect(screen.getAllByTestId("stamp-dikembalikan").map(s => s.textContent)).toEqual(["Rp 300", "Rp 0"]);
+        expect(screen.getAllByTestId("stamp-lunas").map(s => s.textContent)).toEqual(["Rp 900", "Rp 0", "Rp 0"]);
+        expect(screen.getAllByText("Hotel").length).toBeGreaterThan(0);
+        expect(screen.getByTestId("chip-0xvendor")).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: HASH.slice(0, 8) })).toBeInTheDocument();
+      });
+    });
+
+    describe("booking list", () => {
+      it("selects a booking by clicking its card but not by clicking its inner controls", async () => {
+        seedStore({ bookings: ["0x1", "0x2"] });
+        const user = userEvent.setup();
+        const { container } = render(<AgenPage />);
+        const pressed = () =>
+          Array.from(container.querySelectorAll("button[aria-pressed]")).map(b => b.getAttribute("aria-pressed"));
+        expect(pressed()).toEqual(["true", "false"]);
+
+        fireEvent.click(container.querySelectorAll(".mb-hover")[1]);
+        expect(pressed()).toEqual(["false", "true"]);
+
+        await user.click(screen.getAllByLabelText("Nama booking")[0]);
+        expect(pressed()).toEqual(["false", "true"]);
+
+        await user.click(container.querySelectorAll("button[aria-pressed]")[0]);
+        expect(pressed()).toEqual(["true", "false"]);
+      });
+
+      it("removes an unselected booking and keeps the selection", async () => {
+        seedStore({ bookings: ["0x1", "0x2"] });
+        const user = userEvent.setup();
+        const { container } = render(<AgenPage />);
+        await user.click(screen.getAllByLabelText("Hapus dari daftar")[1]);
+        expect(saveJson).toHaveBeenLastCalledWith(expect.stringContaining("bookings"), ["0x1"]);
+        expect(container.querySelector("button[aria-pressed]")).toHaveAttribute("aria-pressed", "true");
+      });
+
+      it("removes the selected booking and moves the selection to the next one", async () => {
+        seedStore({ bookings: ["0x1", "0x2"] });
+        const user = userEvent.setup();
+        const { container } = render(<AgenPage />);
+        await user.click(screen.getAllByLabelText("Hapus dari daftar")[0]);
+        expect(saveJson).toHaveBeenLastCalledWith(expect.stringContaining("bookings"), ["0x2"]);
+        expect(container.querySelector("button[aria-pressed]")).toHaveAttribute("aria-pressed", "true");
+      });
+
+      it("removes a booking that the chain cannot find", async () => {
+        (useBooking as any).mockReturnValue({ data: null });
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await user.click(screen.getByRole("button", { name: "hapus" }));
+        expect(saveJson).toHaveBeenLastCalledWith(expect.stringContaining("bookings"), []);
+      });
+
+      it("skips stored ids that are not booking ids", () => {
+        seedStore({ bookings: ["not-an-id"] });
+        render(<AgenPage />);
+        expect(screen.queryByLabelText("Nama booking")).not.toBeInTheDocument();
+      });
+
+      it("names a booking after the pilgrim label and stores edits under the booking id", async () => {
+        (getLabel as any).mockImplementation((k: string) => (k === PILGRIM ? "Pak Ahmad" : null));
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        const input = screen.getByLabelText("Nama booking") as HTMLInputElement;
+        expect(input.value).toBe("Pak Ahmad");
+        expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("Pak Ahmad");
+
+        await user.type(input, "!");
+        expect(setLabel).toHaveBeenLastCalledWith("0x1", "Pak Ahmad!");
+        expect(input.value).toBe("Pak Ahmad!");
+      });
+
+      it("prompts to choose a booking when none exists", () => {
+        seedStore();
+        (useBooking as any).mockReturnValue({ data: undefined });
+        render(<AgenPage />);
+        expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("— pilih booking —");
+      });
+
+      it("shows a waiting button once the deadline passed and nothing can be refunded yet", () => {
+        (useBooking as any).mockReturnValue({
+          data: mkBooking({ ticketBy: nowSec() - 60, refundable: false }),
+        });
+        (useChainNow as any).mockReturnValue({ now: nowSec() });
+        render(<AgenPage />);
+        const wait = screen.getByRole("button", { name: "Menunggu blok berikutnya…" });
+        expect(wait).toBeDisabled();
+        expect(screen.getByText(/lewat/)).toBeInTheDocument();
+      });
+
+      it("asks for a wallet when a refund is possible but no wallet is connected", () => {
+        useTx({ walletClient: undefined });
+        render(<AgenPage />);
+        expect(screen.getByText(/Hubungkan dompet apa saja/)).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /Kembalikan/ })).toBeDisabled();
+      });
+
+      it("shows the date instead of a countdown while the deadline is far away", () => {
+        render(<AgenPage />);
+        expect(screen.getByText(/batas tiket 2024-01-01/)).toBeInTheDocument();
+      });
+    });
+
+    describe("permissionless refund", () => {
+      const pressRefund = async () => {
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await user.click(screen.getByRole("button", { name: "Kembalikan Rp 10000" }));
+        return screen.findByTestId("inline-result");
+      };
+
+      it("reports the refunded amount from the Refunded event", async () => {
+        run.mockResolvedValue({ kind: "mined", receipt: {}, hash: HASH });
+        (eventsFrom as any).mockReturnValue([{ eventName: "Refunded", args: { amount: 500n } }]);
+        const result = await pressRefund();
+        expect(run).toHaveBeenCalledWith({ address: "0xpbm", abi: [], functionName: "refund", args: [1n] });
+        expect(within(result).getByTestId("stamp-dikembalikan")).toHaveTextContent("Rp 500");
+        expect(within(result).getByText("Sisa dana dikembalikan ke jamaah.")).toBeInTheDocument();
+        expect(within(result).getByRole("link")).toBeInTheDocument();
+        expect(saveJson).toHaveBeenCalledWith(expect.stringContaining("attempts"), [
+          expect.objectContaining({ kind: "lunas", action: "refund", amount: "500", hash: HASH, vendor: PILGRIM }),
+        ]);
+      });
+
+      it("falls back to the whole remaining balance when no Refunded event is found", async () => {
+        run.mockResolvedValue({ kind: "mined", receipt: {}, hash: HASH });
+        const result = await pressRefund();
+        expect(within(result).getByTestId("stamp-dikembalikan")).toHaveTextContent("Rp 10000");
+      });
+
+      it("records a simulated rejection when the dry run reverts", async () => {
+        run.mockResolvedValue({ kind: "reverted", decoded });
+        const result = await pressRefund();
+        expect(within(result).getByText("Kedaluwarsa")).toBeInTheDocument();
+        expect(within(result).getByText(/Expired invoice · simulated, nothing sent/)).toBeInTheDocument();
+        expect(within(result).getByTestId("stamp-ditolak")).toHaveTextContent("Expired");
+      });
+
+      it("records a real rejection when the transaction fails", async () => {
+        run.mockResolvedValue({ kind: "failed", decoded });
+        (errorArgParts as any).mockReturnValue(undefined);
+        const result = await pressRefund();
+        expect(within(result).getByText("Expired invoice")).toBeInTheDocument();
+        expect(within(result).getByTestId("stamp-ditolak")).toHaveTextContent("error()");
+      });
+
+      it("records nothing when the transaction is a passing simulation", async () => {
+        run.mockResolvedValue({ kind: "simulated-ok" });
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await user.click(screen.getByRole("button", { name: "Kembalikan Rp 10000" }));
+        await waitFor(() => expect(run).toHaveBeenCalled());
+        expect(screen.queryByTestId("inline-result")).not.toBeInTheDocument();
+        expect(saveJson).not.toHaveBeenCalledWith(expect.stringContaining("attempts"), expect.anything());
+      });
+
+      it("does nothing when the contracts are not deployed", async () => {
+        (useMabrurContracts as any).mockReturnValue({ pbm: undefined, chainId: 31337 });
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await user.click(screen.getByRole("button", { name: "Kembalikan Rp 10000" }));
+        expect(run).not.toHaveBeenCalled();
+      });
+
+      it("describes a rejection with no decoded id as plain Ditolak", async () => {
+        seedStore({ bookings: [] });
+        (useBooking as any).mockReturnValue({ data: mkBooking() });
+        run.mockResolvedValue({ kind: "failed", decoded: { name: "X", id: undefined, en: undefined } });
+        seedStore({ bookings: ["0x1"] });
+        const result = await pressRefund();
+        expect(within(result).getAllByText(/./).length).toBeGreaterThan(0);
+        expect(within(result).queryByText("Expired invoice")).not.toBeInTheDocument();
+      });
+    });
+
+    describe("loading invoices", () => {
+      it("labels the seeded bookings and agency and warns about a chain mismatch", async () => {
+        seedStore();
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        const agency = "0x" + "a".repeat(40);
+        await loadInvoices(
+          user,
+          [mkInvoice()],
+          JSON.stringify({ ahmadBookingId: "0x1", sitiBookingId: "0x2", agency, chainId: 1 }),
+        );
+        expect(setLabel).toHaveBeenCalledWith("0x1", "Pak Ahmad");
+        expect(setLabel).toHaveBeenCalledWith("0x2", "Ibu Siti");
+        expect(setLabel).toHaveBeenCalledWith(agency, "PT Amanah Contoh Wisata");
+        expect(screen.getByText("Peringatan: file untuk chain 1, dompet di chain 31337")).toBeInTheDocument();
+        expect(saveJson).toHaveBeenCalledWith(expect.stringContaining("bookings"), ["0x1", "0x2"]);
+      });
+
+      it("keeps an existing agency label, ignores non-address agencies and accepts a matching chain", async () => {
+        seedStore();
+        (getLabel as any).mockImplementation((k: string) => (k === "0xalready" ? "Named" : null));
+        (isAddress as any).mockImplementation((a: string) => a === "0xalready");
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice()], JSON.stringify({ agency: "0xalready", chainId: 31337 }));
+        expect(setLabel).not.toHaveBeenCalled();
+        expect(screen.queryByText(/Peringatan/)).not.toBeInTheDocument();
+
+        await loadInvoices(user, [mkInvoice()], JSON.stringify({ agency: "nonsense" }));
+        expect(setLabel).not.toHaveBeenCalled();
+      });
+
+      it("loads invoices from JSON that is not an object", async () => {
+        seedStore();
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice()], "null");
+        expect(screen.getByText(/Bayar faktur/)).toBeInTheDocument();
+        expect(setLabel).not.toHaveBeenCalled();
+      });
+
+      it("does not duplicate a booking that is already listed", async () => {
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice()], JSON.stringify({ ahmadBookingId: "0x1" }));
+        expect(saveJson).toHaveBeenLastCalledWith(expect.stringContaining("bookings"), ["0x1"]);
+      });
+
+      it("reports an empty invoice file but still keeps the seeded bookings", async () => {
+        seedStore();
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [], JSON.stringify({ sitiBookingId: "0x2" }));
+        expect(screen.getByText(/Tidak ada faktur bertanda tangan/)).toBeInTheDocument();
+        expect(saveJson).toHaveBeenCalledWith(expect.stringContaining("bookings"), ["0x2"]);
+        expect(screen.queryByText("kosongkan")).not.toBeInTheDocument();
+      });
+
+      it("shows the parser's message for a rejected invoice", async () => {
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        (parseInvoices as any).mockImplementation(() => {
+          throw new InvoiceParseError("bad signature");
+        });
+        fireEvent.change(screen.getByLabelText("Tempel faktur"), { target: { value: "{}" } });
+        await user.click(screen.getByRole("button", { name: /Baca faktur/ }));
+        expect(screen.getByText("Faktur ditolak · invoice rejected: bad signature")).toBeInTheDocument();
+      });
+
+      it("shows a JSON error when the text cannot be parsed", async () => {
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice()], "not json");
+        expect(screen.getByText(/JSON tidak sah/)).toBeInTheDocument();
+      });
+
+      it("clears the loaded invoices with kosongkan", async () => {
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice()]);
+        expect(screen.getByRole("button", { name: "Bayar faktur" })).toBeInTheDocument();
+        await user.click(screen.getByRole("button", { name: "kosongkan" }));
+        expect(screen.queryByRole("button", { name: "Bayar faktur" })).not.toBeInTheDocument();
+      });
+
+      it("opens the file picker from the Pilih invoices.json button", async () => {
+        const click = vi.spyOn(HTMLInputElement.prototype, "click").mockImplementation(() => {});
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await user.click(screen.getByRole("button", { name: "Pilih invoices.json" }));
+        expect(click).toHaveBeenCalledTimes(1);
+        click.mockRestore();
+      });
+
+      it("ignores a file selection that is empty", () => {
+        render(<AgenPage />);
+        fireEvent.change(screen.getByLabelText("File faktur"), { target: { files: [] } });
+        expect(parseInvoices).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("invoice row", () => {
+      it("shows the recovered signer and marks an invoice for the selected booking", async () => {
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice({}, { refLabel: "INV-1", label: "Hotel Makkah" })]);
+        expect(await screen.findByTestId("chip-0xsigner")).toBeInTheDocument();
+        expect(screen.getByText("booking ini")).toBeInTheDocument();
+        expect(screen.getByText("INV-1")).toBeInTheDocument();
+        expect(screen.getByText(/Hotel Makkah/)).toBeInTheDocument();
+        expect(screen.getAllByText("Rp 1000").length).toBeGreaterThan(0);
+      });
+
+      it("derives the reference label and hides a label equal to it", async () => {
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice({}, { refLabel: "same", label: "same" })]);
+        expect(screen.getByText("same")).toBeInTheDocument();
+        await loadInvoices(user, [mkInvoice()]);
+        expect(screen.getByText("ref-0xref")).toBeInTheDocument();
+      });
+
+      it("marks an invoice for another booking and shows the saved booking name", async () => {
+        (getLabel as any).mockImplementation((k: string) => (k === "0x2" ? "Ibu Siti" : null));
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice({ bookingId: 2n })]);
+        expect(screen.getByText("booking lain")).toBeInTheDocument();
+        expect(screen.getAllByText("(Ibu Siti)").length).toBeGreaterThan(0);
+      });
+
+      it("disables payment when no booking is loaded", async () => {
+        seedStore();
+        (useBooking as any).mockReturnValue({ data: undefined });
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice()]);
+        expect(screen.getByRole("button", { name: "Bayar faktur" })).toBeDisabled();
+        expect(screen.queryByText(/booking ini|booking lain/)).not.toBeInTheDocument();
+      });
+
+      it("shows a dash when the signer cannot be recovered", async () => {
+        (recoverTypedDataAddress as any).mockImplementation(() => Promise.reject(new Error("bad sig")));
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice()]);
+        await waitFor(() => expect(recoverTypedDataAddress).toHaveBeenCalled());
+        expect(screen.queryByTestId("chip-0xsigner")).not.toBeInTheDocument();
+        expect(screen.getByText("–")).toBeInTheDocument();
+      });
+
+      it("does not recover a signer when the contracts are missing, and ignores payment clicks", async () => {
+        (useMabrurContracts as any).mockReturnValue({ pbm: undefined, chainId: 31337 });
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice()]);
+        await user.click(screen.getByRole("button", { name: "Bayar faktur" }));
+        expect(recoverTypedDataAddress).not.toHaveBeenCalled();
+        expect(run).not.toHaveBeenCalled();
+      });
+
+      it("refuses to show an invoice for an unknown line", async () => {
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice({ line: 9 })]);
+        expect(screen.getByText(/Pos tidak dikenal \(9\)/)).toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "Bayar faktur" })).not.toBeInTheDocument();
+      });
+
+      it("pays the invoice from the connected wallet and reports the Spent event", async () => {
+        run.mockResolvedValue({ kind: "mined", receipt: {}, hash: HASH });
+        (eventsFrom as any).mockReturnValue([{ eventName: "Spent", args: { vendor: "0xvendor", amount: 777n } }]);
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice({}, { refLabel: "INV-1" })]);
+        await user.click(screen.getByRole("button", { name: "Bayar faktur" }));
+
+        const result = await screen.findByTestId("inline-result");
+        expect(run).toHaveBeenCalledWith(
+          {
+            address: "0xpbm",
+            abi: [],
+            functionName: "spend",
+            args: [1n, expect.objectContaining({ line: 0, amount: 1000n }), "0xsig1"],
+          },
+          { dryRun: false, account: WALLET },
+        );
+        expect(within(result).getByTestId("stamp-lunas")).toHaveTextContent("Rp 777");
+        expect(within(result).getByText("Dibayar ke penanda tangan.")).toBeInTheDocument();
+        expect(screen.getByTestId("chip-0xvendor")).toBeInTheDocument();
+      });
+
+      it("falls back to the signer and the invoice amount when no Spent event is found", async () => {
+        run.mockResolvedValue({ kind: "mined", receipt: {}, hash: HASH });
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice()]);
+        await screen.findByTestId("chip-0xsigner");
+        await user.click(screen.getByRole("button", { name: "Bayar faktur" }));
+        const result = await screen.findByTestId("inline-result");
+        expect(within(result).getByTestId("stamp-lunas")).toHaveTextContent("Rp 1000");
+        expect(saveJson).toHaveBeenCalledWith(expect.stringContaining("attempts"), [
+          expect.objectContaining({ vendor: "0xsigner", action: "spend · ref-0xref", ref: "ref-0xref" }),
+        ]);
+      });
+
+      it("simulates as the booking's agency when no wallet is connected", async () => {
+        (useAccount as any).mockReturnValue({ address: undefined });
+        run.mockResolvedValue({ kind: "simulated-ok" });
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice({}, { refLabel: "INV-1" })]);
+        await user.click(screen.getAllByRole("button", { name: "Simulasi saja" })[0]);
+
+        const result = await screen.findByTestId("inline-result");
+        expect(run).toHaveBeenCalledWith(expect.anything(), { dryRun: true, account: AGENCY });
+        expect(within(result).getByTestId("stamp-simulasi")).toHaveTextContent("Rp 1000");
+        expect(within(result).getByText(/Simulasi lolos/)).toBeInTheDocument();
+        expect(within(result).getByText("The contract would accept this; nothing was sent.")).toBeInTheDocument();
+      });
+
+      it("reports a reverted dry run as a simulated rejection", async () => {
+        run.mockResolvedValue({ kind: "reverted", decoded });
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice()]);
+        await user.click(screen.getAllByRole("button", { name: "Simulasi saja" })[0]);
+        const result = await screen.findByTestId("inline-result");
+        expect(within(result).getByText(/simulated, nothing sent/)).toBeInTheDocument();
+      });
+
+      it("reports a failed transaction as a rejection", async () => {
+        run.mockResolvedValue({ kind: "failed", decoded });
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        await loadInvoices(user, [mkInvoice()]);
+        await user.click(screen.getByRole("button", { name: "Bayar faktur" }));
+        const result = await screen.findByTestId("inline-result");
+        expect(within(result).getByText("Expired invoice")).toBeInTheDocument();
+        expect(within(result).queryByText(/simulated, nothing sent/)).not.toBeInTheDocument();
+      });
+    });
+
+    describe("adding bookings", () => {
+      const PILGRIM_ADDR = "0x" + "b".repeat(40);
+
+      it("adds a booking computed from the pilgrim address and nonce", async () => {
+        seedStore();
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        fireEvent.change(screen.getByLabelText("Alamat jamaah"), { target: { value: PILGRIM_ADDR } });
+        fireEvent.change(screen.getByLabelText(/Booking ke/), { target: { value: "5" } });
+        await user.click(screen.getByRole("button", { name: "Tambah dari alamat" }));
+        expect(bookingIdOf).toHaveBeenCalledWith(PILGRIM_ADDR, 5n);
+        expect(saveJson).toHaveBeenCalledWith(expect.stringContaining("bookings"), ["0x1"]);
+      });
+
+      it("treats an empty nonce as zero", async () => {
+        seedStore();
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        fireEvent.change(screen.getByLabelText("Alamat jamaah"), { target: { value: PILGRIM_ADDR } });
+        fireEvent.change(screen.getByLabelText(/Booking ke/), { target: { value: "" } });
+        await user.click(screen.getByRole("button", { name: "Tambah dari alamat" }));
+        expect(bookingIdOf).toHaveBeenCalledWith(PILGRIM_ADDR, 0n);
+      });
+
+      it("ignores the add click if the address stops validating before the handler runs", async () => {
+        seedStore();
+        let valid = true;
+        (isAddress as any).mockImplementation(() => valid);
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        fireEvent.change(screen.getByLabelText("Alamat jamaah"), { target: { value: PILGRIM_ADDR } });
+        valid = false;
+        await user.click(screen.getByRole("button", { name: "Tambah dari alamat" }));
+        expect(bookingIdOf).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("agency margin release", () => {
+      const sign = (value: string) =>
+        fireEvent.change(screen.getByLabelText("Tanda tangan keberangkatan"), { target: { value } });
+      const release = () => screen.getByRole("button", { name: /Buka ujrah/ });
+      const resultOf = () => screen.getAllByTestId("inline-result")[0];
+
+      it("sends a raw hex signature and reports the MarginReleased amount", async () => {
+        run.mockResolvedValue({ kind: "mined", receipt: {}, hash: HASH });
+        (eventsFrom as any).mockReturnValue([{ eventName: "MarginReleased", args: { amount: 4000n } }]);
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        sign(" 0xabc ");
+        await user.click(release());
+        await screen.findByTestId("inline-result");
+        expect(run).toHaveBeenCalledWith(
+          { address: "0xpbm", abi: [], functionName: "releaseMargin", args: [1n, "0xabc"] },
+          { dryRun: false, account: WALLET },
+        );
+        expect(within(resultOf()).getByTestId("stamp-lunas")).toHaveTextContent("Rp 4000");
+      });
+
+      it("reports zero when the MarginReleased event is missing", async () => {
+        run.mockResolvedValue({ kind: "mined", receipt: {}, hash: HASH });
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        sign("0xabc");
+        await user.click(release());
+        await screen.findByTestId("inline-result");
+        expect(within(resultOf()).getByTestId("stamp-lunas")).toHaveTextContent("Rp 0");
+      });
+
+      it("reads the signature out of a JSON object, preferring signature over sig", async () => {
+        run.mockResolvedValue({ kind: "simulated-ok" });
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        sign(JSON.stringify({ signature: "0xaaa", sig: "0xbbb" }));
+        await user.click(release());
+        await waitFor(() => expect(run).toHaveBeenCalledTimes(1));
+        expect((run.mock.calls[0][0] as any).args[1]).toBe("0xaaa");
+
+        sign(JSON.stringify({ sig: "0xbbb" }));
+        await user.click(release());
+        await waitFor(() => expect(run).toHaveBeenCalledTimes(2));
+        expect((run.mock.calls[1][0] as any).args[1]).toBe("0xbbb");
+      });
+
+      it("rejects a signature that is not hex without calling the contract", async () => {
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        sign(JSON.stringify({ unrelated: 1 }));
+        await user.click(release());
+        const result = await screen.findByTestId("inline-result");
+        expect(within(result).getByText("Tanda tangan keberangkatan tidak terbaca")).toBeInTheDocument();
+        expect(within(result).getByText("Could not read the departure signature")).toBeInTheDocument();
+        expect(run).not.toHaveBeenCalled();
+      });
+
+      it("shows a passing dry run as a simulation using the agency when no wallet is connected", async () => {
+        (useAccount as any).mockReturnValue({ address: undefined });
+        run.mockResolvedValue({ kind: "simulated-ok" });
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        sign("0xabc");
+        await user.click(screen.getAllByRole("button", { name: "Simulasi saja" })[0]);
+        const result = await screen.findByTestId("inline-result");
+        expect(run).toHaveBeenCalledWith(expect.anything(), { dryRun: true, account: AGENCY });
+        expect(within(result).getByTestId("stamp-simulasi")).toHaveTextContent("Rp 4000");
+      });
+
+      it("reports a revert as a simulated rejection and a failure as a real one", async () => {
+        run.mockResolvedValueOnce({ kind: "reverted", decoded });
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        sign("0xabc");
+        await user.click(release());
+        expect(await screen.findByText(/simulated, nothing sent/)).toBeInTheDocument();
+
+        run.mockResolvedValueOnce({ kind: "failed", decoded: { ...decoded, en: "Real failure" } });
+        await user.click(release());
+        expect((await screen.findAllByText("Real failure")).length).toBeGreaterThan(0);
+        expect(screen.getAllByTestId("stamp-ditolak").length).toBeGreaterThan(1);
+      });
+
+      it("does nothing when the contracts are missing", async () => {
+        (useMabrurContracts as any).mockReturnValue({ pbm: undefined, chainId: 31337 });
+        const user = userEvent.setup();
+        render(<AgenPage />);
+        sign("0xabc");
+        await user.click(release());
+        expect(run).not.toHaveBeenCalled();
+        expect(screen.queryByTestId("inline-result")).not.toBeInTheDocument();
+      });
+    });
+
+    describe("regulator panel agency", () => {
+      const panel = () => screen.getByTestId("regulator-panel");
+
+      it("follows the booking's agency unless overridden", () => {
+        render(<AgenPage />);
+        expect(panel()).toHaveTextContent(AGENCY);
+        fireEvent.change(screen.getByLabelText("Alamat agen untuk panel regulator"), {
+          target: { value: " 0xother " },
+        });
+        expect(panel()).toHaveTextContent("0xother");
+      });
+
+      it("falls back to the default agency, then the wallet, then nothing", () => {
+        seedStore();
+        (useBooking as any).mockReturnValue({ data: undefined });
+        const { unmount } = render(<AgenPage />);
+        expect(panel()).toHaveTextContent("0xdefault");
+        unmount();
+
+        (defaultAgency as any).mockImplementation(() => "");
+        const second = render(<AgenPage />);
+        expect(panel()).toHaveTextContent(WALLET);
+        second.unmount();
+
+        (useAccount as any).mockReturnValue({ address: undefined });
+        render(<AgenPage />);
+        expect(panel().textContent).toBe("");
+      });
     });
   });
 });

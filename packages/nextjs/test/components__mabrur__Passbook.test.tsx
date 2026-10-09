@@ -1,12 +1,10 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { Hex } from "viem";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useAccount, useWalletClient } from "wagmi";
 import { Passbook } from "~~/components/mabrur/Passbook";
-import type { LedgerRow } from "~~/hooks/mabrur/useLedger";
 import { deriveLines, useBookingLedger } from "~~/hooks/mabrur/useLedger";
-import type { Booking, TxOutcome } from "~~/hooks/mabrur/useMabrur";
+import type { Booking } from "~~/hooks/mabrur/useMabrur";
 import { ZERO } from "~~/hooks/mabrur/useMabrur";
 // Get mocked functions
 import { eventsFrom, useChainNow, useMabrurContracts, useMabrurTx } from "~~/hooks/mabrur/useMabrur";
@@ -54,7 +52,7 @@ vi.mock("~~/components/mabrur/ui", () => ({
       {en && ` · ${en}`}
     </span>
   ),
-  CopyButton: ({ text, label }: any) => <button data-testid="copy-btn">{label}</button>,
+  CopyButton: ({ label }: any) => <button data-testid="copy-btn">{label}</button>,
   Label: ({ children }: any) => <label>{children}</label>,
   RevertStamp: ({ d }: any) => <div data-testid="revert-stamp">{d.en}</div>,
   Rp: ({ value, words }: any) => (
@@ -63,7 +61,7 @@ vi.mock("~~/components/mabrur/ui", () => ({
       {words && " (words)"}
     </span>
   ),
-  Stamp: ({ kind, small, children }: any) => (
+  Stamp: ({ kind, children }: any) => (
     <span data-testid={`stamp-${kind}`}>
       {kind}: {children}
     </span>
@@ -124,7 +122,7 @@ vi.mock("~~/utils/mabrur/names", () => ({
 
 // Mock errors utilities
 vi.mock("~~/utils/mabrur/errors", () => ({
-  decodeRevert: vi.fn(e => ({
+  decodeRevert: vi.fn(() => ({
     name: "TestError",
     en: "Test error",
     id: "Test error ID",
@@ -157,17 +155,6 @@ const createBooking = (overrides?: Partial<Booking>): Booking => ({
   remaining: [1000n, 2000n, 3000n, 4000n],
   deposited: 10000n,
   refundable: true,
-  ...overrides,
-});
-
-// Helper to create ledger rows
-const createLedgerRow = (overrides?: Partial<LedgerRow>): LedgerRow => ({
-  kind: "Booked",
-  blockNumber: 1n,
-  logIndex: 0,
-  hash: "0xabc123",
-  timestamp: 1704067200n,
-  amount: 10000n,
   ...overrides,
 });
 
@@ -944,20 +931,11 @@ describe("Passbook component", () => {
 
     it("displays success stamp when release succeeds", async () => {
       const mockSignTypedData = vi.fn(async () => "0xsignature123");
-      let callCount = 0;
-      const mockRun = vi.fn(async () => {
-        callCount++;
-        if (callCount === 1) {
-          // First call should be simulation
-          return { kind: "simulated-ok", result: undefined };
-        }
-        // Second call is the release
-        return {
-          kind: "mined",
-          hash: "0xrelease123",
-          receipt: {},
-        };
-      });
+      const mockRun = vi.fn(async () => ({
+        kind: "mined",
+        hash: "0xrelease123",
+        receipt: {},
+      }));
 
       mockUseWalletClient.mockReturnValue({
         data: { signTypedData: mockSignTypedData },
@@ -1149,6 +1127,49 @@ describe("Passbook component", () => {
       expect(signBtn).toBeDisabled();
     });
 
+    it("submitRelease handles unexpected outcome kind gracefully", async () => {
+      const mockSignTypedData = vi.fn(async () => "0xsignature123");
+      const mockRun = vi.fn(async () => ({
+        kind: "simulated-ok",
+        result: undefined,
+      }));
+
+      mockUseWalletClient.mockReturnValue({
+        data: { signTypedData: mockSignTypedData },
+      });
+
+      mockUseAccount.mockReturnValue({
+        address: "0x1234567890123456789012345678901234567890",
+      });
+
+      mockUseMabrurTx.mockReturnValue({
+        run: mockRun,
+        busy: false,
+        walletClient: { signTypedData: mockSignTypedData },
+      });
+
+      const booking = createBooking({
+        flightVendor: "0x1111111111111111111111111111111111111111",
+        refunded: false,
+      });
+      render(<Passbook b={booking} />);
+
+      const signBtn = screen.getByRole("button", { name: /Tanda tangani keberangkatan/ });
+      await userEvent.click(signBtn);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Tanda tangan · paste into the agency console/)).toBeInTheDocument();
+      });
+
+      // Now try submitRelease
+      const releaseBtn = screen.getByRole("button", { name: /Kirim releaseMargin/ });
+      await userEvent.click(releaseBtn);
+
+      // Should call run but not set release hash or error
+      await new Promise(resolve => setTimeout(resolve, 100));
+      expect(mockRun).toHaveBeenCalled();
+    });
+
     it("handles signDeparture when walletClient is null", async () => {
       mockUseWalletClient.mockReturnValue({
         data: null,
@@ -1178,9 +1199,7 @@ describe("Passbook component", () => {
 
     it("handles submitRelease when walletClient is initially null then has data", async () => {
       const mockSignTypedData = vi.fn(async () => "0xsignature123");
-      let callCount = 0;
       const mockRun = vi.fn(async () => {
-        callCount++;
         return { kind: "simulated-ok", result: undefined };
       });
 
@@ -1881,6 +1900,530 @@ describe("Passbook component", () => {
       render(<Passbook b={booking} />);
 
       expect(screen.getByText(/Total sisa dana amanah/)).toBeInTheDocument();
+    });
+
+    it("signDeparture guard: returns early when walletClient is null", async () => {
+      mockUseWalletClient.mockReturnValue({
+        data: null,
+      });
+
+      mockUseAccount.mockReturnValue({
+        address: "0x1234567890123456789012345678901234567890",
+      });
+
+      const booking = createBooking({
+        flightVendor: "0x1111111111111111111111111111111111111111",
+        refunded: false,
+      });
+      render(<Passbook b={booking} />);
+
+      const signBtn = screen.getByRole("button", { name: /Tanda tangani keberangkatan/ });
+      await userEvent.click(signBtn);
+
+      // Should not set depSig since walletClient is null
+      await new Promise(resolve => setTimeout(resolve, 50));
+      expect(screen.queryByText(/Tanda tangan · paste into the agency console/)).not.toBeInTheDocument();
+    });
+
+    it("signDeparture guard: returns early when pbm is null", async () => {
+      mockUseMabrurContracts.mockReturnValue({
+        pbm: null,
+        chainId: 31337,
+        isLoading: false,
+        ready: false,
+      });
+
+      mockUseWalletClient.mockReturnValue({
+        data: { signTypedData: vi.fn() },
+      });
+
+      mockUseAccount.mockReturnValue({
+        address: "0x1234567890123456789012345678901234567890",
+      });
+
+      const booking = createBooking({
+        flightVendor: "0x1111111111111111111111111111111111111111",
+        refunded: false,
+      });
+      render(<Passbook b={booking} />);
+
+      const signBtn = screen.getByRole("button", { name: /Tanda tangani keberangkatan/ });
+      await userEvent.click(signBtn);
+
+      // Should not set depSig since pbm is null
+      await new Promise(resolve => setTimeout(resolve, 50));
+      expect(screen.queryByText(/Tanda tangan · paste into the agency console/)).not.toBeInTheDocument();
+    });
+
+    it("submitRelease guard: returns early when pbm becomes null during execution", async () => {
+      const mockSignTypedData = vi.fn(async () => "0xsignature123");
+      const mockRun = vi.fn();
+
+      mockUseWalletClient.mockReturnValue({
+        data: { signTypedData: mockSignTypedData },
+      });
+
+      mockUseAccount.mockReturnValue({
+        address: "0x1234567890123456789012345678901234567890",
+      });
+
+      // First render with pbm available for signing
+      mockUseMabrurContracts.mockReturnValue({
+        pbm: { address: "0x5555555555555555555555555555555555555555", abi: [] },
+        chainId: 31337,
+        isLoading: false,
+        ready: true,
+      });
+
+      mockUseMabrurTx.mockReturnValue({
+        run: mockRun,
+        busy: false,
+        walletClient: { signTypedData: mockSignTypedData },
+      });
+
+      const booking = createBooking({
+        flightVendor: "0x1111111111111111111111111111111111111111",
+        refunded: false,
+      });
+
+      const { rerender } = render(<Passbook b={booking} />);
+
+      const signBtn = screen.getByRole("button", { name: /Tanda tangani keberangkatan/ });
+      await userEvent.click(signBtn);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Tanda tangan · paste into the agency console/)).toBeInTheDocument();
+      });
+
+      // Now change pbm to null and rerender
+      mockUseMabrurContracts.mockReturnValue({
+        pbm: null,
+        chainId: 31337,
+        isLoading: false,
+        ready: false,
+      });
+
+      rerender(<Passbook b={booking} />);
+
+      // Now try to submit release - since pbm is now null, run should not be called
+      const releaseBtn = screen.queryByRole("button", { name: /Kirim releaseMargin/ });
+      if (releaseBtn) {
+        await userEvent.click(releaseBtn);
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      // Either button doesn't exist or run was not called
+      expect(releaseBtn === null || mockRun.mock.calls.length === 0).toBe(true);
+    });
+
+    it("submitRelease guard: returns early when depSig is undefined", async () => {
+      const mockRun = vi.fn();
+      mockUseWalletClient.mockReturnValue({
+        data: { signTypedData: vi.fn() },
+      });
+
+      mockUseAccount.mockReturnValue({
+        address: "0x1234567890123456789012345678901234567890",
+      });
+
+      mockUseMabrurTx.mockReturnValue({
+        run: mockRun,
+        busy: false,
+        walletClient: { signTypedData: vi.fn() },
+      });
+
+      mockUseMabrurContracts.mockReturnValue({
+        pbm: { address: "0x5555555555555555555555555555555555555555", abi: [] },
+        chainId: 31337,
+        isLoading: false,
+        ready: true,
+      });
+
+      const booking = createBooking({
+        flightVendor: "0x1111111111111111111111111111111111111111",
+        refunded: false,
+      });
+
+      // Render without clicking sign - depSig will be undefined
+      render(<Passbook b={booking} />);
+
+      // Try to find and check if there are any release buttons - there shouldn't be
+      const releaseBtns = screen.queryAllByRole("button", { name: /Kirim releaseMargin/ });
+      expect(releaseBtns.length).toBe(0);
+    });
+
+    it("doRefund: handles failed outcome correctly", async () => {
+      const mockRun = vi.fn(async () => ({
+        kind: "failed",
+        decoded: {
+          name: "TransactionFailed",
+          en: "Transaction failed",
+          id: "Transaksi gagal",
+          isRevert: false,
+          args: [],
+          argNames: [],
+        },
+        simulated: false,
+      }));
+
+      mockUseMabrurTx.mockReturnValue({
+        run: mockRun,
+        busy: false,
+        walletClient: { signTypedData: vi.fn() },
+      });
+
+      mockUseWalletClient.mockReturnValue({
+        data: { signTypedData: vi.fn() },
+      });
+
+      const booking = createBooking({ refundable: true });
+      render(<Passbook b={booking} />);
+
+      const refundBtn = screen.getByText(/Kembalikan/);
+      await userEvent.click(refundBtn);
+
+      await waitFor(() => {
+        expect(mockRun).toHaveBeenCalled();
+        expect(screen.getByTestId("revert-stamp")).toBeInTheDocument();
+      });
+    });
+
+    it("getLabel fallback: uses shortHex when vendor label not found", () => {
+      mockUseBookingLedger.mockReturnValue({
+        data: [
+          {
+            kind: "Spent",
+            blockNumber: 2n,
+            logIndex: 0,
+            hash: "0xspent123",
+            timestamp: 1704153600n,
+            amount: 1000n,
+            line: 0,
+            counterparty: "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+            ref: "0xref123",
+          },
+        ],
+        isError: false,
+      });
+
+      mockDeriveLines.mockReturnValue([
+        {
+          original: 1000n,
+          remaining: 0n,
+          spent: [{ amount: 1000n, to: "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef", hash: "0x123" }],
+          refunded: undefined,
+          state: "lunas",
+        },
+        { original: 2000n, remaining: 2000n, spent: [], refunded: undefined, state: "earmarked" },
+        { original: 3000n, remaining: 3000n, spent: [], refunded: undefined, state: "earmarked" },
+        { original: 4000n, remaining: 4000n, spent: [], refunded: undefined, state: "earmarked" },
+      ]);
+
+      const booking = createBooking();
+      const { container } = render(<Passbook b={booking} />);
+
+      // Should use shortHex since no label found for 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+      const tables = container.querySelectorAll("table");
+      expect(tables.length).toBeGreaterThan(0);
+      // Verify that shortHex was used (it should show as "deadb...beef" format)
+      expect(screen.getByText(/deadb.*beef/)).toBeInTheDocument();
+    });
+
+    it("ledger: spent entry with known vendor and ref", () => {
+      mockUseBookingLedger.mockReturnValue({
+        data: [
+          {
+            kind: "Spent",
+            blockNumber: 2n,
+            logIndex: 0,
+            hash: "0xspent123",
+            timestamp: 1704153600n,
+            amount: 1000n,
+            line: 0,
+            counterparty: "0x1111111111111111111111111111111111111111",
+            ref: "0xref123",
+          },
+        ],
+        isError: false,
+      });
+
+      mockDeriveLines.mockReturnValue([
+        {
+          original: 1000n,
+          remaining: 0n,
+          spent: [{ amount: 1000n, to: "0x1111111111111111111111111111111111111111", hash: "0x123", ref: "0xref123" }],
+          refunded: undefined,
+          state: "lunas",
+        },
+        { original: 2000n, remaining: 2000n, spent: [], refunded: undefined, state: "earmarked" },
+        { original: 3000n, remaining: 3000n, spent: [], refunded: undefined, state: "earmarked" },
+        { original: 4000n, remaining: 4000n, spent: [], refunded: undefined, state: "earmarked" },
+      ]);
+
+      const booking = createBooking();
+      const { container } = render(<Passbook b={booking} />);
+
+      // Should display Flight Vendor label (from mock) and ref label in the ledger
+      const tables = container.querySelectorAll("table");
+      expect(tables.length).toBeGreaterThan(0);
+      // Check that the table contains both vendor and ref
+      const tableText = container.querySelector("table")?.textContent || "";
+      expect(tableText).toContain("Flight Vendor");
+      expect(tableText).toContain("ref-0xref123");
+    });
+
+    it("ledger: spent entry with unknown vendor and no ref", () => {
+      mockUseBookingLedger.mockReturnValue({
+        data: [
+          {
+            kind: "Spent",
+            blockNumber: 2n,
+            logIndex: 0,
+            hash: "0xspent123",
+            timestamp: 1704153600n,
+            amount: 1000n,
+            line: 0,
+            counterparty: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+          },
+        ],
+        isError: false,
+      });
+
+      mockDeriveLines.mockReturnValue([
+        {
+          original: 1000n,
+          remaining: 0n,
+          spent: [{ amount: 1000n, to: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd", hash: "0x123" }],
+          refunded: undefined,
+          state: "lunas",
+        },
+        { original: 2000n, remaining: 2000n, spent: [], refunded: undefined, state: "earmarked" },
+        { original: 3000n, remaining: 3000n, spent: [], refunded: undefined, state: "earmarked" },
+        { original: 4000n, remaining: 4000n, spent: [], refunded: undefined, state: "earmarked" },
+      ]);
+
+      const booking = createBooking();
+      render(<Passbook b={booking} />);
+
+      // Should show table with the spent entry
+      expect(screen.getByText(/Keterangan/)).toBeInTheDocument();
+    });
+
+    it("ledger: spent entry with known vendor and no ref", () => {
+      mockUseBookingLedger.mockReturnValue({
+        data: [
+          {
+            kind: "Spent",
+            blockNumber: 2n,
+            logIndex: 0,
+            hash: "0xspent123",
+            timestamp: 1704153600n,
+            amount: 1000n,
+            line: 0,
+            counterparty: "0x1111111111111111111111111111111111111111",
+          },
+        ],
+        isError: false,
+      });
+
+      mockDeriveLines.mockReturnValue([
+        {
+          original: 1000n,
+          remaining: 0n,
+          spent: [{ amount: 1000n, to: "0x1111111111111111111111111111111111111111", hash: "0x123" }],
+          refunded: undefined,
+          state: "lunas",
+        },
+        { original: 2000n, remaining: 2000n, spent: [], refunded: undefined, state: "earmarked" },
+        { original: 3000n, remaining: 3000n, spent: [], refunded: undefined, state: "earmarked" },
+        { original: 4000n, remaining: 4000n, spent: [], refunded: undefined, state: "earmarked" },
+      ]);
+
+      const booking = createBooking();
+      const { container } = render(<Passbook b={booking} />);
+
+      // Should display Flight Vendor label (from mock) without ref suffix
+      const tables = container.querySelectorAll("table");
+      expect(tables.length).toBeGreaterThan(0);
+      const tableText = container.querySelector("table")?.textContent || "";
+      expect(tableText).toContain("Flight Vendor");
+    });
+
+    it("refund: handles reverted outcome distinctly from failed", async () => {
+      const mockRun = vi.fn(async () => ({
+        kind: "reverted",
+        decoded: {
+          name: "RefundNotAllowed",
+          en: "Refund not allowed",
+          id: "Refund tidak diizinkan",
+          isRevert: true,
+          args: [],
+          argNames: [],
+        },
+        simulated: true,
+      }));
+
+      mockUseMabrurTx.mockReturnValue({
+        run: mockRun,
+        busy: false,
+        walletClient: { signTypedData: vi.fn() },
+      });
+
+      mockUseWalletClient.mockReturnValue({
+        data: { signTypedData: vi.fn() },
+      });
+
+      const booking = createBooking({ refundable: true });
+      render(<Passbook b={booking} />);
+
+      const refundBtn = screen.getByText(/Kembalikan/);
+      await userEvent.click(refundBtn);
+
+      await waitFor(() => {
+        expect(mockRun).toHaveBeenCalled();
+        expect(screen.getByTestId("revert-stamp")).toBeInTheDocument();
+      });
+    });
+
+    it("doRefund: sets error for reverted outcome", async () => {
+      const mockRun = vi.fn(async () => ({
+        kind: "reverted",
+        decoded: {
+          name: "TestRevert",
+          en: "Test",
+          id: "Test",
+          isRevert: true,
+          args: [],
+          argNames: [],
+        },
+        simulated: true,
+      }));
+
+      mockUseMabrurTx.mockReturnValue({
+        run: mockRun,
+        busy: false,
+        walletClient: { signTypedData: vi.fn() },
+      });
+
+      mockUseWalletClient.mockReturnValue({
+        data: { signTypedData: vi.fn() },
+      });
+
+      const booking = createBooking({ refundable: true });
+      render(<Passbook b={booking} />);
+
+      const refundBtn = screen.getByText(/Kembalikan/);
+      await userEvent.click(refundBtn);
+
+      await waitFor(() => {
+        expect(mockRun).toHaveBeenCalled();
+        expect(screen.getByTestId("revert-stamp")).toBeInTheDocument();
+      });
+    });
+
+    it("doRefund: sets error for failed outcome specifically", async () => {
+      const mockRun = vi.fn(async () => ({
+        kind: "failed",
+        decoded: {
+          name: "TestFailed",
+          en: "Test",
+          id: "Test",
+          isRevert: false,
+          args: [],
+          argNames: [],
+        },
+        simulated: false,
+      }));
+
+      mockUseMabrurTx.mockReturnValue({
+        run: mockRun,
+        busy: false,
+        walletClient: { signTypedData: vi.fn() },
+      });
+
+      mockUseWalletClient.mockReturnValue({
+        data: { signTypedData: vi.fn() },
+      });
+
+      const booking = createBooking({ refundable: true });
+      render(<Passbook b={booking} />);
+
+      const refundBtn = screen.getByText(/Kembalikan/);
+      await userEvent.click(refundBtn);
+
+      await waitFor(() => {
+        expect(mockRun).toHaveBeenCalled();
+        expect(screen.getByTestId("revert-stamp")).toBeInTheDocument();
+      });
+    });
+
+    it("doRefund: handles unexpected outcome kind gracefully", async () => {
+      const mockRun = vi.fn(async () => ({
+        kind: "simulated-ok",
+        result: undefined,
+      }));
+
+      mockUseMabrurTx.mockReturnValue({
+        run: mockRun,
+        busy: false,
+        walletClient: { signTypedData: vi.fn() },
+      });
+
+      mockUseWalletClient.mockReturnValue({
+        data: { signTypedData: vi.fn() },
+      });
+
+      const booking = createBooking({ refundable: true });
+      render(<Passbook b={booking} />);
+
+      const refundBtn = screen.getByText(/Kembalikan/);
+      await userEvent.click(refundBtn);
+
+      // Should call run but not set outcome or error
+      await new Promise(resolve => setTimeout(resolve, 100));
+      expect(mockRun).toHaveBeenCalled();
+      // Neither the outcome stamp nor error stamp should appear
+      expect(screen.queryByTestId("stamp-dikembalikan")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("revert-stamp")).not.toBeInTheDocument();
+    });
+
+    it("ledger: spent with unknown line index uses fallback to line 0", () => {
+      mockUseBookingLedger.mockReturnValue({
+        data: [
+          {
+            kind: "Spent",
+            blockNumber: 2n,
+            logIndex: 0,
+            hash: "0xspent123",
+            timestamp: 1704153600n,
+            amount: 1000n,
+            line: undefined,
+            counterparty: "0x1111111111111111111111111111111111111111",
+            ref: "0xref123",
+          },
+        ],
+        isError: false,
+      });
+
+      mockDeriveLines.mockReturnValue([
+        {
+          original: 1000n,
+          remaining: 0n,
+          spent: [{ amount: 1000n, to: "0x1111111111111111111111111111111111111111", hash: "0x123" }],
+          refunded: undefined,
+          state: "lunas",
+        },
+        { original: 2000n, remaining: 2000n, spent: [], refunded: undefined, state: "earmarked" },
+        { original: 3000n, remaining: 3000n, spent: [], refunded: undefined, state: "earmarked" },
+        { original: 4000n, remaining: 4000n, spent: [], refunded: undefined, state: "earmarked" },
+      ]);
+
+      const booking = createBooking();
+      render(<Passbook b={booking} />);
+
+      // Should use line 0 (Tiket pesawat) when line is undefined
+      // The description should show the ticket line name
+      expect(screen.getByText(/Flight Vendor/)).toBeInTheDocument();
     });
   });
 });
