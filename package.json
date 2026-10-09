@@ -34,7 +34,6 @@
     "foundry:verify": "yarn workspace @se-2/foundry verify",
     "generate": "yarn foundry:generate",
     "postinstall": "husky install",
-    "ipfs": "yarn workspace @se-2/nextjs ipfs",
     "lint": "yarn next:lint && yarn foundry:lint",
     "next:build": "yarn workspace @se-2/nextjs build",
     "next:check-types": "yarn workspace @se-2/nextjs check-types",
