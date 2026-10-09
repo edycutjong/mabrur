@@ -1,14 +1,15 @@
 <div align="center">
-  <img src="packages/nextjs/public/icon.svg" alt="Mabrur icon" width="88">
+  <img src="packages/nextjs/public/icon.svg" alt="Ikon Mabrur" width="88">
   <h1>Mabrur 🕋</h1>
-  <p><em>Dana jamaah adalah amanah, bukan modal kerja agen.<br/>Each pilgrim's prepaid rupiah is earmarked onchain, line by line, payable only to verified vendors, and refundable by anyone.</em></p>
-  <img src="docs/readme-hero.png" alt="Mabrur: the agency's four attempts on Pak Ahmad's booking, three rejected, one paid; Ibu Siti refunded" width="100%">
+  <p><strong>Bahasa Indonesia</strong> · <a href="README.en.md">English</a></p>
+  <p><em>Dana jamaah adalah amanah, bukan modal kerja agen.<br/>Setiap rupiah uang muka jamaah dikunci onchain per pos, hanya bisa dibayarkan ke vendor terverifikasi, dan bisa dikembalikan oleh siapa pun.</em></p>
+  <img src="docs/readme-hero.png" alt="Mabrur: empat percobaan agen pada booking Pak Ahmad, tiga ditolak, satu dibayar; dana Ibu Siti dikembalikan" width="100%">
 
   <br/>
 
-  [![Live App](https://img.shields.io/badge/🚀_Live-mabrur.edycu.dev-06b6d4?style=for-the-badge)](https://mabrur.edycu.dev)
-  [![Proof](https://img.shields.io/badge/🧾_Every_step-DEMO.md-ef4444?style=for-the-badge)](DEMO.md)
-  [![Arbitrum One](https://img.shields.io/badge/Arbitrum_One-42161_verified-f59e0b?style=for-the-badge)](https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code)
+  [![Aplikasi](https://img.shields.io/badge/🚀_Live-mabrur.edycu.dev-06b6d4?style=for-the-badge)](https://mabrur.edycu.dev)
+  [![Bukti](https://img.shields.io/badge/🧾_Setiap_langkah-DEMO.md-ef4444?style=for-the-badge)](DEMO.md)
+  [![Arbitrum One](https://img.shields.io/badge/Arbitrum_One-42161_terverifikasi-f59e0b?style=for-the-badge)](https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code)
   [![ETHJKT 2026](https://img.shields.io/badge/HackQuest-Ethereum_Jakarta_2026-8b5cf6?style=for-the-badge)](https://www.hackquest.io/hackathons/Ethereum-Jakarta-Hackathon-2026)
 
   <br/>
@@ -24,167 +25,171 @@
 
 ---
 
-## 📸 See it in action
+## 📸 Lihat cara kerjanya
 
-> **One booking, four attempts.** The agency tries Siti's hotel invoice on Ahmad's money (**EarmarkMismatch**), tries
-> to pay the director (**VendorClaimMissing**), pays the airline (✔ Rp 14.000.000 to the invoice signer), reaches for
-> its fee before departure (**NotDeparted**). Siti's ticket-by date passes with no ticket bought, and **anyone** taps
-> refund: every unspent rupiah goes back to her.
+> **Satu booking, empat percobaan.** Agen mencoba memakai faktur hotel Ibu Siti dengan dana Pak Ahmad
+> (**EarmarkMismatch**), mencoba membayar direkturnya sendiri (**VendorClaimMissing**), membayar maskapai (✔ Rp 14.000.000
+> ke penanda tangan faktur), lalu mencoba mengambil ujrah sebelum jamaah berangkat (**NotDeparted**). Batas tiket
+> Ibu Siti lewat tanpa tiket dibeli, dan **siapa pun** bisa menekan refund: setiap rupiah yang belum terpakai kembali
+> kepadanya.
 
-Every one of those attempts is a **mined transaction on Arbitrum One**: the three rejections are failed transactions
-you can open on Arbiscan, decoded by name. See [DEMO.md](DEMO.md) for the full ledger.
+Setiap percobaan itu adalah **transaksi yang benar-benar ditambang di Arbitrum One**: tiga penolakan di bawah adalah
+transaksi gagal yang bisa dibuka di Arbiscan, lengkap dengan nama error-nya. Buku besar lengkap ada di [DEMO.md](DEMO.md).
 
-| Agency attempt (on chain) | Result | Tx |
+| Percobaan agen (onchain) | Hasil | Tx |
 |---|---|---|
-| Siti's hotel invoice on a booking of Pak Ahmad's | `EarmarkMismatch` | [0x9ed30e38…](https://arbiscan.io/tx/0x9ed30e3802f988fb2219a08c9d184ab779da13d2afbc7f9314d0ab3fa0bbc316) |
-| Invoice signed by the agency director | `VendorClaimMissing` | [0x887d6b86…](https://arbiscan.io/tx/0x887d6b86d4361666b883edb9624efbd9bef0cdc6e4b0244149433d964beffa61) |
-| Replaying an invoice that was already paid | `InvoiceReplayed` | [0x952f30ad…](https://arbiscan.io/tx/0x952f30adf9d7cc08982d8128c5e0de85a241d92a2d0e099799df6c7a75b9619a) |
-| Agency signs its own "departure" to take the fee | `NotDeparted` | [0xe4855ebd…](https://arbiscan.io/tx/0xe4855ebd72f05a8756a814cc8fbfb963b18f70bdd16856130cff391e1df5291b) |
-| Airline invoice, Rp 14.000.000 | paid to the signer | [0x7bb513e7…](https://arbiscan.io/tx/0x7bb513e7aa166844f26b49c2b94deb2b70ca62904de5b8afdaf23b114ac10590) |
-| Siti's ticket-by lapses, a third party calls `refund` | Rp 23.000.000 back to Siti | [0x13b8a133…](https://arbiscan.io/tx/0x13b8a1335b64ebaaef1a2e22de87c91f4c13604d224e2f06a3dcf51ca3f78666) |
+| Faktur hotel Ibu Siti dipakai pada booking Pak Ahmad | `EarmarkMismatch` | [0x9ed30e38…](https://arbiscan.io/tx/0x9ed30e3802f988fb2219a08c9d184ab779da13d2afbc7f9314d0ab3fa0bbc316) |
+| Faktur yang ditandatangani direktur agen | `VendorClaimMissing` | [0x887d6b86…](https://arbiscan.io/tx/0x887d6b86d4361666b883edb9624efbd9bef0cdc6e4b0244149433d964beffa61) |
+| Mengirim ulang faktur yang sudah dibayar | `InvoiceReplayed` | [0x952f30ad…](https://arbiscan.io/tx/0x952f30adf9d7cc08982d8128c5e0de85a241d92a2d0e099799df6c7a75b9619a) |
+| Agen menandatangani "keberangkatan" sendiri untuk mengambil ujrah | `NotDeparted` | [0xe4855ebd…](https://arbiscan.io/tx/0xe4855ebd72f05a8756a814cc8fbfb963b18f70bdd16856130cff391e1df5291b) |
+| Faktur maskapai, Rp 14.000.000 | dibayar ke penanda tangan | [0x7bb513e7…](https://arbiscan.io/tx/0x7bb513e7aa166844f26b49c2b94deb2b70ca62904de5b8afdaf23b114ac10590) |
+| Batas tiket Ibu Siti lewat, pihak ketiga memanggil `refund` | Rp 23.000.000 kembali ke Ibu Siti | [0x13b8a133…](https://arbiscan.io/tx/0x13b8a1335b64ebaaef1a2e22de87c91f4c13604d224e2f06a3dcf51ca3f78666) |
 
 ---
 
-## 💡 The problem & the solution
+## 💡 Masalah & solusinya
 
-Umrah is prepaid, often months ahead, to a licensed travel agency (PPIU). When an agency treats that money as working
-capital, new pilgrims pay for earlier pilgrims' trips until it collapses:
+Umrah dibayar di muka, sering berbulan-bulan sebelumnya, kepada biro perjalanan berizin (PPIU). Ketika agen
+memperlakukan dana itu sebagai modal kerja, jamaah baru membiayai keberangkatan jamaah lama sampai semuanya runtuh:
 
-- **First Travel:** 63,310 prospective jamaah, Rp 905 miliar lost ([Kompas, 5 Jan 2023](https://megapolitan.kompas.com/read/2023/01/05/15482901/aset-first-travel-dirampas-negara-mahkamah-agung-putuskan-dikembalikan-ke)); new sign-ups funded earlier departures ([detik, 24 Jul 2017](https://finance.detik.com/moneter/d-3571069/first-travel-diduga-pakai-skema-ponzi-apa-itu)).
-- **Abu Tours:** 86,720 jamaah, an estimated Rp 1,8 triliun ([Kompas, 29 Jan 2019](https://regional.kompas.com/read/2019/01/29/13221841/5-fakta-vonis-20-tahun-bos-abu-tour-tipu-86720-jemaah-umrah-hingga-30-kali?page=all)).
-- **Scale:** about 1,4 juta jamaah departed through PPIU in 2024 (SISKOPATUH data as reported by [HIMPUH, 18 Feb 2025](https://himpuh.or.id/blog/detail/2307/himpuh-400-ribu-jemaah-indonesia-berangkat-umrah-tidak-lewat-ppiu-di-tahun-2024); secondary source).
+- **First Travel:** 63.310 calon jamaah, kerugian Rp 905 miliar ([Kompas, 5 Jan 2023](https://megapolitan.kompas.com/read/2023/01/05/15482901/aset-first-travel-dirampas-negara-mahkamah-agung-putuskan-dikembalikan-ke)); pendaftar baru membiayai keberangkatan jamaah sebelumnya ([detik, 24 Jul 2017](https://finance.detik.com/moneter/d-3571069/first-travel-diduga-pakai-skema-ponzi-apa-itu)).
+- **Abu Tours:** 86.720 jamaah, perkiraan kerugian Rp 1,8 triliun ([Kompas, 29 Jan 2019](https://regional.kompas.com/read/2019/01/29/13221841/5-fakta-vonis-20-tahun-bos-abu-tour-tipu-86720-jemaah-umrah-hingga-30-kali?page=all)).
+- **Skala:** sekitar 1,4 juta jamaah berangkat melalui PPIU pada 2024 (data SISKOPATUH sebagaimana dilaporkan [HIMPUH, 18 Feb 2025](https://himpuh.or.id/blog/detail/2307/himpuh-400-ribu-jemaah-indonesia-berangkat-umrah-tidak-lewat-ppiu-di-tahun-2024); sumber sekunder).
 
-**Mabrur** makes the pilgrim's prepayment a **real-world asset she holds**: a non-transferable claim on a licensed
-service (`mUMRAH`), split into FLIGHT · HOTEL · VISA · MARGIN lines. The agency can move money only one way.
+**Mabrur** menjadikan uang muka jamaah sebuah **aset dunia nyata yang ia pegang sendiri**: klaim atas layanan berizin
+yang tidak bisa dipindahtangankan (`mUMRAH`), dipecah menjadi pos TIKET · HOTEL · VISA · UJRAH. Agen hanya punya satu
+jalan untuk memindahkan uang.
 
-**Key features (all in [`MabrurPBM.sol`](packages/foundry/contracts/MabrurPBM.sol)):**
-- 🧾 **Per-pilgrim earmarks:** one EIP-2612 permit signature plus `book()` wraps her rupiah into her own booking. `_update` blocks every transfer, so one pilgrim's money can never pay for another's trip ([`MabrurPBM.sol:241`](packages/foundry/contracts/MabrurPBM.sol#L241)).
-- ✍️ **Nobody chooses the payee:** `spend()` pays the **EIP-712 invoice signer**, and only if that signer holds a valid AIRLINE / HOTEL / VISA claim in the [`ClaimRegistry`](packages/foundry/contracts/ClaimRegistry.sol). There is no address field for the agency to type its director into ([`MabrurPBM.sol:162`](packages/foundry/contracts/MabrurPBM.sol#L162)).
-- 🛫 **Fee after departure:** the agency's MARGIN (capped at 20 %) unlocks only on a `Departure` signature from the pilgrim, or from the licensed airline paid from her FLIGHT line ([`MabrurPBM.sol:197`](packages/foundry/contracts/MabrurPBM.sol#L197)).
-- 🎫 **"Tiket lunas atau sisa dana kembali":** if no full ticket is paid by the pilgrim-signed `ticketBy` date, or once `departBy` passes, **anyone** (a neighbour, an NGO, the regulator) can call `refund()` and every unspent rupiah returns to her ([`MabrurPBM.sol:218`](packages/foundry/contracts/MabrurPBM.sol#L218)). `book` also rejects a departure date more than 180 days out.
-- 🏛️ **Live regulator view:** `regulatorView(agency)` (open bookings, liabilities from an independent deposited − paid-out ledger, earmarked) and `conservation()` show that outstanding prepayments are backed by rupiah held in the contract.
-- 🔑 **No override key:** no owner, pause or upgrade path touches balances. The registry owner (the regulator key, never the agency) only decides who counts as a vendor.
+**Fitur utama (semuanya di [`MabrurPBM.sol`](packages/foundry/contracts/MabrurPBM.sol)):**
+- 🧾 **Dana dipisah per jamaah:** satu tanda tangan permit EIP-2612 ditambah `book()` membungkus rupiahnya ke dalam booking miliknya sendiri. `_update` memblokir setiap transfer, sehingga dana satu jamaah tidak pernah bisa membiayai perjalanan jamaah lain ([`MabrurPBM.sol:241`](packages/foundry/contracts/MabrurPBM.sol#L241)).
+- ✍️ **Tidak ada yang memilih penerima:** `spend()` membayar **penanda tangan faktur EIP-712**, dan hanya jika penanda tangan itu memegang klaim AIRLINE / HOTEL / VISA yang sah di [`ClaimRegistry`](packages/foundry/contracts/ClaimRegistry.sol). Tidak ada kolom alamat yang bisa diisi agen dengan alamat direkturnya ([`MabrurPBM.sol:162`](packages/foundry/contracts/MabrurPBM.sol#L162)).
+- 🛫 **Ujrah setelah berangkat:** ujrah agen (maksimal 20 %) baru terbuka dengan tanda tangan `Departure` dari jamaah, atau dari maskapai berizin yang dibayar dari pos tiketnya ([`MabrurPBM.sol:197`](packages/foundry/contracts/MabrurPBM.sol#L197)).
+- 🎫 **"Tiket lunas atau sisa dana kembali":** jika tiket tidak dibayar lunas sebelum `ticketBy` yang ditandatangani jamaah, atau setelah `departBy` lewat, **siapa pun** (tetangga, LSM, regulator) bisa memanggil `refund()` dan setiap rupiah yang belum terpakai kembali ke jamaah ([`MabrurPBM.sol:218`](packages/foundry/contracts/MabrurPBM.sol#L218)). `book` juga menolak tanggal berangkat lebih dari 180 hari ke depan.
+- 🏛️ **Pandangan regulator secara langsung:** `regulatorView(agency)` (booking terbuka, kewajiban dari buku besar setoran − pembayaran yang independen, dana tersimpan) dan `conservation()` menunjukkan bahwa seluruh uang muka yang belum terpakai dijamin rupiah yang ada di kontrak.
+- 🔑 **Tanpa kunci darurat:** tidak ada owner, pause, atau jalur upgrade yang bisa menyentuh saldo. Pemilik registry (kunci regulator, tidak pernah agen) hanya menentukan siapa yang diakui sebagai vendor.
 
-### Why not a bank escrow account or a milestone-escrow contract?
+### Mengapa bukan rekening penampungan bank atau kontrak escrow bertahap?
 
-| | Bank escrow (*rekening penampungan*) | Milestone escrow (the default build) | **Mabrur** |
+| | Rekening penampungan bank | Escrow bertahap (pendekatan umum) | **Mabrur** |
 |---|---|---|---|
-| Per-pilgrim separation | one pooled account | one pool or per deal | per-booking earmark, enforced in the token |
-| Who picks the payee | agency instructs the bank | agency names an address | **nobody**: the claim-verified invoice signer |
-| Fee before service | agency withdraws at will | at an agency-declared milestone | locked until departure is signed |
-| Agency disappears | court process, years | needs an arbiter | `refund()` by anyone, no cooperation needed |
-| Regulator view | after collapse, by audit | none | live, from contract state |
+| Pemisahan per jamaah | satu rekening gabungan | satu kolam atau per transaksi | dana per booking, ditegakkan di token |
+| Siapa memilih penerima | agen memberi instruksi ke bank | agen menulis alamat | **tidak ada**: penanda tangan faktur yang terverifikasi |
+| Ujrah sebelum layanan | agen menarik kapan saja | pada tahap yang ditentukan agen | terkunci sampai keberangkatan ditandatangani |
+| Agen menghilang | proses pengadilan, bertahun-tahun | butuh arbiter | `refund()` oleh siapa pun, tanpa kerja sama agen |
+| Pandangan regulator | setelah runtuh, lewat audit | tidak ada | langsung, dari state kontrak |
 
 ---
 
-## 🏗️ Architecture & tech stack
+## 🏗️ Arsitektur & teknologi
 
 ```mermaid
 flowchart LR
-  P[Pilgrim wallet] -- permit + book --> PBM[MabrurPBM<br/>mUMRAH earmarks]
-  A[Agency console] -- spend(invoice, vendorSig) --> PBM
-  V[Vendor page] -- EIP-712 Invoice signature --> A
-  PBM -- hasValidClaim --> R[ClaimRegistry<br/>owner = regulator]
-  I[Issuer: stand-in for Kemenag / IATA] -- issueClaim --> R
-  PBM -- payee = signer --> V
-  PBM -- margin after Departure sig --> A
-  X[Anyone] -- refund after ticketBy / departBy --> PBM
-  PBM -- unspent lines --> P
-  PBM -. regulatorView / conservation .-> G[Regulator panel]
+  P[Dompet jamaah] -- permit + book --> PBM[MabrurPBM<br/>dana mUMRAH per pos]
+  A[Konsol agen] -- spend(faktur, tanda tangan vendor) --> PBM
+  V[Halaman vendor] -- tanda tangan Invoice EIP-712 --> A
+  PBM -- hasValidClaim --> R[ClaimRegistry<br/>pemilik = regulator]
+  I[Penerbit: pengganti Kemenag / IATA] -- issueClaim --> R
+  PBM -- penerima = penanda tangan --> V
+  PBM -- ujrah setelah tanda tangan berangkat --> A
+  X[Siapa pun] -- refund setelah ticketBy / departBy --> PBM
+  PBM -- sisa pos --> P
+  PBM -. regulatorView / conservation .-> G[Panel regulator]
 ```
 
-| Layer | Technology |
+| Lapisan | Teknologi |
 |---|---|
-| Contracts | Solidity 0.8.33, OpenZeppelin 5.6.1 (`ERC20Wrapper`, `ERC20Permit`, `EIP712`, `ECDSA`, `ReentrancyGuard`) |
-| Chain | **Arbitrum One (42161)**, all three contracts verified on Arbiscan |
-| Tooling | Foundry (unit, fuzz, invariant, scripts broadcasting to mainnet) |
-| App | Scaffold-ETH 2: Next.js App Router, wagmi + viem, RainbowKit; decoded custom errors via `simulateContract` |
-| Money | `tIDR`: an ERC20Permit **test rupiah with no monetary value**, `decimals = 0` |
+| Kontrak | Solidity 0.8.33, OpenZeppelin 5.6.1 (`ERC20Wrapper`, `ERC20Permit`, `EIP712`, `ECDSA`, `ReentrancyGuard`) |
+| Chain | **Arbitrum One (42161)**, ketiga kontrak terverifikasi di Arbiscan |
+| Tooling | Foundry (unit, fuzz, invariant, skrip yang di-broadcast ke mainnet) |
+| Aplikasi | Scaffold-ETH 2: Next.js App Router, wagmi + viem, RainbowKit; error kontrak didekode lewat `simulateContract` |
+| Uang | `tIDR`: rupiah uji ERC20Permit **tanpa nilai moneter**, `decimals = 0` |
 
-| Contract | Address (Arbitrum One) |
+| Kontrak | Alamat (Arbitrum One) |
 |---|---|
 | MabrurPBM | [`0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5`](https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code) |
 | ClaimRegistry | [`0xd5B731CD0f2c91D5D64b59d9E4a2A4E4b6315ADb`](https://arbiscan.io/address/0xd5B731CD0f2c91D5D64b59d9E4a2A4E4b6315ADb#code) |
-| TIDR (test token) | [`0x66F838be32A624f4C797483a151C7f6209A43448`](https://arbiscan.io/address/0x66F838be32A624f4C797483a151C7f6209A43448#code) |
+| TIDR (token uji) | [`0x66F838be32A624f4C797483a151C7f6209A43448`](https://arbiscan.io/address/0x66F838be32A624f4C797483a151C7f6209A43448#code) |
 
-**What it costs per pilgrim** (from the real receipts, `script/cost.sh`): a full departed lifecycle (book + 3 vendor
-payments + margin release) used **907,185 gas ≈ Rp 809**, and a refunded one (book + 1 payment + refund)
-**582,938 gas ≈ Rp 520**, at ETH/IDR 44,563,294 (CoinGecko, 2026-10-09 04:32 UTC). That is about 0.0025 % of a
-Rp 32.000.000 package.
+**Biaya per jamaah** (dari receipt asli, `script/cost.sh`): siklus lengkap jamaah yang berangkat (book + 3 pembayaran
+vendor + pelepasan ujrah) memakai **907.185 gas ≈ Rp 809**, dan siklus yang di-refund (book + 1 pembayaran + refund)
+**582.938 gas ≈ Rp 520**, dengan kurs ETH/IDR 44.563.294 (CoinGecko, 9 Okt 2026 04:32 UTC). Sekitar 0,0025 % dari
+paket Rp 32.000.000.
 
 ---
 
-## 🚀 Getting started
+## 🚀 Mulai
 
-**For judges, no install:** open **[mabrur.edycu.dev](https://mabrur.edycu.dev)**. Reads work with no wallet.
-- `/app/jamaah`: look up a booking by pilgrim address or id and see each line's state from chain.
-- `/app/agen`: load a signed invoice (paste or file), press **Simulasi saja**, and get the decoded verdict from Arbitrum One without a wallet. The regulator panel is on the right.
-- `/app/vendor`: sign an `Invoice` with a burner key and paste it into the console.
+**Untuk juri, tanpa instalasi:** buka **[mabrur.edycu.dev](https://mabrur.edycu.dev)** (atau langsung
+[/judge](https://mabrur.edycu.dev/judge)). Semua data bisa dibaca tanpa dompet.
+- `/app/jamaah`: cari booking berdasarkan alamat jamaah atau id, lihat status setiap pos langsung dari chain.
+- `/app/agen`: muat faktur bertanda tangan (tempel atau file), tekan **Simulasi saja**, dan dapatkan keputusan kontrak dari Arbitrum One tanpa dompet. Panel regulator ada di sebelah kanan.
+- `/app/vendor`: tandatangani `Invoice` dengan kunci burner lalu tempel ke konsol agen.
 
-**Run it yourself:**
+**Jalankan sendiri:**
 ```bash
 git clone --recursive https://github.com/edycutjong/mabrur.git && cd mabrur
 yarn install
-cd packages/foundry && forge test          # 87 tests: unit, fuzz, invariant
-cd ../.. && yarn chain                     # local anvil (terminal 1)
-yarn deploy                                # deploy + generate ABIs (terminal 2)
-NEXT_PUBLIC_LOCAL_CHAIN=true yarn start    # app on localhost:3000 (terminal 3)
+cd packages/foundry && forge test          # 87 tes: unit, fuzz, invariant
+cd ../.. && yarn chain                     # anvil lokal (terminal 1)
+yarn deploy                                # deploy + buat ABI (terminal 2)
+NEXT_PUBLIC_LOCAL_CHAIN=true yarn start    # aplikasi di localhost:3000 (terminal 3)
 ```
-Replaying the Arbitrum One demo (`script/run.sh SeedDemo`, `script/proof.sh`) needs the role keys in
-`~/.config/mabrur/keys.env`; they are never in this repo.
+Memutar ulang demo Arbitrum One (`script/run.sh SeedDemo`, `script/proof.sh`) membutuhkan kunci peran di
+`~/.config/mabrur/keys.env`; kunci itu tidak pernah ada di repo ini.
 
 ---
 
-## 🧪 Testing & proof
+## 🧪 Pengujian & bukti
 
-| What | Result |
+| Apa | Hasil |
 |---|---|
-| `forge test` | **87 tests, 0 failed, 100 % line · branch · function coverage on all three contracts**: every custom error has a test; regression tests are named after the defect they pin (e.g. `test_ReAddedIssuerDoesNotResurrectOldClaims`) |
-| Invariant suite | **7 invariants** × 256 runs × depth 100: Σ earmarks == `mUMRAH` supply == tracked total; tIDR held == supply + donations; per-booking and per-agency ledgers balance; no payment ever reaches an unclaimed address; no spend after a booking turns refundable; after warping past every deadline and refunding, supply is 0 |
-| T1 bound | `test_CaptureIssuer_Bound`: even a captured issuer cannot take more than the unexpired FLIGHT+HOTEL+VISA lines; the margin only ever goes to the agency |
-| Mined reverts | 4 adversarial attempts mined on Arbitrum One, each replayed by `script/proof.sh` and required to decode to the expected error |
-| Reviews | 3 internal adversarial review rounds of the contracts: no High or Medium findings; four Low ClaimRegistry issues (issuer overwrite, issuer re-add, topic narrowing, expired-claim blocking) were fixed with regression tests; round 3 clean |
+| `forge test` | **87 tes, 0 gagal, cakupan baris · cabang · fungsi 100 % pada ketiga kontrak**: setiap custom error punya tes; tes regresi dinamai sesuai cacat yang dicegahnya (mis. `test_ReAddedIssuerDoesNotResurrectOldClaims`) |
+| Suite invariant | **7 invariant** × 256 run × kedalaman 100: Σ dana per pos == suplai `mUMRAH` == total tercatat; tIDR di kontrak == suplai + donasi; buku besar per booking dan per agen seimbang; tidak ada pembayaran ke alamat tanpa klaim; tidak ada pembayaran setelah booking bisa di-refund; setelah semua tenggat lewat dan semua di-refund, suplai menjadi 0 |
+| Batas T1 | `test_CaptureIssuer_Bound`: penerbit yang dibajak pun tidak bisa mengambil lebih dari pos TIKET+HOTEL+VISA yang belum kedaluwarsa; ujrah hanya pernah dibayar ke agen |
+| Revert yang ditambang | 4 percobaan curang ditambang di Arbitrum One, masing-masing diputar ulang oleh `script/proof.sh` dan wajib terdekode ke error yang diharapkan |
+| Review | 3 putaran review adversarial internal atas kontrak: tidak ada temuan High atau Medium; empat temuan Low di ClaimRegistry (penimpaan klaim penerbit lain, penambahan ulang penerbit, penyempitan topik, klaim kedaluwarsa yang memblokir) diperbaiki dengan tes regresi; putaran 3 bersih |
 
-| Layer | Tool |
+| Lapisan | Alat |
 |---|---|
-| Contracts | `forge fmt --check`, `forge test` (unit, fuzz, invariant), `forge coverage` in CI |
-| Frontend | ESLint (0 warnings), `tsc` type check, Next.js production build |
-| Security | CodeQL, Dependabot alerts + grouped updates, gitleaks over full history, GitHub secret scanning + push protection |
-| Releases | semantic versions from conventional commits (`release.yml`) |
+| Kontrak | `forge fmt --check`, `forge test` (unit, fuzz, invariant), `forge coverage` di CI |
+| Frontend | ESLint (0 peringatan), cek tipe `tsc`, build produksi Next.js, E2E Playwright |
+| Keamanan | CodeQL, peringatan + pembaruan Dependabot, gitleaks atas seluruh riwayat, secret scanning + push protection GitHub |
+| Rilis | versi semantik dari conventional commits (`release.yml`); deploy otomatis ke Vercel setelah semua gerbang lulus |
 
 ---
 
-## ⚖️ Trust assumptions & honest limits
+## ⚖️ Asumsi kepercayaan & batasan yang jujur
 
-- **T1 · registry integrity.** The registry owner is the regulator key, never the agency. A captured owner or issuer could certify the director as a vendor; the damage is bounded (`test_CaptureIssuer_Bound`) and visible on chain.
-- **T2 · vendor honesty.** A licensed vendor could sign an invoice for less service than billed. `spend` blocks the agency's own address (`SelfDealing`) but cannot see corporate affiliation; each payment is capped by that booking's line.
-- **T3 · departure co-signer.** The one airline paid from the FLIGHT line can co-sign departure. The FLIGHT invoice must pay the **whole** FLIGHT line, so a token "Rp 1 ticket" cannot switch off the ticket-by refund (`test_Spend_RevertsFlightNotFullyPaid_Rp1TicketIsNotATicket`).
-- **T4 · pilgrim key custody.** If the agency holds the pilgrim's key, it can sign for her. Production path: a passkey / smart-account wallet issued by her bank or onramp, never the agency.
-- **The money is a test token.** Bank Indonesia does not permit crypto as a payment instrument ([ANTARA, 15 Jun 2021](https://www.antaranews.com/berita/2211790/bi-larang-lembaga-keuangan-gunakan-uang-kripto-untuk-alat-pembayaran)). The production rail is a licensed rupiah token (a bank tokenized deposit or Digital Rupiah) plus a regulator mandate for PPIU deposits; neither exists today. The wrapper takes any plain ERC-20.
-- **No seat guarantee.** Seats depend on airlines and visa quota. Mabrur guarantees *a paid ticket, or every unspent rupiah back* by a date the pilgrim signed.
-- The issuer key stands in for Kemenag / IATA, and all names in the demo ("PT Amanah Contoh Wisata", "PT Contoh GSA") are fictional.
+- **T1 · integritas registry.** Pemilik registry adalah kunci regulator, tidak pernah agen. Pemilik atau penerbit yang dibajak bisa mengakui direktur sebagai vendor; kerusakannya terbatas (`test_CaptureIssuer_Bound`) dan terlihat onchain.
+- **T2 · kejujuran vendor.** Vendor berizin bisa menandatangani faktur untuk layanan yang lebih sedikit dari tagihan. `spend` memblokir alamat agen sendiri (`SelfDealing`) tetapi tidak bisa melihat afiliasi perusahaan; setiap pembayaran dibatasi oleh pos booking tersebut.
+- **T3 · penanda tangan keberangkatan.** Satu maskapai yang dibayar dari pos tiket bisa ikut menandatangani keberangkatan. Faktur tiket harus melunasi **seluruh** pos tiket, sehingga "tiket Rp 1" tidak bisa mematikan refund batas tiket (`test_Spend_RevertsFlightNotFullyPaid_Rp1TicketIsNotATicket`).
+- **T4 · penyimpanan kunci jamaah.** Jika agen memegang kunci jamaah, agen bisa menandatangani atas namanya. Jalur produksi: dompet passkey / smart account yang diterbitkan bank atau onramp jamaah, tidak pernah oleh agen.
+- **Uangnya adalah token uji.** Bank Indonesia tidak mengizinkan kripto sebagai alat pembayaran ([ANTARA, 15 Jun 2021](https://www.antaranews.com/berita/2211790/bi-larang-lembaga-keuangan-gunakan-uang-kripto-untuk-alat-pembayaran)). Jalur produksinya adalah token rupiah berizin (deposito tertokenisasi bank atau Rupiah Digital) ditambah mandat regulator untuk dana PPIU; keduanya belum ada hari ini. Wrapper menerima ERC-20 standar apa pun.
+- **Tidak menjamin kursi.** Kursi bergantung pada maskapai dan kuota visa. Mabrur menjamin *tiket lunas, atau setiap rupiah yang belum terpakai kembali* sebelum tanggal yang ditandatangani jamaah.
+- Kunci penerbit adalah pengganti Kemenag / IATA, dan semua nama dalam demo ("PT Amanah Contoh Wisata", "PT Contoh GSA") fiktif.
 
 ---
 
-## 📁 Project structure
+## 📁 Struktur proyek
 ```
 mabrur/
 ├── packages/foundry/
 │   ├── contracts/        # MabrurPBM, ClaimRegistry, TIDR
-│   ├── test/             # unit + fuzz (MabrurPBM.t.sol), invariant suite (Invariant.t.sol)
+│   ├── test/             # unit + fuzz, suite invariant, tes cakupan
 │   ├── script/           # Deploy, Setup, SeedDemo, DemoRun, DemoRefund, proof.sh, cost.sh, ledger.py
-│   └── broadcast/        # committed Arbitrum One receipts (DEMO.md is generated from them)
+│   └── broadcast/        # receipt Arbitrum One yang di-commit (DEMO.md dibuat dari sini)
 ├── packages/nextjs/app/app/
-│   ├── jamaah/           # pilgrim passbook: book with permit, departure signature, refund
-│   ├── agen/             # agency console: invoice loader, decoded-revert stamps, regulator panel
-│   └── vendor/           # vendor invoice signer (EIP-712)
-├── DEMO.md               # every step as an Arbiscan link
-└── .github/              # CI, CodeQL, gitleaks, Dependabot, release
+│   ├── jamaah/           # buku amanah jamaah: booking dengan permit, tanda tangan berangkat, refund
+│   ├── agen/             # konsol agen: pemuat faktur, cap revert terdekode, panel regulator
+│   └── vendor/           # penanda tangan faktur vendor (EIP-712)
+├── DEMO.md               # setiap langkah sebagai tautan Arbiscan
+├── JUDGE.md              # jalur 30 detik untuk juri
+└── .github/              # CI, CodeQL, gitleaks, Dependabot, rilis
 ```
 
-## 📄 License
-[MIT](LICENSE) © 2026 Edy Cu. Built on [Scaffold-ETH 2](https://scaffoldeth.io) (MIT, BuidlGuidl).
+## 📄 Lisensi
+[MIT](LICENSE) © 2026 Edy Cu. Dibangun di atas [Scaffold-ETH 2](https://scaffoldeth.io) (MIT, BuidlGuidl).
 
-## 🙏 Acknowledgments
-Built for **Ethereum Jakarta Hackathon 2026** (ETHJKT × HackQuest), track *Build the Real World Onchain*.
-Thanks to the ETHJKT mentors and organizers, OpenZeppelin, Foundry and Scaffold-ETH 2.
+## 🙏 Terima kasih
+Dibuat untuk **Ethereum Jakarta Hackathon 2026** (ETHJKT × HackQuest), track *Build the Real World Onchain*.
+Terima kasih kepada mentor dan panitia ETHJKT, OpenZeppelin, Foundry, dan Scaffold-ETH 2.
