@@ -11,7 +11,6 @@ export const menuLinks = [
   { label: "Jamaah", href: "/app/jamaah" },
   { label: "Agen", href: "/app/agen" },
   { label: "Vendor", href: "/app/vendor" },
-  { label: "Debug", href: "/debug" },
 ];
 
 /** A round double-ring stamp mark (an empty stamp ring) next to the wordmark. */
@@ -31,7 +30,7 @@ export const Header = () => {
     <header className="sticky top-0 z-20 border-b border-[var(--rule)] bg-[var(--bg)]/95 backdrop-blur">
       <div className="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 lg:px-8 py-2">
         <div className="flex items-center gap-4 flex-wrap">
-          <Link href="/app" className="flex items-center gap-2">
+          <Link href="/app" className="mb-logo flex items-center gap-2" aria-label="Mabrur — beranda aplikasi">
             <Mark />
             <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 26 }}>Mabrur</span>
           </Link>
@@ -44,8 +43,18 @@ export const Header = () => {
           </nav>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="mb-chip mb-chip-ink text-xs" title="tIDR is a test token with no value">
-            {targetNetwork.name} · tIDR tanpa nilai
+          <Link
+            href="/judge"
+            className="mb-link text-sm font-bold px-1 hidden sm:inline"
+            aria-current={pathname === "/judge" ? "page" : undefined}
+          >
+            Untuk juri
+          </Link>
+          {/* wrapper carries the breakpoint: .mb-chip's own display would beat a utility class */}
+          <span className="hidden sm:inline-flex">
+            <span className="mb-chip mb-chip-ink text-xs" title="tIDR is a test token with no value">
+              {targetNetwork.name} · tIDR tanpa nilai
+            </span>
           </span>
           <RainbowKitCustomConnectButton />
           {isLocalNetwork && <FaucetButton />}

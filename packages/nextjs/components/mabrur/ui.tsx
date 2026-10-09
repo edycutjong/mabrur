@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { Address } from "viem";
 import { explorerAddr, explorerTx, useMabrurContracts } from "~~/hooks/mabrur/useMabrur";
 import { useCopyToClipboard, useScaffoldReadContract, useTargetNetwork } from "~~/hooks/scaffold-eth";
-import { DecodedRevert, formatErrorCall } from "~~/utils/mabrur/errors";
+import { DecodedRevert, errorArgParts } from "~~/utils/mabrur/errors";
 import { TOPICS, formatRp, shortHex, terbilang } from "~~/utils/mabrur/format";
 import { getLabel } from "~~/utils/mabrur/names";
 
@@ -38,7 +38,34 @@ export const Rp = ({
   </span>
 );
 
-export type StampKind = "ditolak" | "lunas" | "dikembalikan";
+export type StampKind = "ditolak" | "lunas" | "dikembalikan" | "simulasi";
+
+/** `Name(arg, arg)` with each shortened arg carrying its full value on hover. */
+export const ErrorCall = ({ name, args }: { name: string; args: { short: string; full: string }[] }) => (
+  <span>
+    {name}(
+    {args.map((a, i) => (
+      <span key={i}>
+        {i > 0 && ", "}
+        {a.short !== a.full ? (
+          <abbr title={a.full} className="no-underline cursor-help">
+            {a.short}
+          </abbr>
+        ) : (
+          a.short
+        )}
+      </span>
+    ))}
+    )
+  </span>
+);
+
+const STAMP_WORD: Record<StampKind, string> = {
+  ditolak: "Ditolak",
+  lunas: "Lunas",
+  dikembalikan: "Dikembalikan",
+  simulasi: "Lolos simulasi",
+};
 
 export const Stamp = ({
   kind,
@@ -53,15 +80,21 @@ export const Stamp = ({
   small?: boolean;
   className?: string;
 }) => {
-  const word = kind === "ditolak" ? "Ditolak" : kind === "lunas" ? "Lunas" : "Dikembalikan";
+  const word = STAMP_WORD[kind];
+  const tone = kind === "ditolak" ? "" : kind === "simulasi" ? "mb-stamp-sim" : "mb-stamp-after";
   return (
     <div
-      className={`mb-stamp ${kind === "ditolak" ? "" : "mb-stamp-after"} ${small ? "mb-stamp-sm" : ""} ${className}`}
+      className={`mb-stamp ${tone} ${small ? "mb-stamp-sm" : ""} ${className}`}
       role="status"
       aria-label={error ? `${word}: ${error.name}` : word}
     >
       <div className="mb-stamp-word">{word}</div>
-      {error && <div className="mb-stamp-error">{formatErrorCall(error)}</div>}
+      {kind === "simulasi" && <div className="mb-stamp-note">belum dikirim · would pass, not sent</div>}
+      {error && (
+        <div className="mb-stamp-error">
+          <ErrorCall name={error.name} args={errorArgParts(error)} />
+        </div>
+      )}
       {children && <div className="text-sm font-bold mt-1">{children}</div>}
     </div>
   );
@@ -108,7 +141,7 @@ export const AddressChip = ({ address, topic, name }: { address?: string; topic?
   const { chainId } = useMabrurContracts();
   const { targetNetwork } = useTargetNetwork();
   const [label, setLabelState] = useState<string | undefined>(name);
-  useEffect(() => setLabelState(name ?? getLabel(address)), [address, name]);
+  useEffect(() => setLabelState(name ?? getLabel(address, chainId)), [address, name, chainId]);
   if (!address) return <span className="mb-muted">–</span>;
   const href = explorerAddr(chainId, address, targetNetwork.blockExplorers?.default?.url);
   return (

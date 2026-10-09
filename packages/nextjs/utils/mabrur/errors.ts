@@ -180,17 +180,22 @@ export const decodeRevert = (e: unknown): DecodedRevert => {
 };
 
 /** "EarmarkMismatch(0x3f2a…, 0x91bc…)" — uint256 ids are shown as shortened hex. */
-export const formatErrorCall = (d: DecodedRevert): string => {
-  const fmt = (v: unknown): string => {
+/** Each decoded arg as {short, full}: long hex values are shortened for the stamp, the full value goes in a title. */
+export const errorArgParts = (d: DecodedRevert): { short: string; full: string }[] =>
+  d.args.map(v => {
     if (typeof v === "bigint") {
       if (v > 10n ** 15n) {
         const h = `0x${v.toString(16)}`;
-        return `${h.slice(0, 6)}…${h.slice(-4)}`;
+        return { short: `${h.slice(0, 6)}…${h.slice(-4)}`, full: h };
       }
-      return v.toString();
+      return { short: v.toString(), full: v.toString() };
     }
-    if (typeof v === "string" && v.startsWith("0x") && v.length > 14) return `${v.slice(0, 6)}…${v.slice(-4)}`;
-    return String(v);
-  };
-  return `${d.name}(${d.args.map(fmt).join(", ")})`;
-};
+    if (typeof v === "string" && v.startsWith("0x") && v.length > 14)
+      return { short: `${v.slice(0, 6)}…${v.slice(-4)}`, full: v };
+    return { short: String(v), full: String(v) };
+  });
+
+export const formatErrorCall = (d: DecodedRevert): string =>
+  `${d.name}(${errorArgParts(d)
+    .map(a => a.short)
+    .join(", ")})`;

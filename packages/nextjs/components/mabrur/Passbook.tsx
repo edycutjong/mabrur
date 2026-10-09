@@ -64,7 +64,7 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
   const { run, busy } = useMabrurTx();
   const { data: ledger, isError: ledgerError } = useBookingLedger(b);
   const lines = useMemo(() => deriveLines(b, ledger), [b, ledger]);
-  const who = name ?? getLabel(b.pilgrim) ?? "Jamaah";
+  const who = name ?? getLabel(b.pilgrim, chainId) ?? "Jamaah";
 
   const [depSig, setDepSig] = useState<Hex | undefined>();
   const [depErr, setDepErr] = useState<DecodedRevert | undefined>();
@@ -74,8 +74,9 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
 
   const total = b.remaining.reduce((x, y) => x + y, 0n);
   const flightPaid = b.flightVendor !== ZERO;
-  const departPassed = now > Number(b.departBy);
-  const ticketPassed = !flightPaid && now > Number(b.ticketBy);
+  const departed = b.departed || b.marginReleased;
+  const departPassed = !departed && !b.refunded && now > Number(b.departBy);
+  const ticketPassed = !flightPaid && !b.refunded && now > Number(b.ticketBy);
   const daysLeft = Math.ceil((Number(b.departBy) - now) / 86400);
   const canRefund = b.refundable && !b.refunded && total > 0n;
   const isPilgrim = address?.toLowerCase() === b.pilgrim.toLowerCase();
@@ -144,7 +145,13 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
         <Label>Berangkat paling lambat · depart by</Label>
         <div className={`mb-big-date ${departPassed ? "mb-strike" : ""}`}>{formatDateWIB(b.departBy, false)}</div>
         <div className="mt-1">
-          {departPassed ? (
+          {b.refunded ? (
+            <span className="mb-muted font-bold">
+              Dana sudah dikembalikan ke {who} <span className="mb-en">Refunded — this booking is closed</span>
+            </span>
+          ) : departed ? (
+            <span className="mb-chip mb-chip-after">Sudah berangkat · departed</span>
+          ) : departPassed ? (
             <span className="mb-refused-text font-bold">Batas berangkat lewat — siapa pun bisa refund</span>
           ) : (
             <span className="mb-num">
@@ -157,14 +164,16 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
           <Label>Batas tiket · ticket by</Label>
           <span className={`mb-num ${ticketPassed ? "mb-strike" : ""}`}>{formatDateWIB(b.ticketBy)}</span>
           {flightPaid ? (
-            <span className="mb-chip mb-chip-after">
+            <span className="mb-chip mb-chip-wrap mb-chip-after">
               Tiket dibayar {lines[0].spent[0] ? formatRp(lines[0].spent[0].amount) : ""} ke{" "}
-              {getLabel(b.flightVendor) ?? shortHex(b.flightVendor)}
+              {getLabel(b.flightVendor, chainId) ?? shortHex(b.flightVendor)}
             </span>
+          ) : b.refunded ? (
+            <span className="mb-chip mb-chip-wrap mb-chip-muted">Tiket tidak dibeli · dana dikembalikan</span>
           ) : ticketPassed ? (
-            <span className="mb-chip mb-chip-refused">Batas tiket lewat — tiket belum dibayar</span>
+            <span className="mb-chip mb-chip-wrap mb-chip-refused">Batas tiket lewat — tiket belum dibayar</span>
           ) : (
-            <span className="mb-chip mb-chip-before">
+            <span className="mb-chip mb-chip-wrap mb-chip-before">
               Tiket belum dibayar · {formatCountdown(Number(b.ticketBy) - now)}
             </span>
           )}
@@ -305,45 +314,47 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
               : "Memuat riwayat…"}
           </p>
         ) : (
-          <table className="w-full mt-2 text-left">
-            <thead>
-              <tr className="mb-label">
-                <th className="py-2 pr-2">Tanggal</th>
-                <th className="py-2 pr-2">Keterangan</th>
-                <th className="py-2 pr-2 text-right">Keluar</th>
-                <th className="py-2 text-right">Sisa</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(() => {
-                let bal = 0n;
-                return ledger.map(r => {
-                  if (r.kind === "Booked") bal = r.amount;
-                  else bal -= r.amount;
-                  const desc =
-                    r.kind === "Booked"
-                      ? "Pemesanan · booked"
-                      : r.kind === "Spent"
-                        ? `${LINES[r.line ?? 0].id} → ${getLabel(r.counterparty) ?? shortHex(r.counterparty)}${r.ref ? ` · ${refToLabel(r.ref)}` : ""}`
-                        : r.kind === "MarginReleased"
-                          ? "Ujrah agen setelah berangkat"
-                          : `Dikembalikan ke ${who}`;
-                  return (
-                    <tr key={`${r.hash}-${r.logIndex}`} className="border-t border-[var(--rule)] align-top">
-                      <td className="py-2 pr-2 text-sm mb-num">{r.timestamp ? formatDateWIB(r.timestamp) : "–"}</td>
-                      <td className="py-2 pr-2 text-sm">
-                        {desc} <TxLink hash={r.hash} />
-                      </td>
-                      <td className="py-2 pr-2 text-right mb-num whitespace-nowrap">
-                        {r.kind === "Booked" ? "–" : formatRp(r.amount)}
-                      </td>
-                      <td className="py-2 text-right mb-num font-bold whitespace-nowrap">{formatRp(bal)}</td>
-                    </tr>
-                  );
-                });
-              })()}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto -mx-1 px-1">
+            <table className="w-full min-w-[480px] mt-2 text-left">
+              <thead>
+                <tr className="mb-label">
+                  <th className="py-2 pr-2">Tanggal</th>
+                  <th className="py-2 pr-2">Keterangan</th>
+                  <th className="py-2 pr-2 text-right">Keluar</th>
+                  <th className="py-2 text-right">Sisa</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(() => {
+                  let bal = 0n;
+                  return ledger.map(r => {
+                    if (r.kind === "Booked") bal = r.amount;
+                    else bal -= r.amount;
+                    const desc =
+                      r.kind === "Booked"
+                        ? "Pemesanan · booked"
+                        : r.kind === "Spent"
+                          ? `${LINES[r.line ?? 0].id} → ${getLabel(r.counterparty, chainId) ?? shortHex(r.counterparty)}${r.ref ? ` · ${refToLabel(r.ref)}` : ""}`
+                          : r.kind === "MarginReleased"
+                            ? "Ujrah agen setelah berangkat"
+                            : `Dikembalikan ke ${who}`;
+                    return (
+                      <tr key={`${r.hash}-${r.logIndex}`} className="border-t border-[var(--rule)] align-top">
+                        <td className="py-2 pr-2 text-sm mb-num">{r.timestamp ? formatDateWIB(r.timestamp) : "–"}</td>
+                        <td className="py-2 pr-2 text-sm">
+                          {desc} <TxLink hash={r.hash} />
+                        </td>
+                        <td className="py-2 pr-2 text-right mb-num whitespace-nowrap">
+                          {r.kind === "Booked" ? "–" : formatRp(r.amount)}
+                        </td>
+                        <td className="py-2 text-right mb-num font-bold whitespace-nowrap">{formatRp(bal)}</td>
+                      </tr>
+                    );
+                  });
+                })()}
+              </tbody>
+            </table>
+          </div>
         )}
         <p className="mb-p mt-3 text-sm mb-muted">
           Saldo mUMRAH Anda = sisa dana amanah Anda. Tidak bisa dipindah ke orang lain.

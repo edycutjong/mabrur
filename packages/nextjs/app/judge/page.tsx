@@ -114,8 +114,9 @@ const JudgePage: NextPage = () => (
       </div>
       <ul className="list-disc pl-5 mb-p flex flex-col gap-1">
         <li>
-          <strong>67 tests</strong>, including an invariant suite of 7 invariants × 256 runs × depth 100 (Σ earmarks ==
-          token supply; rupiah held ≥ supply; no payment ever reaches an unclaimed address).
+          <strong>87 tests</strong> with 100% line, branch and function coverage of the contracts, including an
+          invariant suite of 7 invariants × 256 runs × depth 100 (Σ earmarks == token supply; rupiah held ≥ supply; no
+          payment ever reaches an unclaimed address).
         </li>
         <li>
           Cost from the real receipts: a departed pilgrim&apos;s lifecycle is 907,185 gas ≈ Rp 809; a refunded one is

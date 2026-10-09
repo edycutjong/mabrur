@@ -383,3 +383,54 @@ body.mabrur {
 .mb-nav a:not([aria-current="page"]):hover {
   background: var(--paper);
 }
+
+/* A dry run that would pass: neutral ink, dashed — never the blue LUNAS (paid) stamp. */
+.mb-stamp-sim {
+  --stamp-color: var(--muted);
+  --stamp-rot: -2deg;
+  border-style: dashed;
+  outline-style: dashed;
+}
+.mb-stamp-sm.mb-stamp-sim .mb-stamp-word {
+  font-size: 18px;
+}
+.mb-stamp-note {
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-top: 2px;
+}
+
+/* Hover feedback for clickable sheets (booking tabs, console rows, logo). */
+.mb-hover {
+  transition:
+    transform 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+}
+.mb-hover:hover {
+  transform: translateY(-1px);
+  border-color: var(--ink);
+  box-shadow: 0 2px 0 var(--rule);
+}
+.mb-logo {
+  transition: opacity 120ms ease;
+  border-radius: 8px;
+}
+.mb-logo:hover {
+  opacity: 0.75;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mb-hover,
+  .mb-hover:hover {
+    transform: none;
+  }
+}
+
+/* A chip carrying a sentence (vendor name, countdown) may wrap on a phone instead of pushing the page sideways. */
+.mb-chip.mb-chip-wrap {
+  white-space: normal;
+  max-width: 100%;
+}

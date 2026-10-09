@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Address, Hex, encodeAbiParameters, isAddress, isHex, keccak256, recoverTypedDataAddress } from "viem";
 import { useAccount } from "wagmi";
 import { RegulatorPanel } from "~~/components/mabrur/RegulatorPanel";
-import { AddressChip, Bi, ContractsGuard, Label, PageShell, Stamp, TxLink } from "~~/components/mabrur/ui";
+import { AddressChip, Bi, ContractsGuard, ErrorCall, Label, PageShell, Stamp, TxLink } from "~~/components/mabrur/ui";
 import {
   Booking,
   ZERO,
@@ -14,7 +14,7 @@ import {
   useMabrurContracts,
   useMabrurTx,
 } from "~~/hooks/mabrur/useMabrur";
-import { DecodedRevert, formatErrorCall } from "~~/utils/mabrur/errors";
+import { DecodedRevert, errorArgParts, formatErrorCall } from "~~/utils/mabrur/errors";
 import {
   LINES,
   formatCountdown,
@@ -33,7 +33,7 @@ type Attempt = {
   action: string;
   bookingId: string;
   simulated?: boolean;
-  error?: { name: string; call: string; id: string; en: string };
+  error?: { name: string; call: string; id: string; en: string; args?: { short: string; full: string }[] };
   vendor?: string;
   line?: number;
   amount?: string;
@@ -47,7 +47,65 @@ const nowMs = () => Date.now();
 const ATTEMPTS_KEY = "mabrur.console.attempts";
 const BOOKINGS_KEY = "mabrur.console.bookings";
 
-const toAttemptError = (d: DecodedRevert) => ({ name: d.name, call: formatErrorCall(d), id: d.id, en: d.en });
+const toAttemptError = (d: DecodedRevert) => ({
+  name: d.name,
+  call: formatErrorCall(d),
+  args: errorArgParts(d),
+  id: d.id,
+  en: d.en,
+});
+
+/** The stamp for one attempt: DITOLAK, DIKEMBALIKAN, LUNAS, or the neutral LOLOS SIMULASI for a passing dry run. */
+const AttemptStamp = ({ a }: { a: Attempt }) =>
+  a.kind === "ditolak" ? (
+    <Stamp kind="ditolak" small>
+      <span className="mb-data text-sm">
+        {a.error?.args ? <ErrorCall name={a.error.name} args={a.error.args} /> : a.error?.call}
+      </span>
+    </Stamp>
+  ) : a.simulated ? (
+    <Stamp kind="simulasi" small>
+      {a.amount !== undefined && a.amount !== "0" ? formatRp(BigInt(a.amount)) : null}
+    </Stamp>
+  ) : a.action === "refund" ? (
+    <Stamp kind="dikembalikan" small>
+      {formatRp(BigInt(a.amount ?? 0))}
+    </Stamp>
+  ) : (
+    <Stamp kind="lunas" small>
+      {formatRp(BigInt(a.amount ?? 0))}
+    </Stamp>
+  );
+
+/** One-line reason under an attempt stamp. */
+const attemptReason = (a: Attempt): { id: string; en: string } =>
+  a.kind === "ditolak"
+    ? { id: a.error?.id ?? "Ditolak", en: `${a.error?.en ?? ""}${a.simulated ? " · simulated, nothing sent" : ""}` }
+    : a.simulated
+      ? { id: "Simulasi lolos — belum ada transaksi dikirim.", en: "The contract would accept this; nothing was sent." }
+      : a.action === "refund"
+        ? { id: "Sisa dana dikembalikan ke jamaah.", en: "Remaining money returned to the pilgrim." }
+        : { id: "Dibayar ke penanda tangan.", en: "Paid to the signer." };
+
+/** The result of the last click, shown right next to the button that triggered it (the ledger keeps the history). */
+const InlineResult = ({ a }: { a?: Attempt }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (a) ref.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [a]);
+  if (!a) return null;
+  const r = attemptReason(a);
+  return (
+    <div ref={ref} className="mt-3 flex flex-col gap-4 items-start" aria-live="polite" data-testid="inline-result">
+      <AttemptStamp a={a} />
+      <div className="text-sm">
+        <span className={`font-bold ${a.kind === "ditolak" ? "mb-refused-text" : ""}`}>{r.id}</span>
+        <span className="mb-en">{r.en}</span>
+        {a.hash && <TxLink hash={a.hash} />}
+      </div>
+    </div>
+  );
+};
 
 /* ── Left column: one booking row with countdown + permissionless refund ── */
 const BookingRow = ({
@@ -67,6 +125,11 @@ const BookingRow = ({
   const { now } = useChainNow();
   const { pbm } = useMabrurContracts();
   const { run, busy, walletClient } = useMabrurTx();
+  const [last, setLast] = useState<Attempt | undefined>();
+  const report = (a: Attempt) => {
+    setLast(a);
+    onAttempt(a);
+  };
   const [label, setLabelState] = useState<string>("");
   useEffect(() => setLabelState(getLabel(idHex(id)) ?? (b ? (getLabel(b.pilgrim) ?? "") : "")), [id, b]);
 
@@ -99,7 +162,7 @@ const BookingRow = ({
     const out = await run({ address: pbm.address, abi: pbm.abi, functionName: "refund", args: [b.id] });
     if (out.kind === "mined") {
       const ev = eventsFrom(out.receipt, pbm.abi, pbm.address).find(e => e.eventName === "Refunded");
-      onAttempt({
+      report({
         at: nowMs(),
         kind: "lunas",
         action: "refund",
@@ -109,7 +172,7 @@ const BookingRow = ({
         vendor: b.pilgrim,
       });
     } else if (out.kind !== "simulated-ok") {
-      onAttempt({
+      report({
         at: nowMs(),
         kind: "ditolak",
         action: "refund",
@@ -122,10 +185,10 @@ const BookingRow = ({
 
   return (
     <div
-      className={`mb-sheet flex flex-col gap-1 ${active ? "outline-3 outline-[var(--ink)]" : ""}`}
+      className={`mb-sheet mb-hover flex flex-col gap-1 ${active ? "outline-3 outline-[var(--ink)]" : ""}`}
       style={{ padding: 14 }}
     >
-      <button className="text-left flex flex-col gap-1" onClick={onSelect}>
+      <button className="text-left flex flex-col gap-1 cursor-pointer" onClick={onSelect} aria-pressed={active}>
         <span className="font-bold">{label || "Booking"}</span>
         <span className="mb-data text-sm">{shortHex(idHex(b.id), 8, 6)}</span>
         <span className="mb-num font-bold">{formatRp(total)}</span>
@@ -158,6 +221,10 @@ const BookingRow = ({
           {canRefund ? `Kembalikan ${formatRp(total)}` : "Menunggu blok berikutnya…"}
         </button>
       )}
+      {canRefund && !walletClient && (
+        <div className="text-sm mb-muted">Hubungkan dompet apa saja untuk menekan · connect any wallet to press</div>
+      )}
+      <InlineResult a={last} />
       <div className="flex gap-2 mt-1">
         <input
           className="mb-input text-sm"
@@ -192,6 +259,11 @@ const InvoiceRow = ({
   const { address } = useAccount();
   const { run, busy } = useMabrurTx();
   const [signer, setSigner] = useState<Address | undefined>();
+  const [last, setLast] = useState<Attempt | undefined>();
+  const report = (a: Attempt) => {
+    setLast(a);
+    onAttempt(a);
+  };
   const L = LINES[inv.invoice.line] ?? LINES[0];
 
   useEffect(() => {
@@ -223,7 +295,7 @@ const InvoiceRow = ({
     );
     const refLabel = inv.refLabel ?? refToLabel(inv.invoice.ref);
     if (out.kind === "reverted" || out.kind === "failed") {
-      onAttempt({
+      report({
         at: nowMs(),
         kind: "ditolak",
         action: `spend · ${refLabel}`,
@@ -233,7 +305,7 @@ const InvoiceRow = ({
       });
     } else if (out.kind === "mined") {
       const ev = eventsFrom(out.receipt, pbm.abi, pbm.address).find(e => e.eventName === "Spent");
-      onAttempt({
+      report({
         at: nowMs(),
         kind: "lunas",
         action: `spend · ${refLabel}`,
@@ -246,7 +318,7 @@ const InvoiceRow = ({
       });
     } else {
       // dry run passed
-      onAttempt({
+      report({
         at: nowMs(),
         kind: "lunas",
         action: `simulasi · ${refLabel} lolos (belum dikirim)`,
@@ -301,13 +373,14 @@ const InvoiceRow = ({
           Simulasi saja
         </button>
       </div>
+      <InlineResult a={last} />
     </div>
   );
 };
 
 const AttemptRow = ({ a }: { a: Attempt }) => (
   <div
-    className={`mb-row flex flex-col gap-2 px-3 rounded-[10px] ${a.kind === "ditolak" ? "mb-wash-refused" : "mb-wash-after"}`}
+    className={`mb-row flex flex-col gap-2 px-3 rounded-[10px] ${a.kind === "ditolak" ? "mb-wash-refused" : a.simulated ? "bg-[var(--bg)]" : "mb-wash-after"}`}
   >
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div className="flex flex-col gap-1">
@@ -319,19 +392,7 @@ const AttemptRow = ({ a }: { a: Attempt }) => (
           {getLabel(a.bookingId) && ` (${getLabel(a.bookingId)})`}
         </span>
       </div>
-      {a.kind === "ditolak" ? (
-        <Stamp kind="ditolak" small>
-          <span className="mb-data text-sm">{a.error?.call}</span>
-        </Stamp>
-      ) : a.action === "refund" ? (
-        <Stamp kind="dikembalikan" small>
-          {formatRp(BigInt(a.amount ?? 0))}
-        </Stamp>
-      ) : (
-        <Stamp kind="lunas" small>
-          {formatRp(BigInt(a.amount ?? 0))}
-        </Stamp>
-      )}
+      <AttemptStamp a={a} />
     </div>
     {a.kind === "ditolak" && a.error && (
       <div>
@@ -372,6 +433,7 @@ const ConsoleInner = () => {
   const [addId, setAddId] = useState("");
   const [depPaste, setDepPaste] = useState("");
   const [agencyOverride, setAgencyOverride] = useState("");
+  const [lastRelease, setLastRelease] = useState<Attempt | undefined>();
 
   const storeKey = (k: string) => `${k}.${chainId}`;
   useEffect(() => {
@@ -461,6 +523,10 @@ const ConsoleInner = () => {
     setSelected(idHex(id));
   };
 
+  const reportRelease = (a: Attempt) => {
+    setLastRelease(a);
+    pushAttempt(a);
+  };
   const releaseMargin = async (dryRun: boolean) => {
     if (!pbm || !booking) return;
     let sig: string = depPaste.trim();
@@ -471,7 +537,7 @@ const ConsoleInner = () => {
       /* raw hex */
     }
     if (!isHex(sig)) {
-      pushAttempt({
+      reportRelease({
         at: nowMs(),
         kind: "ditolak",
         action: "releaseMargin",
@@ -490,7 +556,7 @@ const ConsoleInner = () => {
       { dryRun, account: (address ?? booking.agency) as Address },
     );
     if (out.kind === "reverted" || out.kind === "failed")
-      pushAttempt({
+      reportRelease({
         at: nowMs(),
         kind: "ditolak",
         action: "releaseMargin",
@@ -500,7 +566,7 @@ const ConsoleInner = () => {
       });
     else if (out.kind === "mined") {
       const ev = eventsFrom(out.receipt, pbm.abi, pbm.address).find(e => e.eventName === "MarginReleased");
-      pushAttempt({
+      reportRelease({
         at: nowMs(),
         kind: "lunas",
         action: "releaseMargin",
@@ -511,7 +577,7 @@ const ConsoleInner = () => {
         hash: out.hash,
       });
     } else
-      pushAttempt({
+      reportRelease({
         at: nowMs(),
         kind: "lunas",
         action: "simulasi · releaseMargin lolos (belum dikirim)",
@@ -578,15 +644,15 @@ const ConsoleInner = () => {
                 style={{ width: 90 }}
                 value={addNonce}
                 onChange={e => setAddNonce(e.target.value.replace(/\D/g, ""))}
-                aria-label="Nonce"
-                title="nonce"
+                aria-label="Booking ke- (nonce, mulai 0)"
+                title="Booking ke berapa dari jamaah ini (nonce, mulai 0) · the pilgrim's booking number, from 0"
               />
               <button
                 className="mb-btn mb-btn-ghost mb-btn-sm grow"
                 onClick={addByPilgrim}
                 disabled={!isAddress(addPilgrim)}
               >
-                + nonce
+                Tambah dari alamat
               </button>
             </div>
             <input
@@ -606,7 +672,7 @@ const ConsoleInner = () => {
                 setAddId("");
               }}
             >
-              + id
+              Tambah id
             </button>
           </div>
         </section>
@@ -617,14 +683,14 @@ const ConsoleInner = () => {
             <Label>Bayar dari booking</Label>
             <h2 className="mb-h2 mt-1">{bookingName ?? (selected ? shortHex(selected, 8, 6) : "— pilih booking —")}</h2>
             {booking && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 2xl:grid-cols-4 gap-3 mt-4">
                 {LINES.map((L, i) => (
                   <div
                     key={L.key}
                     className={`rounded-[10px] p-3 ${booking.remaining[i] > 0n ? "mb-wash-before" : "mb-wash-after"}`}
                   >
                     <div className="text-sm font-bold">{L.id}</div>
-                    <div className="mb-num font-bold">{formatRp(booking.remaining[i])}</div>
+                    <div className="mb-num font-bold whitespace-nowrap">{formatRp(booking.remaining[i])}</div>
                   </div>
                 ))}
               </div>
@@ -722,6 +788,7 @@ const ConsoleInner = () => {
                 Simulasi saja
               </button>
             </div>
+            <InlineResult a={lastRelease} />
           </div>
 
           <div className="mb-sheet">

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Address, isAddress, parseSignature } from "viem";
 import { useAccount, useWalletClient } from "wagmi";
@@ -332,10 +332,18 @@ const BookForm = ({ onBooked }: { onBooked: (id: bigint) => void }) => {
   );
 };
 
+/** A booking "has activity" once any line moved: a payout, a refund, or the margin release. */
+const hasActivity = (b: Booking) =>
+  b.refunded || b.marginReleased || b.flightVendor !== ZERO || b.remaining.reduce((x, y) => x + y, 0n) < b.deposited;
+
+/** ?pilgrim= default: the newest booking with activity, else the newest booking (list is newest-first). */
+const pickMeaningful = (bookings: Booking[]) => (bookings.find(hasActivity) ?? bookings[0])?.id;
+
 const BookingTab = ({ b, active, onClick }: { b: Booking; active: boolean; onClick: () => void }) => {
   const { now } = useChainNow();
+  const { chainId } = useMabrurContracts();
   const total = b.remaining.reduce((x, y) => x + y, 0n);
-  const name = getLabel(idHex(b.id)) ?? getLabel(b.pilgrim);
+  const name = getLabel(idHex(b.id), chainId) ?? getLabel(b.pilgrim, chainId);
   const chip = b.refunded ? (
     <span className="mb-chip mb-chip-after">Dikembalikan</span>
   ) : b.refundable ? (
@@ -348,7 +356,8 @@ const BookingTab = ({ b, active, onClick }: { b: Booking; active: boolean; onCli
   return (
     <button
       onClick={onClick}
-      className={`mb-sheet text-left w-full flex flex-col gap-1 ${active ? "outline-3 outline-[var(--ink)]" : ""}`}
+      aria-pressed={active}
+      className={`mb-sheet mb-hover text-left w-full flex flex-col gap-1 cursor-pointer ${active ? "outline-3 outline-[var(--ink)]" : ""}`}
       style={{ padding: 14 }}
     >
       <span className="font-bold">{name ?? shortHex(idHex(b.id), 8, 6)}</span>
@@ -362,6 +371,7 @@ const BookingTab = ({ b, active, onClick }: { b: Booking; active: boolean; onCli
 
 const JamaahInner = () => {
   const { address } = useAccount();
+  const { chainId } = useMabrurContracts();
   const router = useRouter();
   const params = useSearchParams();
   const idParam = params.get("id") ?? "";
@@ -377,8 +387,15 @@ const JamaahInner = () => {
     const id = parseBookingId(idParam);
     if (id !== undefined) setSelected(id);
   }, [idParam]);
+  // A new ?pilgrim= (lookup) drops the previous pick so the next pilgrim's best booking is chosen.
+  const lastPilgrim = useRef(pilgrimParam);
   useEffect(() => {
-    if (selected === undefined && mine?.bookings[0]) setSelected(mine.bookings[0].id);
+    if (lastPilgrim.current === pilgrimParam) return;
+    lastPilgrim.current = pilgrimParam;
+    if (parseBookingId(idParam) === undefined) setSelected(undefined);
+  }, [pilgrimParam, idParam]);
+  useEffect(() => {
+    if (selected === undefined && mine?.bookings.length) setSelected(pickMeaningful(mine.bookings));
   }, [mine, selected]);
 
   const go = () => {
@@ -387,7 +404,11 @@ const JamaahInner = () => {
     else if (parseBookingId(t) !== undefined) router.push(`/app/jamaah?id=${t}`);
   };
 
-  const name = useMemo(() => (one ? (getLabel(idHex(one.id)) ?? getLabel(one.pilgrim)) : undefined), [one]);
+  const deepLink = Boolean(idParam || pilgrimParam);
+  const name = useMemo(
+    () => (one ? (getLabel(idHex(one.id), chainId) ?? getLabel(one.pilgrim, chainId)) : undefined),
+    [one, chainId],
+  );
 
   return (
     <PageShell>
@@ -399,8 +420,8 @@ const JamaahInner = () => {
         </span>
       </header>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,560px)_minmax(0,1fr)]">
-        <div className="flex flex-col gap-6">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,560px)_minmax(0,1fr)]">
+        <div className="flex flex-col gap-6 min-w-0">
           <BookForm onBooked={id => setSelected(id)} />
           <div className="mb-sheet">
             <Label>Lihat booking · look up</Label>
@@ -437,7 +458,8 @@ const JamaahInner = () => {
             )}
           </div>
         </div>
-        <div>
+        {/* With a deep link the passbook is the point: on narrow screens it comes before the booking form. */}
+        <div className={`min-w-0 ${deepLink ? "order-first xl:order-none" : ""}`}>
           {one ? (
             <Passbook b={one} name={name} />
           ) : (

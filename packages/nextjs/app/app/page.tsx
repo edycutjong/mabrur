@@ -1,5 +1,12 @@
 import Link from "next/link";
 import type { NextPage } from "next";
+import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
+
+export const metadata = getMetadata({
+  title: "Pilih peran",
+  description:
+    "Mabrur: a pilgrim's umrah prepayment earmarked per line on Arbitrum One. Pick a role — pilgrim, agency or licensed vendor.",
+});
 
 const ROLES = [
   {

@@ -79,11 +79,15 @@ const VendorInner = () => {
     }
     setImportPk("");
     setErr("");
+    setSigned(undefined);
   };
 
   const newBurner = () => {
     const fresh = generatePrivateKey();
     setPk(fresh);
+    // the old output was signed by the old key: never leave it on screen under the new signer
+    setSigned(undefined);
+    setErr("");
     try {
       window.localStorage.setItem(PK_KEY, fresh);
     } catch {
@@ -135,13 +139,21 @@ const VendorInner = () => {
             <div className="flex gap-2 mt-2">
               <button
                 className={`mb-btn mb-btn-sm ${mode === "burner" ? "" : "mb-btn-ghost"}`}
-                onClick={() => setMode("burner")}
+                aria-pressed={mode === "burner"}
+                onClick={() => {
+                  if (mode !== "burner") setSigned(undefined);
+                  setMode("burner");
+                }}
               >
                 Burner di browser ini
               </button>
               <button
                 className={`mb-btn mb-btn-sm ${mode === "wallet" ? "" : "mb-btn-ghost"}`}
-                onClick={() => setMode("wallet")}
+                aria-pressed={mode === "wallet"}
+                onClick={() => {
+                  if (mode !== "wallet") setSigned(undefined);
+                  setMode("wallet");
+                }}
               >
                 Dompet terhubung
               </button>

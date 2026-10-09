@@ -12,6 +12,9 @@ import { Header } from "~~/components/Header";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
+// RainbowKit modal in the kuitansi palette: ink accent on paper, same radius as the sheets.
+const MABRUR_THEME = lightTheme({ accentColor: "#1a2238", accentColorForeground: "#fffdf7", borderRadius: "medium" });
+
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
@@ -45,10 +48,7 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider
-          avatar={BlockieAvatar}
-          theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
-        >
+        <RainbowKitProvider avatar={BlockieAvatar} theme={mounted && isDarkMode ? darkTheme() : MABRUR_THEME}>
           <ProgressBar height="3px" color="#2299dd" />
           <ScaffoldEthApp>{children}</ScaffoldEthApp>
         </RainbowKitProvider>
