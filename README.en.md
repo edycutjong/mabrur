@@ -77,6 +77,12 @@ service (`mUMRAH`), split into FLIGHT · HOTEL · VISA · MARGIN lines. The agen
 | Agency disappears | court process, years | needs an arbiter | `refund()` by anyone, no cooperation needed |
 | Regulator view | after collapse, by audit | none | live, from contract state |
 
+
+### Compared with existing RWA solutions
+
+- **Centrifuge, Ondo, Securitize** tokenize **investors'** assets (credit, bonds, funds). Mabrur protects **consumers'** prepaid money: pilgrims' funds already paid for a service not yet delivered.
+- **MAS Project Orchid** (Singapore) tested *purpose-bound money* for vouchers and payments ([MAS, 31 Oct 2022](https://www.mas.gov.sg/news/media-releases/2022/mas-report-on-potential-uses-of-a-purpose-bound-digital-singapore-dollar)). Mabrur applies that purpose-bound pattern to consumer prepayments: separated per pilgrim, payable only to claim-verified vendors, and refundable by anyone if no ticket is paid.
+
 ---
 
 ## 🏗️ Architecture & tech stack

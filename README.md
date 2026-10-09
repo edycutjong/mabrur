@@ -79,6 +79,12 @@ jalan untuk memindahkan uang.
 | Agen menghilang | proses pengadilan, bertahun-tahun | butuh arbiter | `refund()` oleh siapa pun, tanpa kerja sama agen |
 | Pandangan regulator | setelah runtuh, lewat audit | tidak ada | langsung, dari state kontrak |
 
+
+### Dibanding solusi RWA yang sudah ada
+
+- **Centrifuge, Ondo, Securitize** menokenisasi aset milik **investor** (kredit, obligasi, dana). Mabrur melindungi uang muka milik **konsumen**: dana jamaah yang sudah dibayar untuk layanan yang belum diterima.
+- **MAS Project Orchid** (Singapura) menguji *purpose-bound money* untuk voucher dan pembayaran ([MAS, 31 Okt 2022](https://www.mas.gov.sg/news/media-releases/2022/mas-report-on-potential-uses-of-a-purpose-bound-digital-singapore-dollar)). Mabrur menerapkan pola uang berbatas-tujuan itu pada uang muka konsumen: dipisah per jamaah, dibayar hanya ke vendor yang klaimnya terverifikasi, dan dikembalikan oleh siapa pun bila tiket tidak lunas.
+
 ---
 
 ## 🏗️ Arsitektur & teknologi
