@@ -338,13 +338,13 @@ html.lang-en .t-id {
 .mb-held {
   display: inline-flex;
   align-items: center;
-  font: 500 10.5px/1 var(--font-body);
+  font: 500 12.5px/1 var(--font-body);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--earmarked-ink);
   border: 1px solid var(--earmarked);
   border-radius: 999px;
-  padding: 6px 10px 5px;
+  padding: 7px 12px 6px;
   background: rgba(255, 255, 255, 0.7);
   white-space: nowrap;
 }
