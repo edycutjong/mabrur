@@ -22,7 +22,7 @@ jobs:
       run:
         working-directory: packages/foundry
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
       - uses: foundry-rs/foundry-toolchain@v1
@@ -36,7 +36,7 @@ jobs:
         run: forge test -vv
       - name: Coverage
         run: forge coverage --report summary --report lcov --no-match-coverage "script|test"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: contracts-coverage
           path: packages/foundry/lcov.info
@@ -49,8 +49,8 @@ jobs:
       matrix:
         node-version: ${{ github.event_name == 'push' && fromJSON('[20, 22]') || fromJSON('[22]') }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
@@ -65,8 +65,8 @@ jobs:
     name: "Stage 2 · Dependency audit"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: yarn
@@ -81,8 +81,8 @@ jobs:
     needs: [frontend-quality]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: yarn
@@ -100,8 +100,8 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: yarn
@@ -112,7 +112,7 @@ jobs:
         run: yarn e2e
       - name: Upload report on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: playwright-report
           path: |
@@ -133,8 +133,8 @@ jobs:
       VERCEL_ORG_ID: team_RJcQx4a22v5LqjetHv8HhhLY
       VERCEL_PROJECT_ID: prj_lOJYH75rtEIF2suDMUvuD3s3dwW7
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
       - name: Deploy production
