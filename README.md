@@ -129,7 +129,7 @@ paket Rp 32.000.000.
 **Untuk juri, tanpa instalasi:** buka **[mabrur.edycu.dev](https://mabrur.edycu.dev)** (atau langsung
 [/judge](https://mabrur.edycu.dev/judge)). Semua data bisa dibaca tanpa dompet.
 - `/app/jamaah`: cari booking berdasarkan alamat jamaah atau id, lihat status setiap pos langsung dari chain.
-- `/app/agen`: muat faktur bertanda tangan (tempel atau file), tekan **Simulasi saja**, dan dapatkan keputusan kontrak dari Arbitrum One tanpa dompet. Panel regulator ada di sebelah kanan.
+- `/app/agen`: tekan **Muat contoh faktur** (atau tempel / pilih file faktur bertanda tangan), tekan **Simulasi saja**, dan dapatkan keputusan kontrak dari Arbitrum One tanpa dompet. Contohnya ada di [`/demo/invoices.json`](https://mabrur.edycu.dev/demo/invoices.json); `/app/agen?contoh=1` memuatnya otomatis. Panel regulator ada di sebelah kanan.
 - `/app/vendor`: tandatangani `Invoice` dengan kunci burner lalu tempel ke konsol agen.
 
 **Jalankan sendiri:**
@@ -159,7 +159,7 @@ Memutar ulang demo Arbitrum One (`script/run.sh SeedDemo`, `script/proof.sh`) me
 | Lapisan | Alat |
 |---|---|
 | Kontrak | `forge fmt --check`, `forge test` (unit, fuzz, invariant), `forge coverage` di CI |
-| Frontend | ESLint (0 peringatan), cek tipe `tsc`, build produksi Next.js, E2E Playwright |
+| Frontend | ESLint (0 peringatan), cek tipe `tsc`, build produksi Next.js, tes unit Vitest dengan cakupan 100 % per file (gerbang CI), E2E Playwright |
 | Keamanan | CodeQL, peringatan + pembaruan Dependabot, gitleaks atas seluruh riwayat, secret scanning + push protection GitHub |
 | Rilis | versi semantik dari conventional commits (`release.yml`); deploy otomatis ke Vercel setelah semua gerbang lulus |
 

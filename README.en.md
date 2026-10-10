@@ -127,7 +127,7 @@ Rp 32.000.000 package.
 **For judges, no install:** open **[mabrur.edycu.dev](https://mabrur.edycu.dev)** (or go straight to
 [/judge](https://mabrur.edycu.dev/judge)). Reads work with no wallet.
 - `/app/jamaah`: look up a booking by pilgrim address or id and see each line's state from chain.
-- `/app/agen`: load a signed invoice (paste or file), press **Simulate only**, and get the decoded verdict from Arbitrum One without a wallet. The regulator panel is on the right.
+- `/app/agen`: press **Load sample invoices** (or paste / pick a signed invoice file), press **Simulate only**, and get the decoded verdict from Arbitrum One without a wallet. The sample is [`/demo/invoices.json`](https://mabrur.edycu.dev/demo/invoices.json); `/app/agen?contoh=1` loads it on arrival. The regulator panel is on the right.
 - `/app/vendor`: sign an `Invoice` with a burner key and paste it into the console.
 
 **Run it yourself:**
@@ -157,7 +157,7 @@ Replaying the Arbitrum One demo (`script/run.sh SeedDemo`, `script/proof.sh`) ne
 | Layer | Tool |
 |---|---|
 | Contracts | `forge fmt --check`, `forge test` (unit, fuzz, invariant), `forge coverage` in CI |
-| Frontend | ESLint (0 warnings), `tsc` type check, Next.js production build, Playwright E2E |
+| Frontend | ESLint (0 warnings), `tsc` type check, Next.js production build, Vitest unit tests with 100 % per-file coverage (CI gate), Playwright E2E |
 | Security | CodeQL, Dependabot alerts + grouped updates, gitleaks over full history, GitHub secret scanning + push protection |
 | Releases | semantic versions from conventional commits (`release.yml`); automatic Vercel deploy after every gate passes |
 

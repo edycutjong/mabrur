@@ -25,17 +25,19 @@ Each attempt was sent by the agency key with an explicit gas limit, so it was **
 
 ## 2. Regulator view, read from chain state
 
-At block 513093334 (2026-10-09 04:35 UTC), for the demo agency:
+At block 513365690 (2026-10-10 00:58 UTC), for the demo agency:
 
 | `regulatorView(agency)` | value |
 |---|---|
-| open bookings | 3 |
-| liabilities (deposited − paid out, independent ledger) | Rp 84.000.000 |
-| earmarked (Σ unspent lines) | Rp 84.000.000 |
+| open bookings | 7 |
+| liabilities (deposited − paid out, independent ledger) | Rp 175.000.000 |
+| earmarked (Σ unspent lines) | Rp 175.000.000 |
 
-`conservation()` → Σ earmarks Rp 84.000.000 · `mUMRAH` supply Rp 84.000.000 · tIDR held by the contract Rp 84.000.000:
+`conservation()` → Σ earmarks Rp 175.000.000 · `mUMRAH` supply Rp 175.000.000 · tIDR held by the contract Rp 175.000.000:
 **every rupiah of outstanding prepayment is backed by rupiah held in-contract.**
-These numbers grow with every demo re-seed; read them live with `script/proof.sh` or the agency console.
+These are the figures at the time of writing. They grow with every demo re-seed (each `SeedDemo` run opens new bookings;
+the first snapshot, at block 513093334 on 2026-10-09, read 3 bookings and Rp 84.000.000). The agency console's regulator
+panel always shows the live chain state; read it yourself with `script/proof.sh`.
 
 ## 3. What one pilgrim costs — from the real receipts
 

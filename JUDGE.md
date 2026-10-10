@@ -11,7 +11,7 @@ Web version: **https://mabrur.edycu.dev/judge**
 1. Pak Ahmad's completed booking: [/app/jamaah?id=9307…4554](https://mabrur.edycu.dev/app/jamaah?id=93071288952676167289577516806255635492368093588595261547394544652192346034554) — flight, hotel and visa paid to their signers; fee released after his departure signature.
 2. Ibu Siti's refunded booking: [/app/jamaah?id=3830…1737](https://mabrur.edycu.dev/app/jamaah?id=38303033312745746094663211795656914215448779063347601464497604008460359611737) — no ticket by her ticket-by date, so a third party refunded Rp 23.000.000.
 3. The four rejected attempts below, each a mined, failed transaction on Arbiscan.
-4. The [agency console](https://mabrur.edycu.dev/app/agen) (live regulator panel) and the [vendor page](https://mabrur.edycu.dev/app/vendor): sign your own invoice, paste it into the console, press **Simulasi saja**.
+4. The [agency console with the sample invoices loaded](https://mabrur.edycu.dev/app/agen?contoh=1) (live regulator panel): Pak Ahmad's booking is selected; press **Simulasi saja** on any invoice to see a DITOLAK (rejected) seal with its error name, no wallet needed. Or sign your own invoice on the [vendor page](https://mabrur.edycu.dev/app/vendor) and paste it in.
 
 ## Receipts
 | Rejected attempt | What the agency tried | Mined tx |
