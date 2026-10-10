@@ -106,5 +106,6 @@ on these bookings; their mined counterparts are the four failed transactions in 
 | On camera: agency pays Ahmad's FLIGHT invoice INV-FLT-0001 (`spend`) | Rp 14.000.000 to the airline (LUNAS) | [0xb254472d…27e4e8](https://arbiscan.io/tx/0xb254472d54d85b82e627a4de87daa787d8d416932b9b9d798cdd09481827e4e8) | ✓ success |
 | On camera: Siti's ticket-by lapses, a third party (deployer key, neither agency nor pilgrim) calls `refund` | Rp 23.000.000 back to Ibu Siti (DIKEMBALIKAN) | [0xcf8d11e3…aa4014](https://arbiscan.io/tx/0xcf8d11e3a810b21e23b24752ed09fd167a777cf0b88190ac40fecc1c94aa4014) | ✓ success |
 
-Regulator panel right after the refund (as filmed, block ≈ 513390112): liabilities = earmarked = Rp 193.000.000, fully
-backed by tIDR held in the contract. Time of writing, not a fixed value.
+Regulator panel as filmed (liabilities = earmarked = tIDR held, fully backed): Rp 230.000.000 with 9 open bookings after
+SeedDemo, Rp 216.000.000 after the on-camera flight payment, Rp 193.000.000 with 8 open bookings after the refund
+(block ≈ 513390112). Time of writing, not fixed values.
