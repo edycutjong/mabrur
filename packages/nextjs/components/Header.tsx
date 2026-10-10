@@ -29,7 +29,8 @@ export const Header = () => {
 
   return (
     <header className="mb-header sticky top-0 z-20 border-b">
-      {/* At 375px: row 1 = logo + language + wallet, row 2 = the roles + judges. From sm up: one 72px row. */}
+      {/* At 375px: row 1 = logo + network toggle, row 2 = language + wallet, row 3 = the roles + judges. From sm up:
+          one 72px row. */}
       <div className="max-w-[1600px] mx-auto flex flex-wrap items-center gap-x-7 gap-y-0 px-4 lg:px-8 py-2">
         <Link
           href="/app"
@@ -55,7 +56,9 @@ export const Header = () => {
             <T id="Untuk juri" en="For judges" />
           </Link>
         </div>
-        <div className="order-2 sm:order-3 ml-auto flex items-center gap-2.5">
+        {/* Network chip + Mainnet | Testnet: beside the logo at 375px (so a connected wallet still fits row 2 next to
+            the language pill); from sm up it joins the right-hand controls (from xl, on one row, -mr cancels the outer gap to their 10px). */}
+        <div className="order-1 ml-auto sm:order-3 xl:-mr-[18px] flex items-center gap-2.5">
           {/* wrapper carries the breakpoint: .mb-chip's own display would beat a utility class */}
           <span className="hidden xl:inline-flex">
             <span
@@ -66,6 +69,8 @@ export const Header = () => {
             </span>
           </span>
           <NetToggle />
+        </div>
+        <div className="order-2 sm:order-3 ml-auto sm:ml-0 flex items-center gap-2.5">
           <LangToggle />
           <RainbowKitCustomConnectButton />
           {isLocalNetwork && <FaucetButton />}

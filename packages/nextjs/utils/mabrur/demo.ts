@@ -3,7 +3,8 @@
 export const AHMAD_ID = "93071288952676167289577516806255635492368093588595261547394544652192346034554";
 export const SITI_ID = "38303033312745746094663211795656914215448779063347601464497604008460359611737";
 
-/** The chain the demo bookings and the sample invoices live on (Arbitrum One). */
+/** Arbitrum One: the judged deployment, where /judge's mined proofs and the default sample invoices live (the demo
+ *  bookings also exist on the testnet: DEMO_BOOKING_CHAINS). */
 export const DEMO_CHAIN_ID = 42161;
 
 /** Arbitrum Sepolia: the testnet deployment outside users can try for free (header Mainnet | Testnet toggle). */

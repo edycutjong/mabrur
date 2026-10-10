@@ -37,7 +37,7 @@
 ## 📸 See it in action
 
 <p align="center"><img src="docs/ditolak-earmark.gif" alt="The Mabrur agency console: Ibu Siti's hotel invoice is tried on Pak Ahmad's booking, Simulate only is pressed, and a red DITOLAK (rejected) EarmarkMismatch seal lands" width="720"></p>
-<p align="center"><sub>Real screen capture of the agency console: <b>Simulate only</b> is a real call to the contract that sends no transaction. The mined versions are in the table below.</sub></p>
+<p align="center"><sub>Real screen capture of the agency console: <b>Simulate only</b> is a real call to the contract that sends no transaction. A mined EarmarkMismatch of the same attempt is the first row of the table below.</sub></p>
 
 > **One booking, four attempts.** The agency tries Siti's hotel invoice on Ahmad's money (**EarmarkMismatch**), tries
 > to pay the director (**VendorClaimMissing**), pays the airline (✔ Rp 14.000.000 to the invoice signer), reaches for
@@ -132,7 +132,7 @@ flowchart LR
 | ClaimRegistry | [`0xCbf1247e292B8eA0bA151a1b5811B732Fc564480`](https://sepolia.arbiscan.io/address/0xCbf1247e292B8eA0bA151a1b5811B732Fc564480#code) |
 | TIDR (test token) | [`0xc56c5561fc65274c55419FC031D90f68AE854B4B`](https://sepolia.arbiscan.io/address/0xc56c5561fc65274c55419FC031D90f68AE854B4B#code) |
 
-**Try it yourself on testnet.** The **Mainnet | Testnet** switch in the app header moves the app to Arbitrum Sepolia, with the same (verified) contracts. Get free test ETH from a [faucet](https://faucets.chain.link/arbitrum-sepolia), press the tIDR faucet in the app, then make and refund your own booking: [mabrur.edycu.dev/app/jamaah?net=testnet](https://mabrur.edycu.dev/app/jamaah?net=testnet).
+**Try it yourself on testnet.** The **Mainnet | Testnet** switch in the app header moves the app to Arbitrum Sepolia, with the same (verified) contracts. Get free test ETH from a [faucet](https://faucets.chain.link/arbitrum-sepolia), press the tIDR faucet in the app, then make your own booking with **Demo: 10 minutes** as the ticket-by date, and refund it once those 10 minutes pass: [mabrur.edycu.dev/app/jamaah?net=testnet](https://mabrur.edycu.dev/app/jamaah?net=testnet).
 
 **What it costs per pilgrim** (from the real receipts, `script/cost.sh`): a full departed lifecycle (book + 3 vendor
 payments + margin release) used **907,185 gas ≈ Rp 809**, and a refunded one (book + 1 payment + refund)

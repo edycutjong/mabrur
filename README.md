@@ -37,7 +37,7 @@
 ## 📸 Lihat cara kerjanya
 
 <p align="center"><img src="docs/ditolak-earmark.gif" alt="Konsol agen di aplikasi Mabrur: faktur hotel Ibu Siti dicoba pada booking Pak Ahmad, tombol Simulasi saja ditekan, dan cap merah DITOLAK EarmarkMismatch muncul" width="720"></p>
-<p align="center"><sub>Rekaman layar asli dari konsol agen: <b>Simulasi saja</b> adalah panggilan nyata ke kontrak tanpa mengirim transaksi. Versi yang benar-benar ditambang ada di tabel di bawah.</sub></p>
+<p align="center"><sub>Rekaman layar asli dari konsol agen: <b>Simulasi saja</b> adalah panggilan nyata ke kontrak tanpa mengirim transaksi. Versi EarmarkMismatch yang benar-benar ditambang ada di baris pertama tabel di bawah.</sub></p>
 
 > **Satu booking, empat percobaan.** Agen mencoba memakai faktur hotel Ibu Siti dengan dana Pak Ahmad
 > (**EarmarkMismatch**), mencoba membayar direkturnya sendiri (**VendorClaimMissing**), membayar maskapai (✔ Rp 14.000.000
@@ -134,7 +134,7 @@ flowchart LR
 | ClaimRegistry | [`0xCbf1247e292B8eA0bA151a1b5811B732Fc564480`](https://sepolia.arbiscan.io/address/0xCbf1247e292B8eA0bA151a1b5811B732Fc564480#code) |
 | TIDR (token uji) | [`0xc56c5561fc65274c55419FC031D90f68AE854B4B`](https://sepolia.arbiscan.io/address/0xc56c5561fc65274c55419FC031D90f68AE854B4B#code) |
 
-**Coba sendiri di testnet.** Tombol **Mainnet | Testnet** di header aplikasi memindahkan aplikasi ke Arbitrum Sepolia, dengan kontrak yang sama (terverifikasi). Ambil ETH uji gratis dari [faucet](https://faucets.chain.link/arbitrum-sepolia), tekan faucet tIDR di aplikasi, lalu buat dan refund booking sendiri: [mabrur.edycu.dev/app/jamaah?net=testnet](https://mabrur.edycu.dev/app/jamaah?net=testnet).
+**Coba sendiri di testnet.** Tombol **Mainnet | Testnet** di header aplikasi memindahkan aplikasi ke Arbitrum Sepolia, dengan kontrak yang sama (terverifikasi). Ambil ETH uji gratis dari [faucet](https://faucets.chain.link/arbitrum-sepolia), tekan faucet tIDR di aplikasi, lalu buat booking sendiri dengan batas tiket **Demo: 10 menit**, dan refund setelah 10 menit itu lewat: [mabrur.edycu.dev/app/jamaah?net=testnet](https://mabrur.edycu.dev/app/jamaah?net=testnet).
 
 **Biaya per jamaah** (dari receipt asli, `script/cost.sh`): siklus lengkap jamaah yang berangkat (book + 3 pembayaran
 vendor + pelepasan ujrah) memakai **907.185 gas ≈ Rp 809**, dan siklus yang di-refund (book + 1 pembayaran + refund)
