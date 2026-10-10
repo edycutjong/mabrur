@@ -24,6 +24,7 @@ dist
 
 # mabrur
 packages/foundry/script/out/
+packages/foundry/script/out-*/
 .env
 .env.local
 .env.*

@@ -13,12 +13,9 @@
   [![Pitch video](https://img.shields.io/badge/▶_Pitch_video-2:58-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/fcSKl9-3VJk)
   [![Demo video](https://img.shields.io/badge/▶_Demo_video-2:24-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/2xBHUcz45OU)
   [![HackQuest](https://img.shields.io/badge/HackQuest-Project-14181C?style=for-the-badge)](https://www.hackquest.io/projects/Mabrur)
-
-  <br/>
-
-  [![DEMO.md](https://img.shields.io/badge/🧾_Every_step-DEMO.md-0E8A5F?style=flat)](DEMO.md)
-  [![Arbitrum One](https://img.shields.io/badge/Arbitrum_One-42161_verified-85672A?style=flat)](https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code)
-  [![ETHJKT 2026](https://img.shields.io/badge/HackQuest-Ethereum_Jakarta_2026-14181C?style=flat)](https://www.hackquest.io/hackathons/Ethereum-Jakarta-Hackathon-2026)
+  [![DEMO.md](https://img.shields.io/badge/🧾_Every_step-DEMO.md-0E8A5F?style=for-the-badge)](DEMO.md)
+  [![Arbitrum One](https://img.shields.io/badge/Arbitrum_One-42161_verified-85672A?style=for-the-badge)](https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code)
+  [![ETHJKT 2026](https://img.shields.io/badge/HackQuest-Ethereum_Jakarta_2026-14181C?style=for-the-badge)](https://www.hackquest.io/hackathons/Ethereum-Jakarta-Hackathon-2026)
 
   <br/>
 
