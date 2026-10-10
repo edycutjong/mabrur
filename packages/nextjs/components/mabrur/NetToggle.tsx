@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { arbitrum, arbitrumSepolia } from "viem/chains";
 import { useAccount, useSwitchChain } from "wagmi";
 import { useT } from "~~/hooks/mabrur/useLang";
@@ -17,7 +17,8 @@ const NETS = [
 /**
  * The "Mainnet | Testnet" pill: Arbitrum One (the judged deployment) or Arbitrum Sepolia (free faucet ETH, so anyone
  * can book and refund). `?net=testnet` in a link picks the testnet; the choice is remembered in this browser. With a
- * wallet connected, the wallet is asked to switch too (useTargetNetwork follows the wallet's chain).
+ * wallet connected, the wallet is asked to switch too: useTargetNetwork follows the wallet's chain, so a wallet that
+ * reconnects on the other network after load is asked once to switch to the wanted one (declining keeps the wallet's).
  */
 export const NetToggle = () => {
   const { targetNetwork } = useTargetNetwork();
@@ -25,6 +26,8 @@ export const NetToggle = () => {
   const { isConnected, chain } = useAccount();
   const { switchChain } = useSwitchChain();
   const t = useT();
+  // The network a link or the remembered choice asked for, until a connected wallet has been asked to switch to it.
+  const wanted = useRef<number | undefined>(undefined);
 
   const select = (id: number, remember = true) => {
     const net = NETS.find(n => n.id === id)!.chain;
@@ -36,7 +39,10 @@ export const NetToggle = () => {
         /* storage unavailable: the choice lasts for this page only */
       }
     }
-    if (isConnected && chain?.id !== id) switchChain({ chainId: id });
+    if (isConnected && chain?.id !== id) {
+      switchChain({ chainId: id });
+      wanted.current = undefined; // asked already: the reconnect effect below must not ask again
+    }
   };
 
   // First paint is the mainnet (server render); a link's ?net= or the remembered choice applies right after.
@@ -50,9 +56,19 @@ export const NetToggle = () => {
       stored = undefined;
     }
     const id = fromParam ?? stored;
-    if (id && id !== targetNetwork.id && NETS.some(n => n.id === id)) select(id, fromParam !== undefined);
+    if (id && NETS.some(n => n.id === id)) {
+      wanted.current = id;
+      if (id !== targetNetwork.id) select(id, fromParam !== undefined);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // A wallet that (re)connects after load on the other network would pull the app back to it: ask it once to switch.
+  useEffect(() => {
+    if (!isConnected || !chain || wanted.current === undefined) return;
+    if (chain.id !== wanted.current && NETS.some(n => n.id === chain.id)) switchChain({ chainId: wanted.current });
+    wanted.current = undefined;
+  }, [isConnected, chain, switchChain]);
 
   if (!NETS.some(n => n.id === targetNetwork.id)) return null;
   return (

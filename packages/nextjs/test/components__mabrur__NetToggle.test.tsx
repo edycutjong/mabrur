@@ -56,6 +56,39 @@ describe("NetToggle (Mainnet | Testnet)", () => {
     expect(setTargetNetwork).toHaveBeenCalledWith(expect.objectContaining({ id: arbitrumSepolia.id }));
   });
 
+  it("asks a wallet that reconnects on the mainnet after a ?net=testnet load to switch, once", () => {
+    window.history.replaceState(null, "", "/app/jamaah?net=testnet");
+    on(arbitrum);
+    const { rerender } = render(<NetToggle />);
+    expect(switchChain).not.toHaveBeenCalled();
+    account.isConnected = true;
+    account.chain = { id: arbitrum.id };
+    rerender(<NetToggle />);
+    expect(switchChain).toHaveBeenCalledWith({ chainId: arbitrumSepolia.id });
+    account.chain = { id: arbitrum.id, again: true } as any;
+    rerender(<NetToggle />);
+    expect(switchChain).toHaveBeenCalledTimes(1);
+  });
+
+  it("asks a wallet already connected on the mainnet only once for a ?net=testnet link", () => {
+    window.history.replaceState(null, "", "/app/jamaah?net=testnet");
+    account.isConnected = true;
+    account.chain = { id: arbitrum.id };
+    on(arbitrum);
+    render(<NetToggle />);
+    expect(switchChain).toHaveBeenCalledTimes(1);
+    expect(switchChain).toHaveBeenCalledWith({ chainId: arbitrumSepolia.id });
+  });
+
+  it("does not ask a wallet already on the wanted network", () => {
+    window.history.replaceState(null, "", "/app/jamaah?net=testnet");
+    account.isConnected = true;
+    account.chain = { id: arbitrumSepolia.id };
+    on(arbitrumSepolia);
+    render(<NetToggle />);
+    expect(switchChain).not.toHaveBeenCalled();
+  });
+
   it("restores the remembered network", () => {
     window.localStorage.setItem("mabrur.net", String(arbitrumSepolia.id));
     on(arbitrum);
