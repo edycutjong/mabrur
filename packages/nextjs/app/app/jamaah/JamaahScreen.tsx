@@ -592,21 +592,18 @@ const JamaahInner = ({ params }: { params: Params }) => {
                 id={selected !== undefined && one === null ? "Booking tidak ditemukan." : "Pilih atau buat booking."}
                 en={selected !== undefined && one === null ? "No booking with this id." : "Pick or create a booking."}
               />
-              {chainId !== TESTNET_CHAIN_ID ? (
-                <>
-                  <p className="mb-p mt-4 mb-muted text-sm">
-                    <T id="Atau buka booking contoh di Arbitrum One:" en="Or open a demo booking on Arbitrum One:" />
-                  </p>
-                  <div className="flex flex-wrap gap-3 mt-3">
-                    <Link className="mb-btn mb-btn-ghost mb-go" href={`/app/jamaah?id=${AHMAD_ID}`}>
-                      <T id="Buku Amanah Pak Ahmad" en="Pak Ahmad's passbook" />
-                    </Link>
-                    <Link className="mb-btn mb-btn-ghost mb-go" href={`/app/jamaah?id=${SITI_ID}`}>
-                      <T id="Buku Amanah Ibu Siti" en="Ibu Siti's passbook" />
-                    </Link>
-                  </div>
-                </>
-              ) : (
+              <p className="mb-p mt-4 mb-muted text-sm">
+                <T id={`Atau buka booking contoh di ${netName}:`} en={`Or open a demo booking on ${netName}:`} />
+              </p>
+              <div className="flex flex-wrap gap-3 mt-3">
+                <Link className="mb-btn mb-btn-ghost mb-go" href={`/app/jamaah?id=${AHMAD_ID}`}>
+                  <T id="Buku Amanah Pak Ahmad" en="Pak Ahmad's passbook" />
+                </Link>
+                <Link className="mb-btn mb-btn-ghost mb-go" href={`/app/jamaah?id=${SITI_ID}`}>
+                  <T id="Buku Amanah Ibu Siti" en="Ibu Siti's passbook" />
+                </Link>
+              </div>
+              {chainId === TESTNET_CHAIN_ID && (
                 <p className="mb-p mt-4 mb-muted text-sm">
                   <T
                     id={`Testnet ${chainName}: ambil ETH uji gratis dari faucet, lalu buat booking sendiri di kiri.`}

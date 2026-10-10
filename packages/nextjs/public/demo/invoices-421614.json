@@ -1,0 +1,38 @@
+{
+  "about": "Sample signed invoices for the Mabrur agency console (/app/agen) on the Arbitrum Sepolia testnet. Simulate only: each one is refused by MabrurPBM.spend on Pak Ahmad's booking with a named error. Signed by the demo vendor and agency-director keys of the testnet deployment (the hotel one is the real invoice already paid on Pak Ahmad's testnet booking); tIDR is a test token with no value.",
+  "chainId": 421614,
+  "pbm": "0xa2BC8c2959b1c9d5A90B750aCFfbD52181CE98f1",
+  "agency": "0x2e427dD87F7cEd8148de179D1CC9A9e9f13f3A4a",
+  "ahmadBookingId": "93071288952676167289577516806255635492368093588595261547394544652192346034554",
+  "sitiBookingId": "38303033312745746094663211795656914215448779063347601464497604008460359611737",
+  "earmarkMismatch": {
+    "label": "Faktur hotel Ibu Siti dipakai di booking Pak Ahmad → EarmarkMismatch",
+    "labelEn": "Ibu Siti's hotel invoice used on Pak Ahmad's booking → EarmarkMismatch",
+    "bookingId": "38303033312745746094663211795656914215448779063347601464497604008460359611737",
+    "line": 1,
+    "amount": "9000000",
+    "ref": "0x494e562d48544c2d303030310000000000000000000000000000000000000000",
+    "expiry": 1796814186,
+    "signature": "0x7279265b876292f0a82b1d73eaf9be8c980fc672545a66599702e856d00c1fc548a4d873ae6729705c59fabf9b73737ac991e856d7e1e8e8b06d9d4f20c38f9f1c"
+  },
+  "vendorClaimMissing": {
+    "label": "Faktur hotel ditandatangani direktur agen (tanpa klaim vendor) → VendorClaimMissing",
+    "labelEn": "Hotel invoice signed by the agency director (no vendor claim) → VendorClaimMissing",
+    "bookingId": "93071288952676167289577516806255635492368093588595261547394544652192346034554",
+    "line": 1,
+    "amount": "9000000",
+    "ref": "0x494e562d48544c2d4449522d3030303100000000000000000000000000000000",
+    "expiry": 1796814186,
+    "signature": "0x6aad3599283cb31a857584e9c37558e4b365c5c2a941ae585d6631951a1a86363dccf122c295aa6427966b9d961cf3da78849431f3111b2868ec1af2ed05da8d1c"
+  },
+  "invoiceReplayed": {
+    "label": "Faktur hotel Pak Ahmad yang sudah dibayar, dikirim ulang → InvoiceReplayed",
+    "labelEn": "Pak Ahmad's already-paid hotel invoice, sent again → InvoiceReplayed",
+    "bookingId": "93071288952676167289577516806255635492368093588595261547394544652192346034554",
+    "line": 1,
+    "amount": "9000000",
+    "ref": "0x494e562d48544c2d303030330000000000000000000000000000000000000000",
+    "expiry": 1796814186,
+    "signature": "0x47757be21b424eceb481f9ec0f71585ed5ae921377a6ec354ad38c1c9a5fb6ba3d03f7406f5d5417b579f874b7f782071d8d054c904ff988b3e461cdafdae25e1c"
+  }
+}

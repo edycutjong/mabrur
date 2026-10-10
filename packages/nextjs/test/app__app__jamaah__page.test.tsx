@@ -1053,10 +1053,14 @@ describe("app/app/jamaah/page.tsx behaviour", () => {
       );
     });
 
-    it("on the testnet, points to a faucet instead of the mainnet demo bookings", () => {
+    it("on the testnet, links the testnet demo bookings and a faucet", () => {
       mk.c.mockReturnValue({ ...mk.c(), chainId: 421614, chainName: "Arbitrum Sepolia" });
       render(<JamaahPage />);
-      expect(screen.queryByRole("link", { name: /Buku Amanah Pak Ahmad/ })).toBeNull();
+      expect(screen.getByText(/booking contoh di Arbitrum Sepolia/)).toBeTruthy();
+      expect(screen.getByRole("link", { name: /Buku Amanah Pak Ahmad/ })).toHaveAttribute(
+        "href",
+        expect.stringContaining("/app/jamaah?id=9307128895"),
+      );
       expect(screen.getByRole("link", { name: /Faucet/ })).toHaveAttribute(
         "href",
         "https://faucets.chain.link/arbitrum-sepolia",

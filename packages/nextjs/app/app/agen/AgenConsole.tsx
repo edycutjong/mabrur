@@ -26,7 +26,7 @@ import {
   useMabrurContracts,
   useMabrurTx,
 } from "~~/hooks/mabrur/useMabrur";
-import { AHMAD_ID, DEMO_CHAIN_ID, DEMO_NAMES, SAMPLE_INVOICES_URL, SITI_ID } from "~~/utils/mabrur/demo";
+import { AHMAD_ID, DEMO_BOOKING_CHAINS, DEMO_NAMES, SITI_ID, sampleInvoicesUrl } from "~~/utils/mabrur/demo";
 import { DecodedRevert, errorArgParts, formatErrorCall } from "~~/utils/mabrur/errors";
 import {
   LINES,
@@ -633,7 +633,7 @@ const ConsoleInner = ({ initialSample, initialSigners }: ConsoleProps) => {
   // First render (server and client alike) already shows the demo bookings and, with ?contoh, the sample invoices:
   // nothing in the roster or the invoice list is inserted after load.
   const [boot] = useState(() => bootSample(initialSample));
-  const demoIds = chainId === DEMO_CHAIN_ID ? DEMO_BOOKINGS : [];
+  const demoIds = DEMO_BOOKING_CHAINS.includes(chainId) ? DEMO_BOOKINGS : [];
   const [ids, setIds] = useState<string[]>(() => union(boot.ids, demoIds));
   const [selected, setSelected] = useState<string | undefined>(() => boot.ids[0] ?? demoIds[0]);
   const [attempts, setAttempts] = useState<Attempt[]>([]);
@@ -654,7 +654,7 @@ const ConsoleInner = ({ initialSample, initialSigners }: ConsoleProps) => {
   useEffect(() => {
     // A cold visit (nothing stored) starts on the two demo bookings, Pak Ahmad first, so the console is never empty.
     const stored = loadJson<string[]>(storeKey(BOOKINGS_KEY), []);
-    const next = union(boot.ids, stored.length ? stored : chainId === DEMO_CHAIN_ID ? DEMO_BOOKINGS : []);
+    const next = union(boot.ids, stored.length ? stored : DEMO_BOOKING_CHAINS.includes(chainId) ? DEMO_BOOKINGS : []);
     setIds(next);
     setSelected(s => (s && next.includes(s) ? s : next[0]));
     setAttempts(loadJson<Attempt[]>(storeKey(ATTEMPTS_KEY), []));
@@ -752,7 +752,7 @@ const ConsoleInner = ({ initialSample, initialSigners }: ConsoleProps) => {
   const loadSample = async () => {
     setSampleBusy(true);
     try {
-      const res = await fetch(SAMPLE_INVOICES_URL);
+      const res = await fetch(sampleInvoicesUrl(chainId));
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       if (loadText(await res.text())) setRevealFirst(true);
     } catch (e) {

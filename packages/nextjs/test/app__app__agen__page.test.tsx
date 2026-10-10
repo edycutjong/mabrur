@@ -2016,6 +2016,23 @@ describe("app/app/agen/page.tsx", () => {
       expect(screen.queryByText("Muat invoices.json atau tambah booking di bawah.")).toBeNull();
     });
 
+    it("starts a cold visit on the testnet with the same two demo bookings", () => {
+      (useMabrurContracts as any).mockReturnValue({ pbm: { address: "0xpbm", abi: [] }, chainId: 421614 });
+      render(<AgenPage />);
+      expect(screen.queryByText("Muat invoices.json atau tambah booking di bawah.")).toBeNull();
+    });
+
+    it("loads the testnet-signed sample invoices on the testnet", async () => {
+      (useMabrurContracts as any).mockReturnValue({ pbm: { address: "0xpbm", abi: [] }, chainId: 421614 });
+      const f = okFetch();
+      vi.stubGlobal("fetch", f);
+      (parseInvoices as any).mockReturnValue([inv]);
+      render(<AgenPage />);
+      await userEvent.click(screen.getByRole("button", { name: "Muat contoh faktur" }));
+      expect(f).toHaveBeenCalledWith("/demo/invoices-421614.json");
+      vi.unstubAllGlobals();
+    });
+
     it("shows a closed booking instead of a meaningless fee release (refunded)", () => {
       (useBooking as any).mockReturnValue({
         data: {
