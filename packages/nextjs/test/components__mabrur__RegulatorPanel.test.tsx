@@ -457,7 +457,11 @@ describe("RegulatorPanel component", () => {
 
       render(<RegulatorPanel agency={validAgency} />);
 
-      expect(screen.queryByText(/Kewajiban \(setoran − pembayaran\)/)).not.toBeInTheDocument();
+      // kept in the layout (height reserved) but invisible and hidden from screen readers until both ledgers load
+      const p = screen.getByText(/Kewajiban \(setoran − pembayaran\)/).closest("p");
+      expect(p).toHaveClass("invisible");
+      expect(p).toHaveAttribute("aria-hidden", "true");
+      expect(p).not.toHaveAttribute("data-agree");
     });
 
     it("renders Indonesian and English labels for liabilities comparison", () => {

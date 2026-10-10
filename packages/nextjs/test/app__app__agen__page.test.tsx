@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { isAddress, isHex, recoverTypedDataAddress } from "viem";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useAccount, useWalletClient } from "wagmi";
-import AgenPage from "~~/app/app/agen/page";
+import AgenPage from "~~/app/app/agen/AgenConsole";
 import {
   bookingIdOf,
   eventsFrom,
@@ -1567,7 +1567,10 @@ describe("app/app/agen/page.tsx", () => {
         await loadInvoices(user, [mkInvoice()]);
         expect(screen.getByRole("button", { name: "Bayar faktur" })).toBeDisabled();
         expect(screen.queryByText("booking ini")).not.toBeInTheDocument();
-        expect(screen.queryByText("booking lain")).not.toBeInTheDocument();
+        // an invisible placeholder chip keeps the row's height while the booking loads
+        const placeholder = screen.getByText("booking lain").closest(".mb-chip");
+        expect(placeholder).toHaveClass("invisible");
+        expect(placeholder).toHaveAttribute("aria-hidden", "true");
       });
 
       it("shows a dash when the signer cannot be recovered", async () => {
@@ -1941,15 +1944,70 @@ describe("app/app/agen/page.tsx", () => {
       vi.unstubAllGlobals();
     });
 
-    it("loads the sample on arrival with ?contoh=1 (the /judge link)", async () => {
+    it("renders the server-passed sample on first paint (?contoh=1, the /judge link) and scrolls to it", async () => {
       const f = okFetch();
       vi.stubGlobal("fetch", f);
-      (parseInvoices as any).mockReturnValue([inv]);
-      window.history.pushState({}, "", "/app/agen?contoh=1");
-      render(<AgenPage />);
-      await waitFor(() => expect(f).toHaveBeenCalledTimes(1));
-      window.history.pushState({}, "", "/");
+      const scroll = vi.fn();
+      Element.prototype.scrollIntoView = scroll;
+      (parseInvoices as any).mockReturnValue([inv, { ...inv, signature: "0xsig2" }]);
+      const text = JSON.stringify({ ahmadBookingId: "0x1", sitiBookingId: "0x2" });
+      render(<AgenPage initialSample={text} initialSigners={["0xknown"]} />);
+      // no fetch: the invoices are already in the first render, with the server-recovered signer on row 1
+      expect(f).not.toHaveBeenCalled();
+      expect(screen.getAllByText("Label ID")).toHaveLength(2);
+      expect(screen.getByTestId("chip-0xknown")).toBeInTheDocument();
+      expect(document.querySelectorAll("[data-first-invoice]")).toHaveLength(1);
+      await waitFor(() => expect(scroll).toHaveBeenCalledWith({ block: "start", behavior: "instant" }));
+      // the two named demo bookings are labelled and kept, Pak Ahmad first and selected
+      expect(setLabel).toHaveBeenCalledWith("0x1", "Pak Ahmad");
+      expect(setLabel).toHaveBeenCalledWith("0x2", "Ibu Siti");
+      expect(saveJson).toHaveBeenCalledWith("mabrur.console.bookings.31337", ["0x1", "0x2"]);
       vi.unstubAllGlobals();
+    });
+
+    it("scrolls smoothly to the first invoice after a click on Muat contoh faktur", async () => {
+      vi.stubGlobal("fetch", okFetch());
+      const scroll = vi.fn();
+      Element.prototype.scrollIntoView = scroll;
+      (parseInvoices as any).mockReturnValue([inv]);
+      render(<AgenPage />);
+      await userEvent.click(screen.getByRole("button", { name: "Muat contoh faktur" }));
+      await waitFor(() => expect(scroll).toHaveBeenCalledWith({ block: "start", behavior: "smooth" }));
+      vi.unstubAllGlobals();
+    });
+
+    it("does not scroll when the sample has no invoice", async () => {
+      vi.stubGlobal("fetch", okFetch());
+      const scroll = vi.fn();
+      Element.prototype.scrollIntoView = scroll;
+      (parseInvoices as any).mockReturnValue([]);
+      render(<AgenPage />);
+      await userEvent.click(screen.getByRole("button", { name: "Muat contoh faktur" }));
+      expect(await screen.findByText("Tidak ada faktur bertanda tangan di JSON ini")).toBeInTheDocument();
+      expect(scroll).not.toHaveBeenCalled();
+      vi.unstubAllGlobals();
+    });
+
+    it("ignores a server sample that does not parse, and one without named bookings", () => {
+      (parseInvoices as any).mockImplementation(() => {
+        throw new Error("bad");
+      });
+      const { unmount } = render(<AgenPage initialSample="{" />);
+      expect(document.querySelectorAll("[data-first-invoice]")).toHaveLength(0);
+      unmount();
+      (parseInvoices as any).mockReset();
+      (parseInvoices as any).mockReturnValue([inv]);
+      render(<AgenPage initialSample="null" />);
+      expect(document.querySelectorAll("[data-first-invoice]")).toHaveLength(1);
+      expect(setLabel).not.toHaveBeenCalled();
+    });
+
+    it("keeps a stored selection that is still listed, else picks the first stored booking", () => {
+      (loadJson as any).mockImplementation((key: string, def: any) => (key.includes("bookings") ? ["0x9"] : def));
+      (parseInvoices as any).mockReturnValue([inv]);
+      render(<AgenPage initialSample={JSON.stringify({ ahmadBookingId: "0x1" })} />);
+      // sample booking first, the stored one kept after it
+      expect(saveJson).toHaveBeenCalledWith("mabrur.console.bookings.31337", ["0x1", "0x9"]);
     });
 
     it("starts a cold visit on the demo chain with the two demo bookings", () => {

@@ -355,13 +355,22 @@ const VendorInner = () => {
               <Label>
                 <T id="Jumlah" en="Amount" />
               </Label>
-              <input
-                className="mb-input mb-amt text-right"
-                inputMode="numeric"
-                value={amount}
-                onChange={e => setAmount(e.target.value)}
-                aria-label={t("Jumlah", "Amount")}
-              />
+              {/* the unit sits inside the field: tIDR is a 1:1 test rupiah, shown as Rp everywhere else */}
+              <div className="relative">
+                <span
+                  className="mb-amt mb-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                  aria-hidden="true"
+                >
+                  Rp
+                </span>
+                <input
+                  className="mb-input mb-amt text-right pl-11"
+                  inputMode="numeric"
+                  value={amount}
+                  onChange={e => setAmount(e.target.value)}
+                  aria-label={t("Jumlah (Rp)", "Amount (Rp)")}
+                />
+              </div>
             </div>
           </div>
           {line === 0 && (

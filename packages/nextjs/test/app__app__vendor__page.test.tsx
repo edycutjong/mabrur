@@ -321,7 +321,7 @@ describe("app/app/vendor/page", () => {
       const user = userEvent.setup();
       render(<VendorPage />);
 
-      const amountInputs = screen.getAllByLabelText("Jumlah");
+      const amountInputs = screen.getAllByLabelText("Jumlah (Rp)");
       const amountInput = amountInputs[0] as HTMLInputElement;
 
       await user.clear(amountInput);
@@ -450,7 +450,7 @@ describe("app/app/vendor/page", () => {
       await user.type(bookingInput, "123");
 
       // Amount has default value, so we need to make it invalid by clearing
-      const amountInputs = screen.getAllByLabelText("Jumlah");
+      const amountInputs = screen.getAllByLabelText("Jumlah (Rp)");
       const amountInput = amountInputs[0];
 
       await user.clear(amountInput);
@@ -956,9 +956,9 @@ describe("app/app/vendor/page", () => {
     it("amount input has aria-label", () => {
       render(<VendorPage />);
 
-      const amountInputs = screen.getAllByLabelText("Jumlah");
+      const amountInputs = screen.getAllByLabelText("Jumlah (Rp)");
       expect(amountInputs.length).toBeGreaterThan(0);
-      expect(amountInputs[0]).toHaveAttribute("aria-label", "Jumlah");
+      expect(amountInputs[0]).toHaveAttribute("aria-label", "Jumlah (Rp)");
     });
 
     it("ref input has aria-label", () => {
@@ -1499,7 +1499,7 @@ describe("app/app/vendor/page", () => {
       await user.type(bookingInput, "0x123456789abcdef");
 
       // Clear the amount
-      const amountInputs = screen.getAllByLabelText("Jumlah");
+      const amountInputs = screen.getAllByLabelText("Jumlah (Rp)");
       const amountInput = amountInputs[0];
       await user.clear(amountInput);
 
@@ -1642,7 +1642,7 @@ describe("app/app/vendor/page", () => {
       await user.type(bookingInput, "0x123456789abcdef");
 
       // Clear amount
-      const amountInputs = screen.getAllByLabelText("Jumlah");
+      const amountInputs = screen.getAllByLabelText("Jumlah (Rp)");
       const amountInput = amountInputs[0];
       await user.clear(amountInput);
 
@@ -2029,7 +2029,7 @@ describe("app/app/vendor/page", () => {
       await user.type(bookingInput, "0x123456789abcdef");
 
       // Clear the amount to make it invalid
-      const amountInputs = screen.getAllByLabelText("Jumlah");
+      const amountInputs = screen.getAllByLabelText("Jumlah (Rp)");
       const amountInput = amountInputs[0];
       await user.clear(amountInput);
 

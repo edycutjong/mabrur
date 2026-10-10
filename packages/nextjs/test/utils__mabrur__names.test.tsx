@@ -68,6 +68,14 @@ describe("utils/mabrur/names", () => {
       expect(result).toBe("Custom Name");
     });
 
+    it("publicOnly skips this browser's own label (first-render safe, same as the server)", () => {
+      window.localStorage.setItem(
+        "mabrur.labels",
+        JSON.stringify({ "0x69ba3e937628201d614e18326f273bb04e7f20c8": "Custom Name" }),
+      );
+      expect(getLabel("0x69ba3e937628201d614e18326f273bb04e7f20c8", 42161, true)).toBe("Pak Ahmad");
+    });
+
     it("returns local label with case-insensitive key lookup", () => {
       window.localStorage.setItem(
         "mabrur.labels",

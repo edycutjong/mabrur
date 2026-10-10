@@ -13,9 +13,19 @@ import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["600", "700"],
-  style: ["normal", "italic"],
+  style: ["normal"],
   variable: "--font-cormorant",
   display: "swap",
+});
+// The italic (terbilang only) and the data face are not preloaded: most first screens never use them, and an unused
+// preload is a console warning on every route (the 404 included). Both load on first use, same family name.
+const cormorantItalic = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["600"],
+  style: ["italic"],
+  variable: "--font-cormorant-italic",
+  display: "swap",
+  preload: false,
 });
 const inter = Inter({
   subsets: ["latin"],
@@ -28,6 +38,7 @@ const mono = JetBrains_Mono({
   weight: ["400", "500"],
   variable: "--font-jetbrains",
   display: "swap",
+  preload: false,
 });
 
 export const metadata = getMetadata({
@@ -38,7 +49,11 @@ export const metadata = getMetadata({
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
-    <html suppressHydrationWarning lang="id" className={`${cormorant.variable} ${inter.variable} ${mono.variable}`}>
+    <html
+      suppressHydrationWarning
+      lang="id"
+      className={`${cormorant.variable} ${cormorantItalic.variable} ${inter.variable} ${mono.variable}`}
+    >
       <head>
         {/* Before first paint: apply the visitor's ID/EN choice (shared with the landing) so nothing flashes. */}
         <script dangerouslySetInnerHTML={{ __html: LANG_BOOT_SCRIPT }} />

@@ -55,10 +55,18 @@ const readLocal = (): Record<string, string> => {
   }
 };
 
-export const getLabel = (key: string | undefined, chainId: number = DEFAULT_CHAIN): string | undefined => {
+/**
+ * The display name of an address or booking id. `publicOnly` skips the names this browser stored, leaving the ones
+ * every visitor (and the server) sees: safe for a first render, so a chip never gains its name after hydration.
+ */
+export const getLabel = (
+  key: string | undefined,
+  chainId: number = DEFAULT_CHAIN,
+  publicOnly = false,
+): string | undefined => {
   if (!key) return undefined;
   const k = key.toLowerCase();
-  const local = readLocal()[k];
+  const local = publicOnly ? undefined : readLocal()[k];
   if (local) return local;
   for (const [addr, name] of ENV_NAMES) if (addr && addr.toLowerCase() === k) return name;
   return CHAIN_NAMES[chainId]?.[k];

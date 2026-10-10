@@ -11,5 +11,4 @@ export const DEMO_NAMES: Record<string, string> = { [AHMAD_ID]: "Pak Ahmad", [SI
 /** Signed sample invoices served from public/demo/: each one is refused by name on Pak Ahmad's booking. */
 export const SAMPLE_INVOICES_URL = "/demo/invoices.json";
 
-/** `?contoh` (any value) on /app/agen loads the sample invoices on arrival. */
-export const hasSampleParam = (search: string) => new URLSearchParams(search).has("contoh");
+/** `?contoh` (any value) on /app/agen: the server renders the page with the sample invoices loaded (agen/page.tsx). */

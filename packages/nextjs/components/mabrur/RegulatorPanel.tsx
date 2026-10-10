@@ -28,7 +28,8 @@ export const RegulatorPanel = ({ agency }: { agency?: string }) => {
   const backed = cons ? underlyingHeld! >= wrappedSupply! && sumEarmarks === wrappedSupply : undefined;
   const surplus = cons ? underlyingHeld! - wrappedSupply! : undefined;
 
-  const ledgersAgree = liabilities !== undefined && earmarked !== undefined && liabilities === earmarked;
+  const ledgersLoaded = liabilities !== undefined && earmarked !== undefined;
+  const ledgersAgree = ledgersLoaded && liabilities === earmarked;
   const m = backed ? "mb-match" : "";
   const am = ledgersAgree ? "mb-match" : "";
 
@@ -49,10 +50,11 @@ export const RegulatorPanel = ({ agency }: { agency?: string }) => {
         className={`rounded-[10px] p-5 ${backed ? "mb-wash-paid" : backed === false ? "mb-wash-refused" : "bg-[var(--surface)]"}`}
       >
         <div className={`mb-kpi ${backed === false ? "mb-refused-text" : ""}`}>{formatRp(wrappedSupply)}</div>
-        <div className="mb-terbilang mt-1">
+        <div className="mb-terbilang mt-1 min-h-[1.35em]">
           {wrappedSupply !== undefined ? <T id={terbilang(wrappedSupply)} en={inWords(wrappedSupply)} /> : ""}
         </div>
-        <p className="mb-p mt-3 font-medium leading-snug">
+        {/* three lines reserved: "Memuat…" becomes a three-line sentence without pushing the panel down (CLS) */}
+        <p className="mb-p mt-3 font-medium leading-snug min-h-[4.125em]">
           {backed === undefined ? (
             <T id="Memuat…" en="Loading…" />
           ) : backed ? (
@@ -123,10 +125,12 @@ export const RegulatorPanel = ({ agency }: { agency?: string }) => {
           <dd className={`mb-amt ${am}`}>{formatRp(earmarked)}</dd>
         </dl>
       )}
-      {a && liabilities !== undefined && earmarked !== undefined && (
+      {a && (
+        // rendered (invisible) while the two ledgers load, so its height is reserved
         <p
-          className={`mb-p text-[13.5px] leading-snug flex gap-2 items-start ${ledgersAgree ? "mb-paid-text" : "mb-refused-text"}`}
-          data-agree={ledgersAgree}
+          className={`mb-p text-[13.5px] leading-snug flex gap-2 items-start ${!ledgersLoaded ? "invisible" : ledgersAgree ? "mb-paid-text" : "mb-refused-text"}`}
+          data-agree={ledgersLoaded ? ledgersAgree : undefined}
+          aria-hidden={ledgersLoaded ? undefined : true}
         >
           <span className="mt-[3px] shrink-0 [&_svg]:w-[13px] [&_svg]:h-[13px]">
             {ledgersAgree ? <CheckIcon /> : <CrossIcon />}

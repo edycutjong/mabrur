@@ -126,7 +126,7 @@ const JudgePage: NextPage = () => (
         </div>
         <div className="mb-judge-quick">
           <Link className="mb-link mb-judge-step-link" href={SAMPLE_CONSOLE}>
-            <T id="Lihat cap DITOLAK sendiri, tanpa dompet" en="See a DITOLAK (rejected) seal yourself, no wallet" />
+            <T id="Lihat cap DITOLAK sendiri, tanpa dompet" en="See a real rejection seal, no wallet" />
           </Link>
           <span className="mb-p text-sm mb-ink-soft">
             <T
@@ -165,7 +165,7 @@ const JudgePage: NextPage = () => (
             {REVERTS.map(([err, whatId, whatEn, tx]) => (
               <tr key={tx}>
                 <td>
-                  <span className="mb-stamp mb-stamp-sm">
+                  <span className="mb-stamp mb-stamp-sm" role="img" aria-label={`Ditolak (rejected): ${err}`}>
                     <span className="mb-stamp-word">Ditolak</span>
                     <Gloss en="rejected" />
                     <span className="mb-stamp-error mb-receipt-err">{err}</span>

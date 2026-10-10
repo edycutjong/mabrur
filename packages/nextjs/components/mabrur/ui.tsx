@@ -180,7 +180,8 @@ export const ClaimBadge = ({ address, topic }: { address?: string; topic: number
 export const AddressChip = ({ address, topic, name }: { address?: string; topic?: number; name?: string }) => {
   const { chainId } = useMabrurContracts();
   const { targetNetwork } = useTargetNetwork();
-  const [label, setLabelState] = useState<string | undefined>(name);
+  // first render: the public name (same on the server), so the chip does not widen and wrap after hydration
+  const [label, setLabelState] = useState<string | undefined>(() => name ?? getLabel(address, chainId, true));
   useEffect(() => setLabelState(name ?? getLabel(address, chainId)), [address, name, chainId]);
   if (!address) return <span className="mb-muted">–</span>;
   const href = explorerAddr(chainId, address, targetNetwork.blockExplorers?.default?.url);
