@@ -114,7 +114,7 @@ flowchart LR
 | Lapisan | Teknologi |
 |---|---|
 | Kontrak | Solidity `^0.8.24`, dikompilasi & diverifikasi dengan solc 0.8.33; OpenZeppelin 5.6.1 (`ERC20Wrapper`, `ERC20Permit`, `EIP712`, `ECDSA`, `ReentrancyGuard`) |
-| Chain | **Arbitrum One (42161)**, ketiga kontrak terverifikasi di Arbiscan |
+| Chain | **Arbitrum One (42161)**, ketiga kontrak terverifikasi di Arbiscan; salinan di testnet **Arbitrum Sepolia (421614)** untuk dicoba siapa saja |
 | Tooling | Foundry (unit, fuzz, invariant, skrip yang di-broadcast ke mainnet) |
 | Aplikasi | Scaffold-ETH 2: Next.js App Router, wagmi + viem, RainbowKit; error kontrak didekode lewat `simulateContract` |
 | Uang | `tIDR`: rupiah uji ERC20Permit **tanpa nilai moneter**, `decimals = 0` |
@@ -124,6 +124,14 @@ flowchart LR
 | MabrurPBM | [`0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5`](https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code) |
 | ClaimRegistry | [`0xd5B731CD0f2c91D5D64b59d9E4a2A4E4b6315ADb`](https://arbiscan.io/address/0xd5B731CD0f2c91D5D64b59d9E4a2A4E4b6315ADb#code) |
 | TIDR (token uji) | [`0x66F838be32A624f4C797483a151C7f6209A43448`](https://arbiscan.io/address/0x66F838be32A624f4C797483a151C7f6209A43448#code) |
+
+| Kontrak | Alamat (Arbitrum Sepolia, testnet) |
+|---|---|
+| MabrurPBM | [`0xa2BC8c2959b1c9d5A90B750aCFfbD52181CE98f1`](https://sepolia.arbiscan.io/address/0xa2BC8c2959b1c9d5A90B750aCFfbD52181CE98f1#code) |
+| ClaimRegistry | [`0xCbf1247e292B8eA0bA151a1b5811B732Fc564480`](https://sepolia.arbiscan.io/address/0xCbf1247e292B8eA0bA151a1b5811B732Fc564480#code) |
+| TIDR (token uji) | [`0xc56c5561fc65274c55419FC031D90f68AE854B4B`](https://sepolia.arbiscan.io/address/0xc56c5561fc65274c55419FC031D90f68AE854B4B#code) |
+
+**Coba sendiri di testnet.** Tombol **Mainnet | Testnet** di header aplikasi memindahkan aplikasi ke Arbitrum Sepolia, dengan kontrak yang sama (terverifikasi). Ambil ETH uji gratis dari [faucet](https://faucets.chain.link/arbitrum-sepolia), tekan faucet tIDR di aplikasi, lalu buat dan refund booking sendiri: [mabrur.edycu.dev/app/jamaah?net=testnet](https://mabrur.edycu.dev/app/jamaah?net=testnet).
 
 **Biaya per jamaah** (dari receipt asli, `script/cost.sh`): siklus lengkap jamaah yang berangkat (book + 3 pembayaran
 vendor + pelepasan ujrah) memakai **907.185 gas ≈ Rp 809**, dan siklus yang di-refund (book + 1 pembayaran + refund)

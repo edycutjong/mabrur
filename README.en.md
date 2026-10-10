@@ -112,7 +112,7 @@ flowchart LR
 | Layer | Technology |
 |---|---|
 | Contracts | Solidity `^0.8.24`, compiled and verified with solc 0.8.33; OpenZeppelin 5.6.1 (`ERC20Wrapper`, `ERC20Permit`, `EIP712`, `ECDSA`, `ReentrancyGuard`) |
-| Chain | **Arbitrum One (42161)**, all three contracts verified on Arbiscan |
+| Chain | **Arbitrum One (42161)**, all three contracts verified on Arbiscan; a copy on the **Arbitrum Sepolia (421614)** testnet for anyone to try |
 | Tooling | Foundry (unit, fuzz, invariant, scripts broadcasting to mainnet) |
 | App | Scaffold-ETH 2: Next.js App Router, wagmi + viem, RainbowKit; decoded custom errors via `simulateContract` |
 | Money | `tIDR`: an ERC20Permit **test rupiah with no monetary value**, `decimals = 0` |
@@ -122,6 +122,14 @@ flowchart LR
 | MabrurPBM | [`0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5`](https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code) |
 | ClaimRegistry | [`0xd5B731CD0f2c91D5D64b59d9E4a2A4E4b6315ADb`](https://arbiscan.io/address/0xd5B731CD0f2c91D5D64b59d9E4a2A4E4b6315ADb#code) |
 | TIDR (test token) | [`0x66F838be32A624f4C797483a151C7f6209A43448`](https://arbiscan.io/address/0x66F838be32A624f4C797483a151C7f6209A43448#code) |
+
+| Contract | Address (Arbitrum Sepolia, testnet) |
+|---|---|
+| MabrurPBM | [`0xa2BC8c2959b1c9d5A90B750aCFfbD52181CE98f1`](https://sepolia.arbiscan.io/address/0xa2BC8c2959b1c9d5A90B750aCFfbD52181CE98f1#code) |
+| ClaimRegistry | [`0xCbf1247e292B8eA0bA151a1b5811B732Fc564480`](https://sepolia.arbiscan.io/address/0xCbf1247e292B8eA0bA151a1b5811B732Fc564480#code) |
+| TIDR (test token) | [`0xc56c5561fc65274c55419FC031D90f68AE854B4B`](https://sepolia.arbiscan.io/address/0xc56c5561fc65274c55419FC031D90f68AE854B4B#code) |
+
+**Try it yourself on testnet.** The **Mainnet | Testnet** switch in the app header moves the app to Arbitrum Sepolia, with the same (verified) contracts. Get free test ETH from a [faucet](https://faucets.chain.link/arbitrum-sepolia), press the tIDR faucet in the app, then make and refund your own booking: [mabrur.edycu.dev/app/jamaah?net=testnet](https://mabrur.edycu.dev/app/jamaah?net=testnet).
 
 **What it costs per pilgrim** (from the real receipts, `script/cost.sh`): a full departed lifecycle (book + 3 vendor
 payments + margin release) used **907,185 gas ≈ Rp 809**, and a refunded one (book + 1 payment + refund)
