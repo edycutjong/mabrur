@@ -32,7 +32,7 @@ def describe(script, tx, names):
     if fn == "refund":
         return "anyone triggers refund after ticket-by (no ticket bought)", "every unspent rupiah back to the pilgrim"
     if fn == "addTrustedIssuer":
-        return "regulator trusts the issuer (stand-in for Kemenag / IATA)", "issuer trusted for 4 topics"
+        return "regulator trusts the issuer (stand-in for Kemenhaj / IATA)", "issuer trusted for 4 topics"
     if fn == "issueClaim":
         topic = {"1": "PPIU_AGENCY", "2": "AIRLINE", "3": "HOTEL", "4": "VISA_PROVIDER"}.get(args[1], args[1])
         return f"issuer certifies {args[0][:10]}… as {topic}", "claim issued"

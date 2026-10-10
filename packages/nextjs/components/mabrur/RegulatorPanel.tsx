@@ -148,8 +148,8 @@ export const RegulatorPanel = ({ agency }: { agency?: string }) => {
       )}
       <p className="mb-p text-[13px] mb-muted leading-snug">
         <T
-          id="Penerbit klaim: kunci demo, pengganti Kemenag / IATA. tIDR = token uji tanpa nilai."
-          en="Claim issuer: a demo key standing in for Kemenag / IATA. tIDR = test token, no value."
+          id="Penerbit klaim: kunci demo, pengganti Kemenhaj / IATA. tIDR = token uji tanpa nilai."
+          en="Claim issuer: a demo key standing in for Kemenhaj / IATA. tIDR = test token, no value."
         />
       </p>
     </aside>

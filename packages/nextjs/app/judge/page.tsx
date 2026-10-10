@@ -382,8 +382,8 @@ const JudgePage: NextPage = () => (
             </li>
             <li>
               <T
-                id="Penerbit klaim adalah kunci demo yang menggantikan Kemenag / IATA. Penerbit yang dibobol bisa mensertifikasi vendor palsu; kerugiannya terbatas pada pos tiket, hotel, dan visa yang belum kedaluwarsa, dan itu sudah diuji."
-                en="The claim issuer is a demo key standing in for Kemenag / IATA. A captured issuer could certify a fake vendor; the damage is bounded to unexpired flight, hotel and visa lines and tested."
+                id="Penerbit klaim adalah kunci demo yang menggantikan Kemenhaj / IATA. Penerbit yang dibobol bisa mensertifikasi vendor palsu; kerugiannya terbatas pada pos tiket, hotel, dan visa yang belum kedaluwarsa, dan itu sudah diuji."
+                en="The claim issuer is a demo key standing in for Kemenhaj / IATA. A captured issuer could certify a fake vendor; the damage is bounded to unexpired flight, hotel and visa lines and tested."
               />
             </li>
             <li>

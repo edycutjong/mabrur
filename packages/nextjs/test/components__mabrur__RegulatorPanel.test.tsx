@@ -564,7 +564,7 @@ describe("RegulatorPanel component", () => {
 
       render(<RegulatorPanel />);
 
-      expect(screen.getByText(/Penerbit klaim: kunci demo, pengganti Kemenag \/ IATA/)).toBeInTheDocument();
+      expect(screen.getByText(/Penerbit klaim: kunci demo, pengganti Kemenhaj \/ IATA/)).toBeInTheDocument();
     });
 
     it("renders tIDR disclaimer", () => {

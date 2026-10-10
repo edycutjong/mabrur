@@ -3,6 +3,7 @@
   <h1>Mabrur 🕋</h1>
   <p><strong>Bahasa Indonesia</strong> · <a href="README.en.md">English</a></p>
   <p><em>Dana jamaah adalah amanah, bukan modal kerja agen.<br/>Setiap rupiah uang muka jamaah dikunci onchain per pos, hanya bisa dibayarkan ke vendor terverifikasi, dan bisa dikembalikan oleh siapa pun.</em></p>
+  <p>Kasus First Travel: 63.310 calon jamaah jadi korban, kerugian Rp 905 miliar (<a href="https://megapolitan.kompas.com/read/2023/01/05/15482901/aset-first-travel-dirampas-negara-mahkamah-agung-putuskan-dikembalikan-ke">Kompas, 5 Jan 2023</a>).</p>
   <img src="docs/readme-hero-animated.svg" alt="Mabrur: empat percobaan agen pada booking Pak Ahmad, tiga ditolak, satu dibayar; dana Ibu Siti dikembalikan" width="100%">
 
   <br/>
@@ -95,7 +96,7 @@ flowchart LR
   A[Konsol agen] -- spend(faktur, tanda tangan vendor) --> PBM
   V[Halaman vendor] -- tanda tangan Invoice EIP-712 --> A
   PBM -- hasValidClaim --> R[ClaimRegistry<br/>pemilik = regulator]
-  I[Penerbit: pengganti Kemenag / IATA] -- issueClaim --> R
+  I[Penerbit: pengganti Kemenhaj / IATA] -- issueClaim --> R
   PBM -- penerima = penanda tangan --> V
   PBM -- ujrah setelah tanda tangan berangkat --> A
   X[Siapa pun] -- refund setelah ticketBy / departBy --> PBM
@@ -173,7 +174,7 @@ Memutar ulang demo Arbitrum One (`script/run.sh SeedDemo`, `script/proof.sh`) me
 - **T4 · penyimpanan kunci jamaah.** Jika agen memegang kunci jamaah, agen bisa menandatangani atas namanya. Jalur produksi: dompet passkey / smart account yang diterbitkan bank atau onramp jamaah, tidak pernah oleh agen.
 - **Uangnya adalah token uji.** Bank Indonesia tidak mengizinkan kripto sebagai alat pembayaran ([ANTARA, 15 Jun 2021](https://www.antaranews.com/berita/2211790/bi-larang-lembaga-keuangan-gunakan-uang-kripto-untuk-alat-pembayaran)). Jalur produksinya adalah token rupiah berizin (deposito tertokenisasi bank atau Rupiah Digital) ditambah mandat regulator untuk dana PPIU; keduanya belum ada hari ini. Wrapper menerima ERC-20 standar apa pun.
 - **Tidak menjamin kursi.** Kursi bergantung pada maskapai dan kuota visa. Mabrur menjamin *tiket lunas, atau setiap rupiah yang belum terpakai kembali* sebelum tanggal yang ditandatangani jamaah.
-- Kunci penerbit adalah pengganti Kemenag / IATA, dan semua nama dalam demo ("PT Amanah Contoh Wisata", "PT Contoh GSA") fiktif.
+- Kunci penerbit adalah pengganti Kemenhaj (Kementerian Haji dan Umrah, yang memegang perizinan dan pengawasan PPIU sejak [UU 14/2025](https://pasal.id/peraturan/uu/uu-no-14-tahun-2025) dan Permen Haji dan Umrah No. 2/2026; [RRI, 6 Agu 2026](https://rri.co.id/bengkalis/info-kementerian/2631886/kemenhaj-perkuat-pengawasan-ppiu-demi-lindungi-jemaah-umrah)) / IATA, dan semua nama dalam demo ("PT Amanah Contoh Wisata", "PT Contoh GSA") fiktif.
 
 ---
 
@@ -200,3 +201,5 @@ mabrur/
 ## 🙏 Terima kasih
 Dibuat untuk **Ethereum Jakarta Hackathon 2026** (ETHJKT × HackQuest), track *Build the Real World Onchain*.
 Terima kasih kepada mentor dan panitia ETHJKT, OpenZeppelin, Foundry, dan Scaffold-ETH 2.
+
+**Cara dibangun.** Dibangun solo bersama agen AI (Claude Code) dari spesifikasi desain yang ditulis sebelum sprint; semua kode di-commit setelah 10:00 WIB, 9 Okt 2026 (commit pertama `6837308`, 10:38 WIB). Riwayat commit lengkap ada di repo ini.

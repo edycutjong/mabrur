@@ -326,16 +326,16 @@ body.chrome-off .hud, body.chrome-off .hint, body.chrome-off .ver { opacity: 0; 
   <h2>Asetnya: <em>hak jamaah</em> atas layanan berizin.</h2>
   <div class="paper flow up" style="margin-top:22px">
     <div class="step"><span class="n">1 · JAMAAH</span><h3>Pesan</h3><p>permit + book</p><span class="code">mUMRAH</span></div>
-    <div class="step"><span class="n">2 · PENERBIT</span><h3>Akui</h3><p>pengganti Kemenag / IATA</p><span class="code">ClaimRegistry</span></div>
+    <div class="step"><span class="n">2 · PENERBIT</span><h3>Akui</h3><p>pengganti Kemenhaj / IATA</p><span class="code">ClaimRegistry</span></div>
     <div class="step"><span class="n">3 · VENDOR</span><h3>Tagih</h3><p>faktur satu booking, satu pos</p><span class="code">EIP-712</span></div>
     <div class="step"><span class="n">4 · AGEN</span><h3>Bayar</h3><p>uang ke penanda tangan</p><span class="code">spend()</span></div>
     <div class="step"><span class="n">5 · SIAPA PUN</span><h3>Kembalikan</h3><p>lewat batas tiket</p><span class="code">refund()</span></div>
   </div>
   <div class="cols mid up" style="--u:.2s;grid-template-columns:.5fr 1.5fr;gap:40px;align-items:center;padding-top:22px">
-    <div style="font:600 36px/1.35 var(--font-display)"><div class="label" style="margin-bottom:14px;color:var(--earmarked-ink)">Buku tabungan amanah · Pak Ahmad</div>Uang muka umrah adalah aktivitas ekonomi nyata. Mabrur menjadikannya klaim yang dipegang jamaah sendiri, <span style="color:var(--earmarked-ink)">tidak bisa dipindahtangankan.</span></div>
+    <div style="font:600 31px/1.3 var(--font-display)"><div class="label" style="margin-bottom:14px;color:var(--earmarked-ink)">Buku tabungan amanah · Pak Ahmad</div>Uang muka umrah adalah aktivitas ekonomi nyata. Mabrur menjadikannya klaim yang dipegang jamaah sendiri, <span style="color:var(--earmarked-ink)">tidak bisa dipindahtangankan.</span><p style="font:400 21px/1.4 var(--font-body);color:var(--ink-soft);margin-top:16px"><b style="color:var(--ink)">Pembanding:</b> Centrifuge, Ondo, Securitize menokenisasi aset <b style="color:var(--ink)">investor</b>; Mabrur melindungi uang muka <b style="color:var(--ink)">konsumen</b>, pola <i>purpose-bound money</i> yang diuji MAS Project Orchid.</p></div>
     <div class="paper shot"><img src="/pitch/assets/passbook-deck.webp" width="2056" height="818" style="width:100%;height:auto;display:block" alt="Buku tabungan amanah Pak Ahmad: pemesanan, tiket, hotel, visa, ujrah, dengan tx hash."></div>
   </div>
-  <aside class="note">Asetnya adalah hak jamaah atas layanan berizin: jamaah memesan, penerbit klaim mengakui vendor, vendor menagih, agen hanya meneruskan, siapa pun bisa mengembalikan. Token mUMRAH tidak bisa dipindahtangankan.</aside>
+  <aside class="note">Asetnya adalah hak jamaah atas layanan berizin: jamaah memesan, penerbit klaim mengakui vendor, vendor menagih, agen hanya meneruskan, siapa pun bisa mengembalikan. Token mUMRAH tidak bisa dipindahtangankan. Bedanya dengan Centrifuge atau Ondo: mereka menokenisasi aset investor; Mabrur melindungi uang muka konsumen, pola purpose-bound money yang diuji MAS Project Orchid.</aside>
 </section>
 
 <!-- 5 · ONCHAIN: PROOF MOMENT -->
@@ -354,7 +354,7 @@ body.chrome-off .hud, body.chrome-off .hint, body.chrome-off .ver { opacity: 0; 
     <span class="mono" style="font-size:24px;color:var(--ink-soft)"><b style="color:var(--refused);font-size:27px">InvoiceReplayed</b> 0x952f30ad…</span>
     <span class="mono" style="font-size:24px;color:var(--ink-soft)"><b style="color:var(--refused);font-size:27px">NotDeparted</b> 0xe4855ebd…</span>
   </div>
-  <aside class="note">Momen intinya: agen membayar hotel Ibu Siti dari dana Pak Ahmad. Kontrak menolak, EarmarkMismatch. Transaksi gagal ini ditambang di Arbitrum One; tiga kecurangan lain juga.</aside>
+  <aside class="note">Ini pola yang diduga terjadi di First Travel: hotel Ibu Siti dibayar dari dana Pak Ahmad. Kontrak menolak, EarmarkMismatch, dan penolakan itu ditambang di Arbitrum One. Tiga kecurangan lain juga.</aside>
 </section>
 
 <!-- 6 · ONCHAIN: DEMO -->
@@ -390,7 +390,7 @@ body.chrome-off .hud, body.chrome-off .hint, body.chrome-off .ver { opacity: 0; 
       <div class="paper k up" style="--u:.25s"><span class="big">3</span><p>putaran review kontrak, putaran 3 tanpa temuan baru</p></div>
     </div>
   </div>
-  <aside class="note">Tiga kontrak terverifikasi di Arbiscan. Aturannya ada di jalur transfer token, tanpa owner atau pause atas saldo. 87 tes, cakupan 100 persen, tujuh invariant.</aside>
+  <aside class="note">Tiga kontrak terverifikasi. Aturannya ada di jalur transfer token, tanpa owner, tanpa pause.</aside>
 </section>
 
 <!-- 7 · DAMPAK -->
@@ -413,21 +413,22 @@ body.chrome-off .hud, body.chrome-off .hint, body.chrome-off .ver { opacity: 0; 
         <div style="display:grid;gap:8px"><span style="font-size:24px;font-weight:500;color:var(--returned)">kembali ke Ibu Siti · booking ditutup</span><span style="font-size:22px;color:var(--muted)">batas berangkat semula 8 Nov 2026</span></div>
       </div>
       <div style="font-size:28px;color:var(--ink)">Tanpa izin agen, tanpa pengadilan.</div>
+      <div style="font-size:20px;line-height:1.4;color:var(--muted);border-top:1px solid #D3DED8;padding-top:14px">Pembanding: aset First Travel yang disita ≈ Rp 40 miliar dari kerugian Rp 905 miliar, sekitar 4 % (JawaPos, 22 Nov 2019; Kejagung via kumparan, 2 Jul 2020).</div>
     </div>
   </div>
-  <aside class="note">Biayanya sekitar Rp 809 per jamaah, 0,0025 persen dari paket. Batas tiket Ibu Siti lewat tanpa tiket: pihak ketiga menekan refund, Rp 23.000.000 kembali, tanpa izin agen.</aside>
+  <aside class="note">Dari First Travel, aset yang bisa disita hanya sekitar empat persen dari kerugian. Di Mabrur, seratus persen sisa uang muka ada di kontrak, dan siapa pun bisa mengembalikannya: Ibu Siti menerima dua puluh tiga juta tanpa izin agen. Biayanya delapan ratus sembilan rupiah per jamaah.</aside>
 </section>
 
 <!-- 10 · JALUR ADOPSI (compact; detail = appendix A4, A5) -->
 <section class="slide" data-title="Jalur adopsi">
   <div class="label kicker">07 · Jalur adopsi</div>
-  <h2>Biro jujur dulu, lalu <em>Kemenag.</em></h2>
+  <h2>Biro jujur dulu, lalu <em>Kemenhaj.</em></h2>
   <div class="mid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
     <div class="paper tcard up" style="min-height:0"><span class="n">PPIU</span><h3>Keunggulan jual</h3><p>Biro jujur membuktikan uang jamaah aman, melawan biro promo yang murah.</p></div>
-    <div class="paper tcard up" style="--u:.1s;min-height:0"><span class="n">Kemenag</span><h3>Penerbit &amp; mandat</h3><p>Kemenag dan akreditor maskapai/IATA sebagai penerbit klaim; regulator mewajibkan dana PPIU di earmark.</p></div>
+    <div class="paper tcard up" style="--u:.1s;min-height:0"><span class="n">Kemenhaj</span><h3>Penerbit &amp; mandat</h3><p>Kementerian Haji dan Umrah, pengawas PPIU, dan akreditor maskapai/IATA sebagai penerbit klaim; regulator mewajibkan dana PPIU di earmark.</p></div>
     <div class="paper tcard up" style="--u:.2s;min-height:0"><span class="n">Rupiah</span><h3>Rupiah berizin</h3><p>Rupiah Digital atau deposito tertokenisasi bank menggantikan tIDR; wrapper menerima ERC-20 apa pun.</p></div>
   </div>
-  <aside class="note">Jalur adopsi: biro jujur dulu, karena bukti uang jamaah aman adalah keunggulan jual. Lalu Kemenag sebagai penerbit klaim dan mandat earmark, dan rupiah berizin menggantikan token uji.</aside>
+  <aside class="note">Jalur adopsi: biro jujur dulu, karena bukti uang jamaah aman adalah keunggulan jual. Lalu Kemenhaj, Kementerian Haji dan Umrah yang kini mengawasi PPIU, sebagai penerbit klaim dan mandat earmark, dan rupiah berizin menggantikan token uji.</aside>
 </section>
 
 <!-- 8 · PENUTUP -->
@@ -492,13 +493,14 @@ body.chrome-off .hud, body.chrome-off .hint, body.chrome-off .ver { opacity: 0; 
 <!-- A4 · JALUR ADOPSI -->
 <section class="slide" data-title="Lampiran · Jalur adopsi">
   <div class="label kicker"><span class="app-tag">Lampiran A4</span> Jalur adopsi</div>
-  <h2 style="font-size:72px">Kemenag, PPIU, <em>SISKOPATUH.</em></h2>
+  <h2 style="font-size:72px">Kemenhaj, PPIU, <em>SISKOPATUH.</em></h2>
   <div class="mid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
     <div class="paper tcard up"><span class="n">PPIU</span><h3>Keunggulan jual</h3><p>Biro jujur membuktikan uang jamaah aman, melawan biro promo yang murah.</p></div>
-    <div class="paper tcard up" style="--u:.1s"><span class="n">Kemenag</span><h3>Penerbit &amp; mandat</h3><p>Kemenag dan akreditor maskapai/IATA sebagai penerbit klaim; regulator mewajibkan dana PPIU di earmark.</p></div>
+    <div class="paper tcard up" style="--u:.1s"><span class="n">Kemenhaj</span><h3>Penerbit &amp; mandat</h3><p>Kementerian Haji dan Umrah, pengawas PPIU, dan akreditor maskapai/IATA sebagai penerbit klaim; regulator mewajibkan dana PPIU di earmark.</p></div>
     <div class="paper tcard up" style="--u:.2s"><span class="n">SISKOPATUH</span><h3>Registry booking</h3><p>Rujukan data jamaah. Belum ada API publik yang kami temukan: disebut, belum diintegrasikan.</p></div>
   </div>
-  <aside class="note">Jalur adopsi: pertama biro yang jujur, karena bukti uang jamaah aman adalah keunggulan jual. Lalu Kemenag dan akreditor maskapai sebagai penerbit klaim yang sesungguhnya, dan mandat regulator agar dana PPIU berada di earmark. SISKOPATUH bisa menjadi registry booking; kami belum menemukan API publiknya.</aside>
+  <div style="font-size:20px;color:var(--muted);margin-top:4px">Perizinan dan pengawasan PPIU: Kementerian Haji dan Umrah (UU 14/2025; Permen Haji dan Umrah No. 2/2026, 30 Jul 2026). Sebelumnya Kemenag.</div>
+  <aside class="note">Jalur adopsi: pertama biro yang jujur, karena bukti uang jamaah aman adalah keunggulan jual. Lalu Kemenhaj dan akreditor maskapai sebagai penerbit klaim yang sesungguhnya, dan mandat regulator agar dana PPIU berada di earmark. Sejak UU 14/2025, perizinan PPIU pindah dari Kemenag ke Kementerian Haji dan Umrah; standarnya diatur Permen Haji dan Umrah No. 2/2026. SISKOPATUH bisa menjadi registry booking; kami belum menemukan API publiknya.</aside>
 </section>
 
 <!-- A5 · ROADMAP -->
@@ -533,7 +535,7 @@ body.chrome-off .hud, body.chrome-off .hint, body.chrome-off .ver { opacity: 0; 
 </div>
 <nav aria-label="Navigasi deck"><div class="hint">← → navigasi (berhenti di slide terakhir) · A lampiran · N catatan · H sembunyikan/tampilkan · ⌘P → PDF</div>
 <div class="hud"><span id="count">01 / 11</span><button type="button" id="prev" aria-label="Slide sebelumnya">←</button><button type="button" id="next" aria-label="Slide berikutnya">→</button><button type="button" id="notesBtn" aria-label="Catatan pembicara">N</button></div>
-<div class="ver" style="position:fixed;top:12px;right:18px;font:400 12px var(--font-data);color:var(--muted);z-index:10">v5 · 10 Okt 2026</div></nav>
+<div class="ver" style="position:fixed;top:12px;right:18px;font:400 12px var(--font-data);color:var(--muted);z-index:10">v6 · 10 Okt 2026</div></nav>
 <aside class="notes" id="notes" aria-live="polite" aria-label="Catatan pembicara"><div class="label">Catatan pembicara · <span id="ntitle"></span></div><p id="ntext"></p></aside>
 <script>
 (function () {

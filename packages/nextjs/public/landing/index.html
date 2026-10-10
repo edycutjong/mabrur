@@ -877,7 +877,7 @@ html.lang-en .stamp > .gl { display: block; }
     </div>
     <div class="flow rise">
       <div class="step"><span class="n"><span class="t-id">1 · JAMAAH</span><span class="t-en">1 · PILGRIM</span></span><h3><span class="t-id">Pesan</span><span class="t-en">Book</span></h3><p class="t-id">Satu tanda tangan permit, rupiah masuk ke booking miliknya.</p><p class="t-en">One permit signature; rupiah enters her own booking.</p><span class="code">permit + book()</span></div>
-      <div class="step"><span class="n"><span class="t-id">2 · PENERBIT</span><span class="t-en">2 · ISSUER</span></span><h3><span class="t-id">Akui</span><span class="t-en">Certify</span></h3><p class="t-id">Penerbit klaim (kunci demo, pengganti Kemenag / IATA) mengakui agen, maskapai, hotel, visa.</p><p class="t-en">A claim issuer (demo key standing in for Kemenag / IATA) certifies agency, airline, hotel, visa.</p><span class="code">issueClaim</span></div>
+      <div class="step"><span class="n"><span class="t-id">2 · PENERBIT</span><span class="t-en">2 · ISSUER</span></span><h3><span class="t-id">Akui</span><span class="t-en">Certify</span></h3><p class="t-id">Penerbit klaim (kunci demo, pengganti Kemenhaj / IATA) mengakui agen, maskapai, hotel, visa.</p><p class="t-en">A claim issuer (demo key standing in for Kemenhaj / IATA) certifies agency, airline, hotel, visa.</p><span class="code">issueClaim</span></div>
       <div class="step"><span class="n">3 · VENDOR</span><h3><span class="t-id">Tagih</span><span class="t-en">Invoice</span></h3><p class="t-id">Vendor menandatangani faktur untuk satu booking dan satu pos.</p><p class="t-en">The vendor signs an invoice for one booking and one line.</p><span class="code">Invoice (EIP-712)</span></div>
       <div class="step"><span class="n"><span class="t-id">4 · AGEN</span><span class="t-en">4 · AGENCY</span></span><h3><span class="t-id">Bayar</span><span class="t-en">Pay</span></h3><p class="t-id">Agen hanya meneruskan faktur; uang mengalir ke penanda tangan.</p><p class="t-en">The agency only forwards the invoice; money flows to the signer.</p><span class="code">spend()</span></div>
       <div class="step"><span class="n"><span class="t-id">5 · SIAPA PUN</span><span class="t-en">5 · ANYONE</span></span><h3><span class="t-id">Kembalikan</span><span class="t-en">Refund</span></h3><p class="t-id">Lewat batas tiket tanpa tiket lunas: sisa dana kembali ke jamaah.</p><p class="t-en">Ticket-by passes unpaid: the remainder returns to the pilgrim.</p><span class="code">refund()</span></div>
@@ -962,9 +962,9 @@ html.lang-en .stamp > .gl { display: block; }
       </article>
       <article class="card rise">
         <span class="when"><span class="t-id">Kemudian · Mandat</span><span class="t-en">Then · Mandate</span></span>
-        <h3>Kemenag &amp; PPIU</h3>
-        <ul class="t-id"><li>Regulator mewajibkan dana PPIU berada di earmark per jamaah</li><li>Kemenag dan akreditor maskapai/IATA sebagai penerbit klaim nyata</li><li>SISKOPATUH sebagai registry booking (belum ada API publik yang kami temukan)</li></ul>
-        <ul class="t-en"><li>The regulator requires PPIU deposits to sit in per-pilgrim earmarks</li><li>Kemenag and airline / IATA accreditors as the real claim issuers</li><li>SISKOPATUH as the booking registry (no public API that we could find)</li></ul>
+        <h3>Kemenhaj &amp; PPIU</h3>
+        <ul class="t-id"><li>Regulator mewajibkan dana PPIU berada di earmark per jamaah</li><li>Kemenhaj (Kementerian Haji dan Umrah, pengawas PPIU sejak UU 14/2025 dan Permen Haji dan Umrah No. 2/2026) dan akreditor maskapai/IATA sebagai penerbit klaim nyata</li><li>SISKOPATUH sebagai registry booking (belum ada API publik yang kami temukan)</li></ul>
+        <ul class="t-en"><li>The regulator requires PPIU deposits to sit in per-pilgrim earmarks</li><li>Kemenhaj (the Ministry of Hajj and Umrah, which licenses and supervises PPIU under Law 14/2025 and Ministerial Regulation 2/2026) and airline / IATA accreditors as the real claim issuers</li><li>SISKOPATUH as the booking registry (no public API that we could find)</li></ul>
       </article>
     </div>
   </div>
@@ -1001,7 +1001,7 @@ html.lang-en .stamp > .gl { display: block; }
       </details>
       <details>
         <summary><span class="t-id">Apa yang belum nyata di demo ini?</span><span class="t-en">What in this demo is not real yet?</span></summary>
-        <div class="ans"><p class="t-id"><b>Uangnya:</b> tIDR adalah token uji tanpa nilai. <b>Penerbit klaim:</b> kunci demo pengganti Kemenag / IATA. <b>Nama:</b> “PT Amanah Contoh Wisata”, “PT Contoh GSA” fiktif. Selebihnya nyata: kontrak di Arbitrum One, terverifikasi, dan setiap langkah adalah transaksi publik di DEMO.md. Tidak ada mode mock, offline, atau dry-run.</p><p class="en-line t-en"><b>The money:</b> tIDR is a test token with no value. <b>The claim issuer:</b> a demo key standing in for Kemenag / IATA. <b>The names:</b> “PT Amanah Contoh Wisata” and “PT Contoh GSA” are fictional. Everything else is real: the contracts on Arbitrum One, verified, and every step a public transaction in DEMO.md. There is no mock, offline or dry-run mode.</p></div>
+        <div class="ans"><p class="t-id"><b>Uangnya:</b> tIDR adalah token uji tanpa nilai. <b>Penerbit klaim:</b> kunci demo pengganti Kemenhaj / IATA. <b>Nama:</b> “PT Amanah Contoh Wisata”, “PT Contoh GSA” fiktif. Selebihnya nyata: kontrak di Arbitrum One, terverifikasi, dan setiap langkah di DEMO.md adalah transaksi publik. Tidak ada mode mock, offline, atau dry-run.</p><p class="en-line t-en"><b>The money:</b> tIDR is a test token with no value. <b>The claim issuer:</b> a demo key standing in for Kemenhaj / IATA. <b>The names:</b> “PT Amanah Contoh Wisata” and “PT Contoh GSA” are fictional. Everything else is real: the contracts on Arbitrum One, verified, and every step in DEMO.md a public transaction. There is no mock, offline or dry-run mode.</p></div>
       </details>
       <details>
         <summary><span class="t-id">Bagaimana kalau agennya menghilang?</span><span class="t-en">What if the agency disappears?</span></summary>

@@ -3,6 +3,7 @@
   <h1>Mabrur 🕋</h1>
   <p><a href="README.md">Bahasa Indonesia</a> · <strong>English</strong></p>
   <p><em>A pilgrim's money is held in trust, not the agency's working capital.<br/>Each pilgrim's prepaid rupiah is earmarked onchain, line by line, payable only to verified vendors, and refundable by anyone.</em></p>
+  <p>The First Travel case: 63,310 prospective pilgrims defrauded, IDR 905 billion lost (<a href="https://megapolitan.kompas.com/read/2023/01/05/15482901/aset-first-travel-dirampas-negara-mahkamah-agung-putuskan-dikembalikan-ke">Kompas, 5 Jan 2023</a>).</p>
   <img src="docs/readme-hero-animated.svg" alt="Mabrur: the agency's four attempts on Pak Ahmad's booking, three rejected, one paid; Ibu Siti refunded" width="100%">
 
   <br/>
@@ -93,7 +94,7 @@ flowchart LR
   A[Agency console] -- spend(invoice, vendorSig) --> PBM
   V[Vendor page] -- EIP-712 Invoice signature --> A
   PBM -- hasValidClaim --> R[ClaimRegistry<br/>owner = regulator]
-  I[Issuer: stand-in for Kemenag / IATA] -- issueClaim --> R
+  I[Issuer: stand-in for Kemenhaj / IATA] -- issueClaim --> R
   PBM -- payee = signer --> V
   PBM -- margin after Departure sig --> A
   X[Anyone] -- refund after ticketBy / departBy --> PBM
@@ -171,7 +172,7 @@ Replaying the Arbitrum One demo (`script/run.sh SeedDemo`, `script/proof.sh`) ne
 - **T4 · pilgrim key custody.** If the agency holds the pilgrim's key, it can sign for her. Production path: a passkey / smart-account wallet issued by her bank or onramp, never the agency.
 - **The money is a test token.** Bank Indonesia does not permit crypto as a payment instrument ([ANTARA, 15 Jun 2021](https://www.antaranews.com/berita/2211790/bi-larang-lembaga-keuangan-gunakan-uang-kripto-untuk-alat-pembayaran)). The production rail is a licensed rupiah token (a bank tokenized deposit or Digital Rupiah) plus a regulator mandate for PPIU deposits; neither exists today. The wrapper takes any plain ERC-20.
 - **No seat guarantee.** Seats depend on airlines and visa quota. Mabrur guarantees *a paid ticket, or every unspent rupiah back* by a date the pilgrim signed.
-- The issuer key stands in for Kemenag / IATA, and all names in the demo ("PT Amanah Contoh Wisata", "PT Contoh GSA") are fictional.
+- The issuer key stands in for Kemenhaj (Indonesia's Ministry of Hajj and Umrah, which licenses and supervises PPIU under [Law 14/2025](https://pasal.id/peraturan/uu/uu-no-14-tahun-2025) and Ministerial Regulation 2/2026; [RRI, 6 Aug 2026](https://rri.co.id/bengkalis/info-kementerian/2631886/kemenhaj-perkuat-pengawasan-ppiu-demi-lindungi-jemaah-umrah)) / IATA, and all names in the demo ("PT Amanah Contoh Wisata", "PT Contoh GSA") are fictional.
 
 ---
 
@@ -198,3 +199,5 @@ mabrur/
 ## 🙏 Acknowledgments
 Built for **Ethereum Jakarta Hackathon 2026** (ETHJKT × HackQuest), track *Build the Real World Onchain*.
 Thanks to the ETHJKT mentors and organizers, OpenZeppelin, Foundry and Scaffold-ETH 2.
+
+**How it was built.** Built solo with an AI coding agent (Claude Code) from a design spec written before the sprint; all code was committed after 10:00 WIB on 9 Oct 2026 (first commit `6837308`, 10:38 WIB). The full commit history is in this repo.

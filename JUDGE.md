@@ -35,5 +35,5 @@ Every demo script broadcasts to Arbitrum One; there is no mock, offline or dry-r
 
 ## Honest limits
 - tIDR is a test token with no value: we found no licensed rupiah token on Arbitrum One at build time. The wrapper takes any plain ERC-20.
-- The claim issuer is a demo key standing in for Kemenag / IATA. A captured issuer could certify a fake vendor; the damage is bounded and tested (`test_CaptureIssuer_Bound`).
+- The claim issuer is a demo key standing in for Kemenhaj (Ministry of Hajj and Umrah, the PPIU regulator) / IATA. A captured issuer could certify a fake vendor; the damage is bounded and tested (`test_CaptureIssuer_Bound`).
 - Mabrur cannot guarantee a seat: it guarantees a paid ticket, or every unspent rupiah back.
