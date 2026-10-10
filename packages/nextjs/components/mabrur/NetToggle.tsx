@@ -5,14 +5,13 @@ import { arbitrum, arbitrumSepolia } from "viem/chains";
 import { useAccount, useSwitchChain } from "wagmi";
 import { useT } from "~~/hooks/mabrur/useLang";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
-import scaffoldConfig from "~~/scaffold.config";
 import { useGlobalState } from "~~/services/store/store";
 import { NETWORKS_EXTRA_DATA } from "~~/utils/scaffold-eth";
 
 const KEY = "mabrur.net";
 const NETS = [
-  { id: arbitrum.id, label: "Mainnet", param: "mainnet" },
-  { id: arbitrumSepolia.id, label: "Testnet", param: "testnet" },
+  { id: arbitrum.id, chain: arbitrum, label: "Mainnet", param: "mainnet" },
+  { id: arbitrumSepolia.id, chain: arbitrumSepolia, label: "Testnet", param: "testnet" },
 ] as const;
 
 /**
@@ -28,8 +27,7 @@ export const NetToggle = () => {
   const t = useT();
 
   const select = (id: number, remember = true) => {
-    const net = scaffoldConfig.targetNetworks.find(n => n.id === id);
-    if (!net) return;
+    const net = NETS.find(n => n.id === id)!.chain;
     setTargetNetwork({ ...net, ...NETWORKS_EXTRA_DATA[net.id] });
     if (remember) {
       try {

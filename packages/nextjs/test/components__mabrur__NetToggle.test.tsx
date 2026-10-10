@@ -63,6 +63,22 @@ describe("NetToggle (Mainnet | Testnet)", () => {
     expect(setTargetNetwork).toHaveBeenCalledWith(expect.objectContaining({ id: arbitrumSepolia.id }));
   });
 
+  it("still works when this browser blocks storage", () => {
+    const get = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    const set = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    on(arbitrum);
+    render(<NetToggle />);
+    expect(setTargetNetwork).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Testnet" }));
+    expect(setTargetNetwork).toHaveBeenCalledWith(expect.objectContaining({ id: arbitrumSepolia.id }));
+    get.mockRestore();
+    set.mockRestore();
+  });
+
   it("is hidden on the local anvil chain", () => {
     on(foundry);
     const { container } = render(<NetToggle />);
