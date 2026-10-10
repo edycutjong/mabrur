@@ -15,6 +15,12 @@
 
   <br/>
 
+  [![Video pitch](https://img.shields.io/badge/▶_Video_pitch-2:58-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/fcSKl9-3VJk)
+  [![Video demo](https://img.shields.io/badge/▶_Video_demo-2:24-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/2xBHUcz45OU)
+  [![HackQuest](https://img.shields.io/badge/HackQuest-Halaman_proyek-14181C?style=for-the-badge)](https://www.hackquest.io/projects/Mabrur)
+
+  <br/>
+
   ![Solidity](https://img.shields.io/badge/Solidity_0.8.33-363636?style=flat&logo=solidity&logoColor=white)
   ![OpenZeppelin](https://img.shields.io/badge/OpenZeppelin_5.6.1-4E5EE4?style=flat&logo=openzeppelin&logoColor=white)
   ![Foundry](https://img.shields.io/badge/Foundry-1C1C1C?style=flat)
