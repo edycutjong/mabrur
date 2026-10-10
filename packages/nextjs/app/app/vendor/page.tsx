@@ -225,7 +225,8 @@ const VendorInner = () => {
               </button>
             </div>
           </div>
-          <div>
+          {/* The burner key loads from localStorage after hydration: reserve its address + claim rows (no CLS). */}
+          <div className="min-h-[80px]">
             <Label>
               <T id="Alamat penanda tangan" en="Signer address" />
             </Label>
@@ -250,7 +251,7 @@ const VendorInner = () => {
           </div>
           {mode === "burner" && (
             <details>
-              <summary className="cursor-pointer text-sm font-medium text-[var(--returned)] hover:text-[var(--paid-ink)]">
+              <summary className="cursor-pointer text-sm font-medium text-(--returned) hover:text-(--paid-ink)">
                 <T id="Ganti / impor kunci burner" en="Replace / import the burner key" />
               </summary>
               <p className="mb-p text-sm mb-muted mt-2">
@@ -405,7 +406,7 @@ const VendorInner = () => {
             </div>
           </div>
 
-          <p className="mb-p font-medium text-[var(--returned)] rounded-[8px] bg-[var(--returned-wash)] px-4 py-3">
+          <p className="mb-p font-medium text-(--returned) rounded-[8px] bg-[var(--returned-wash)] px-4 py-3">
             <Bi
               id="Uang hanya bisa dibayarkan ke alamat yang menandatangani faktur ini — alamat Anda."
               en="Money can only be paid to the address that signs this invoice — yours."

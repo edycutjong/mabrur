@@ -764,6 +764,23 @@ html.lang-en .mb-lang [data-l="en"] {
   color: var(--on-dark);
   background: var(--returned);
 }
+/* Hover: the edge firms up and the language you would switch to darkens; press = the shared .985 scale. */
+.mb-lang {
+  transition:
+    border-color 0.2s,
+    transform 0.2s var(--ease);
+}
+.mb-lang:hover {
+  border-color: var(--returned);
+}
+html:not(.lang-en) .mb-lang:hover [data-l="en"],
+html.lang-en .mb-lang:hover [data-l="id"] {
+  color: var(--ink);
+  background: var(--returned-wash);
+}
+.mb-lang:active {
+  transform: scale(0.985);
+}
 
 /* Hover feedback for clickable sheets (booking tabs, console rows, role cards). */
 .mb-hover {

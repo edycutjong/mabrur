@@ -39,8 +39,8 @@ export const RegulatorPanel = ({ agency }: { agency?: string }) => {
           <T id="Panel regulator" en="Regulator view" />
         </Label>
         <span className="text-[13px] mb-muted leading-snug">
-          <span className="mb-data text-[12.5px] text-[var(--ink)]">regulatorView</span> +{" "}
-          <span className="mb-data text-[12.5px] text-[var(--ink)]">conservation()</span>,{" "}
+          <span className="mb-data text-[12.5px] text-(--ink)">regulatorView</span> +{" "}
+          <span className="mb-data text-[12.5px] text-(--ink)">conservation()</span>,{" "}
           <T id="dibaca langsung dari kontrak" en="read live from the chain" />
         </span>
       </div>
