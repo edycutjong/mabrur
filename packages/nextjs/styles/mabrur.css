@@ -790,6 +790,48 @@ html.lang-en .mb-lang:hover [data-l="id"] {
   transform: scale(0.985);
 }
 
+/* The "Mainnet | Testnet" pill (NetToggle.tsx): same shape as .mb-lang; the pressed half is the active network. */
+.mb-net {
+  display: inline-flex;
+  gap: 2px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  border-radius: 999px;
+  padding: 4px;
+  white-space: nowrap;
+  transition: border-color 0.2s;
+}
+.mb-net:hover {
+  border-color: var(--returned);
+}
+.mb-net button {
+  font: 500 12px/1 var(--font-body);
+  letter-spacing: 0.04em;
+  padding: 6px 9px;
+  border-radius: 999px;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    transform 0.2s var(--ease);
+}
+.mb-net button:hover {
+  color: var(--ink);
+  background: var(--returned-wash);
+}
+.mb-net button[aria-pressed="true"] {
+  color: var(--on-dark);
+  background: var(--returned);
+}
+.mb-net button:active {
+  transform: scale(0.985);
+}
+.mb-net button:focus-visible {
+  outline: 2px solid var(--returned);
+  outline-offset: 2px;
+}
+
 /* Hover feedback for clickable sheets (booking tabs, console rows, role cards). */
 .mb-hover {
   transition:

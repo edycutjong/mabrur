@@ -20,7 +20,7 @@ import {
   useMabrurTx,
 } from "~~/hooks/mabrur/useMabrur";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { AHMAD_ID, DEMO_NAMES, SITI_ID } from "~~/utils/mabrur/demo";
+import { AHMAD_ID, DEMO_NAMES, SITI_ID, TESTNET_CHAIN_ID, TESTNET_FAUCET } from "~~/utils/mabrur/demo";
 import { DecodedRevert, decodeRevert } from "~~/utils/mabrur/errors";
 import {
   LINES,
@@ -434,7 +434,8 @@ const NO_PARAMS: Params = { get: () => null };
 
 const JamaahInner = ({ params }: { params: Params }) => {
   const { address } = useAccount();
-  const { chainId } = useMabrurContracts();
+  const { chainId, chainName } = useMabrurContracts();
+  const netName = chainId === TESTNET_CHAIN_ID ? chainName : "Arbitrum One";
   const router = useRouter();
   const t = useT();
   const idParam = params.get("id") ?? "";
@@ -571,8 +572,8 @@ const JamaahInner = ({ params }: { params: Params }) => {
                 <div className="flex flex-col gap-3 items-start">
                   <p className="mb-p">
                     <T
-                      id="Jaringan lambat: booking ini belum terbaca dari Arbitrum One."
-                      en="Slow network: this booking has not been read from Arbitrum One yet."
+                      id={`Jaringan lambat: booking ini belum terbaca dari ${netName}.`}
+                      en={`Slow network: this booking has not been read from ${netName} yet.`}
                     />
                   </p>
                   <button type="button" className="mb-btn mb-btn-ghost mb-btn-sm" onClick={() => void refetchOne()}>
@@ -581,7 +582,7 @@ const JamaahInner = ({ params }: { params: Params }) => {
                 </div>
               ) : (
                 <p className="mb-p mb-muted">
-                  <T id="Membaca booking dari Arbitrum One…" en="Reading the booking from Arbitrum One…" />
+                  <T id={`Membaca booking dari ${netName}…`} en={`Reading the booking from ${netName}…`} />
                 </p>
               )}
             </div>
@@ -591,17 +592,31 @@ const JamaahInner = ({ params }: { params: Params }) => {
                 id={selected !== undefined && one === null ? "Booking tidak ditemukan." : "Pilih atau buat booking."}
                 en={selected !== undefined && one === null ? "No booking with this id." : "Pick or create a booking."}
               />
-              <p className="mb-p mt-4 mb-muted text-sm">
-                <T id="Atau buka booking contoh di Arbitrum One:" en="Or open a demo booking on Arbitrum One:" />
-              </p>
-              <div className="flex flex-wrap gap-3 mt-3">
-                <Link className="mb-btn mb-btn-ghost mb-go" href={`/app/jamaah?id=${AHMAD_ID}`}>
-                  <T id="Buku Amanah Pak Ahmad" en="Pak Ahmad's passbook" />
-                </Link>
-                <Link className="mb-btn mb-btn-ghost mb-go" href={`/app/jamaah?id=${SITI_ID}`}>
-                  <T id="Buku Amanah Ibu Siti" en="Ibu Siti's passbook" />
-                </Link>
-              </div>
+              {chainId !== TESTNET_CHAIN_ID ? (
+                <>
+                  <p className="mb-p mt-4 mb-muted text-sm">
+                    <T id="Atau buka booking contoh di Arbitrum One:" en="Or open a demo booking on Arbitrum One:" />
+                  </p>
+                  <div className="flex flex-wrap gap-3 mt-3">
+                    <Link className="mb-btn mb-btn-ghost mb-go" href={`/app/jamaah?id=${AHMAD_ID}`}>
+                      <T id="Buku Amanah Pak Ahmad" en="Pak Ahmad's passbook" />
+                    </Link>
+                    <Link className="mb-btn mb-btn-ghost mb-go" href={`/app/jamaah?id=${SITI_ID}`}>
+                      <T id="Buku Amanah Ibu Siti" en="Ibu Siti's passbook" />
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <p className="mb-p mt-4 mb-muted text-sm">
+                  <T
+                    id={`Testnet ${chainName}: ambil ETH uji gratis dari faucet, lalu buat booking sendiri di kiri.`}
+                    en={`${chainName} testnet: get free test ETH from a faucet, then make your own booking on the left.`}
+                  />{" "}
+                  <a className="mb-link" href={TESTNET_FAUCET} target="_blank" rel="noreferrer">
+                    Faucet ↗
+                  </a>
+                </p>
+              )}
             </div>
           )}
         </div>

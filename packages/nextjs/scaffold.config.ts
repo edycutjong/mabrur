@@ -14,14 +14,15 @@ export type ScaffoldConfig = BaseConfig;
 export const DEFAULT_ALCHEMY_API_KEY = "IZYEU2cWBgnFmgiTAgpWD";
 
 // NEXT_PUBLIC_LOCAL_CHAIN=true puts the local anvil chain first (reads go there without a wallet, burner wallet on);
-// the default is Arbitrum One first.
+// the default is Arbitrum One first. Arbitrum Sepolia is the testnet for outside users (free faucet ETH); the header's
+// Mainnet | Testnet toggle (components/mabrur/NetToggle.tsx) switches between the two.
 const localFirst = process.env.NEXT_PUBLIC_LOCAL_CHAIN === "true";
 
 const scaffoldConfig = {
   // The networks on which your DApp is live (the first one is used for reads when no wallet is connected)
   targetNetworks: localFirst
-    ? ([chains.foundry, chains.arbitrum] as const)
-    : ([chains.arbitrum, chains.foundry] as const),
+    ? ([chains.foundry, chains.arbitrum, chains.arbitrumSepolia] as const)
+    : ([chains.arbitrum, chains.arbitrumSepolia, chains.foundry] as const),
   // The interval at which your front-end polls the RPC servers for new data (it has no effect if you only target the local network (default is 4000))
   pollingInterval: 3000,
   // This is ours Alchemy's default API key.

@@ -1053,6 +1053,17 @@ describe("app/app/jamaah/page.tsx behaviour", () => {
       );
     });
 
+    it("on the testnet, points to a faucet instead of the mainnet demo bookings", () => {
+      mk.c.mockReturnValue({ ...mk.c(), chainId: 421614, chainName: "Arbitrum Sepolia" });
+      render(<JamaahPage />);
+      expect(screen.queryByRole("link", { name: /Buku Amanah Pak Ahmad/ })).toBeNull();
+      expect(screen.getByRole("link", { name: /Faucet/ })).toHaveAttribute(
+        "href",
+        "https://faucets.chain.link/arbitrum-sepolia",
+      );
+      expect(screen.getByText(/Testnet Arbitrum Sepolia/)).toBeTruthy();
+    });
+
     it("says the booking was not found when the selected id resolves to null", () => {
       mk.p.mockReturnValue({ get: (k: string) => (k === "id" ? "99" : null) });
       mk.b.mockReturnValue({ data: null });

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
 import { LangToggle } from "~~/components/mabrur/LangToggle";
+import { NetToggle } from "~~/components/mabrur/NetToggle";
 import { T } from "~~/components/mabrur/T";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useT } from "~~/hooks/mabrur/useLang";
@@ -64,6 +65,7 @@ export const Header = () => {
               {targetNetwork.name} · <T id="tIDR tanpa nilai" en="tIDR, no value" />
             </span>
           </span>
+          <NetToggle />
           <LangToggle />
           <RainbowKitCustomConnectButton />
           {isLocalNetwork && <FaucetButton />}

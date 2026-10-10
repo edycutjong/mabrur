@@ -1,6 +1,6 @@
 import { wagmiConnectors } from "./wagmiConnectors";
 import { Chain, createClient, fallback, http as viemHttp } from "viem";
-import { arbitrum, hardhat, mainnet } from "viem/chains";
+import { arbitrum, arbitrumSepolia, hardhat, mainnet } from "viem/chains";
 import { createConfig } from "wagmi";
 import scaffoldConfig, { DEFAULT_ALCHEMY_API_KEY, ScaffoldConfig } from "~~/scaffold.config";
 import { getAlchemyHttpUrl } from "~~/utils/scaffold-eth";
@@ -22,6 +22,11 @@ export const PUBLIC_RPCS: Record<number, string[]> = {
     "https://arbitrum-one-rpc.publicnode.com",
     "https://arbitrum.drpc.org",
     "https://arbitrum-one.public.blastapi.io",
+  ],
+  [arbitrumSepolia.id]: [
+    "https://sepolia-rollup.arbitrum.io/rpc",
+    "https://arbitrum-sepolia-rpc.publicnode.com",
+    "https://arbitrum-sepolia.drpc.org",
   ],
 };
 

@@ -15,6 +15,9 @@ vi.mock("~~/hooks/scaffold-eth", () => ({
   useTargetNetwork: vi.fn(),
 }));
 
+// NetToggle has its own test (components__mabrur__NetToggle.test.tsx)
+vi.mock("~~/components/mabrur/NetToggle", () => ({ NetToggle: () => <span data-testid="net-toggle" /> }));
+
 // Mock scaffold-eth components
 vi.mock("~~/components/scaffold-eth", () => ({
   FaucetButton: () => <div data-testid="faucet-button">Faucet Button</div>,
