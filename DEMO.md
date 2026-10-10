@@ -90,3 +90,21 @@ script/run.sh DemoRun            # the success ledger; DemoRefund >= 11 min late
 script/cost.sh                   # per-pilgrim cost from receipts
 ```
 No step has a mock, offline or dry-run flag: every script broadcasts to Arbitrum One.
+
+## 6. Demo-video capture run (10 Okt 2026), every hash visible in the videos
+
+The v2 pitch and demo videos were filmed on a fresh `SeedDemo` (Siti's ticket-by set 8 minutes after booking). The
+flight payment and the refund were pressed in the real UI. The "Simulasi saja" refusals in the videos are `eth_call`s
+on these bookings; their mined counterparts are the four failed transactions in §1.
+
+| Step | Result | Tx | Status |
+|---|---|---|---|
+| SeedDemo: tIDR faucet (test token, no value) | Rp 32.000.000 minted | [0x9c155e7d…](https://arbiscan.io/tx/0x9c155e7d21c2e800a48d1aa32369ce56fb97b598776a9d6de5e6064e8891549c) | ✓ success |
+| SeedDemo: Ibu Siti books Rp 32.000.000 | earmark FLIGHT 14M · HOTEL 9M · VISA 4M · MARGIN 5M | [0xa8f027b2…](https://arbiscan.io/tx/0xa8f027b2723e7fc6deec1741e3fa1c3c2fb6cee0a1a3e7be006428333eff244a) | ✓ success |
+| SeedDemo: agency pays Siti's HOTEL invoice INV-HTL-0001 | Rp 9.000.000 to the hotel | [0xc7e94221…](https://arbiscan.io/tx/0xc7e942216a14b9e358911b2d8713f9178f03fffe4f07ecadb4025a2808fe87d3) | ✓ success |
+| SeedDemo: Pak Ahmad books Rp 32.000.000 | earmark FLIGHT 14M · HOTEL 9M · VISA 4M · MARGIN 5M | [0x7adddde6…](https://arbiscan.io/tx/0x7adddde6c7c12b941bb73872362703d06a27cb95705617326ff04d9ec89260fe) | ✓ success |
+| On camera: agency pays Ahmad's FLIGHT invoice INV-FLT-0001 (`spend`) | Rp 14.000.000 to the airline (LUNAS) | [0xb254472d…27e4e8](https://arbiscan.io/tx/0xb254472d54d85b82e627a4de87daa787d8d416932b9b9d798cdd09481827e4e8) | ✓ success |
+| On camera: Siti's ticket-by lapses, a third party (deployer key, neither agency nor pilgrim) calls `refund` | Rp 23.000.000 back to Ibu Siti (DIKEMBALIKAN) | [0xcf8d11e3…aa4014](https://arbiscan.io/tx/0xcf8d11e3a810b21e23b24752ed09fd167a777cf0b88190ac40fecc1c94aa4014) | ✓ success |
+
+Regulator panel right after the refund (as filmed, block ≈ 513390112): liabilities = earmarked = Rp 193.000.000, fully
+backed by tIDR held in the contract. Time of writing, not a fixed value.
