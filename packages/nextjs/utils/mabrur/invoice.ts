@@ -49,6 +49,8 @@ export type SignedInvoice = {
   refLabel?: string;
   signer?: Address;
   label?: string;
+  /** English label, when the source gave one (the sample file does); the UI falls back to `label`. */
+  labelEn?: string;
 };
 
 /** A pasted / uploaded invoice file that is not acceptable. The message is shown to the user. */
@@ -156,6 +158,7 @@ const normalizeOne = (raw: unknown, keyHint?: string): SignedInvoice | undefined
     refLabel: raw.refLabel ?? raw.refString ?? (isHex(refStr) ? refToLabel(ref) : refStr),
     signer: raw.signer,
     label: raw.label ?? raw.name ?? keyHint,
+    ...(typeof raw.labelEn === "string" ? { labelEn: raw.labelEn } : {}),
   };
 };
 

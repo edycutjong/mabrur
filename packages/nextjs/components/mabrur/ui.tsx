@@ -62,14 +62,22 @@ export const ErrorCall = ({ name, args }: { name: string; args: { short: string;
   </span>
 );
 
-// DITOLAK / LUNAS / DIKEMBALIKAN are the brand: the same seal in both languages. Only the neutral dry-run
-// stamp (never a real outcome) is translated.
-const STAMP_WORD: Record<StampKind, { id: string; en: string }> = {
-  ditolak: { id: "Ditolak", en: "Ditolak" },
-  lunas: { id: "Lunas", en: "Lunas" },
-  dikembalikan: { id: "Dikembalikan", en: "Dikembalikan" },
+// DITOLAK / LUNAS / DIKEMBALIKAN are the brand (specs/design.md: Indonesian-first state words): the same seal in both
+// languages, with a small English gloss under the word in EN mode. Only the neutral dry-run stamp (never a real
+// outcome) is translated outright.
+const STAMP_WORD: Record<StampKind, { id: string; en: string; gloss?: string }> = {
+  ditolak: { id: "Ditolak", en: "Ditolak", gloss: "rejected" },
+  lunas: { id: "Lunas", en: "Lunas", gloss: "paid" },
+  dikembalikan: { id: "Dikembalikan", en: "Dikembalikan", gloss: "refunded" },
   simulasi: { id: "Lolos simulasi", en: "Would pass" },
 };
+
+/** The English gloss shown under a brand seal word in EN mode only (hidden in ID mode by the .t-en rule). */
+export const SealGloss = ({ word }: { word: string }) => (
+  <span className="mb-stamp-gloss t-en" lang="en">
+    {word}
+  </span>
+);
 
 export const Stamp = ({
   kind,
@@ -86,7 +94,7 @@ export const Stamp = ({
 }) => {
   const t = useT();
   const w = STAMP_WORD[kind];
-  const word = t(w.id, w.en);
+  const word = t(w.id, w.gloss ? `${w.en} (${w.gloss})` : w.en);
   const tone = kind === "simulasi" ? "mb-stamp-sim" : `mb-stamp-${kind}`;
   return (
     <div
@@ -97,6 +105,7 @@ export const Stamp = ({
       <div className="mb-stamp-word">
         <T id={w.id} en={w.en} />
       </div>
+      {w.gloss && <SealGloss word={w.gloss} />}
       {kind === "simulasi" && (
         <div className="mb-stamp-note">
           <T id="simulasi · belum dikirim" en="dry run · not sent" />
@@ -227,10 +236,22 @@ export const CopyButton = ({ text, label }: { text: string; label?: ReactNode })
   );
 };
 
-/** Shown instead of a screen when the connected chain has no Mabrur deployment. */
+/**
+ * Gate for the app screens. Three states, never confused:
+ * - no deployment record for this chain, or the chain says there is no code → the "switch network" notice;
+ * - the RPC cannot be reached (venue wifi, rate limit) → the screen still renders from the static deployment record,
+ *   under a "network slow" notice with a retry button. It never claims the contracts are missing;
+ * - otherwise the screen.
+ */
 export const ContractsGuard = ({ children }: { children: ReactNode }) => {
-  const { ready, isLoading, chainName, chainId } = useMabrurContracts();
-  if (ready) return <>{children}</>;
+  const { ready, isLoading, unreachable, chainName, chainId } = useMabrurContracts();
+  if (ready)
+    return (
+      <>
+        {unreachable && <NetworkNotice chainName={chainName} />}
+        {children}
+      </>
+    );
   return (
     <div className="mb-sheet max-w-2xl mx-auto mt-10">
       <Label>
@@ -249,6 +270,26 @@ export const ContractsGuard = ({ children }: { children: ReactNode }) => {
     </div>
   );
 };
+
+/** Reload = every read retried from scratch (the RPC fallback list starts again at its first, most capable node). */
+export const reloadPage = () => window.location.reload();
+
+/** The RPC is unreachable or slow: say so plainly, keep the page, offer a retry. */
+export const NetworkNotice = ({ chainName, onRetry = reloadPage }: { chainName: string; onRetry?: () => void }) => (
+  <div className="w-full max-w-[1600px] mx-auto px-4 lg:px-8 pt-4" role="status">
+    <div className="mb-sheet mb-wash-before flex flex-wrap items-center justify-between gap-3" style={{ padding: 14 }}>
+      <p className="mb-p text-sm">
+        <T
+          id={`Jaringan lambat: ${chainName} belum terjangkau, jadi data langsung belum termuat. Kontraknya tetap ada.`}
+          en={`Slow network: ${chainName} is not reachable yet, so live data has not loaded. The contracts are still there.`}
+        />
+      </p>
+      <button type="button" className="mb-btn mb-btn-ghost mb-btn-sm" onClick={onRetry}>
+        <T id="Coba lagi" en="Retry" />
+      </button>
+    </div>
+  </div>
+);
 
 export const PageShell = ({ children }: { children: ReactNode }) => (
   <div className="mb-shell w-full max-w-[1600px] mx-auto px-4 lg:px-8 py-6 lg:py-10">{children}</div>

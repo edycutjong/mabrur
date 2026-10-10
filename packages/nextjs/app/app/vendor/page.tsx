@@ -196,7 +196,7 @@ const VendorInner = () => {
         </p>
       </header>
 
-      <div className="grid gap-6 xl:gap-8 lg:grid-cols-2 max-w-6xl">
+      <div className="grid gap-6 xl:gap-8 lg:grid-cols-2">
         <div className="mb-sheet flex flex-col gap-4">
           <div>
             <Label>
@@ -431,9 +431,17 @@ const VendorInner = () => {
             <T id="Faktur bertanda tangan" en="Signed invoice" />
           </Label>
           {!signed ? (
-            <p className="mb-p mb-muted">
-              <Bi id="Isi formulir lalu tanda tangani." en="Fill the form, then sign." />
-            </p>
+            <div className="flex flex-col gap-3">
+              <p className="mb-p mb-muted">
+                <Bi id="Isi formulir lalu tanda tangani." en="Fill the form, then sign." />
+              </p>
+              <p className="mb-p mb-ink-soft">
+                <T
+                  id="Yang dibuktikan: kontrak membayar penanda tangan faktur ini, bukan alamat yang diketik agen. Tanpa klaim vendor yang sah di ClaimRegistry, pembayaran ditolak dengan VendorClaimMissing."
+                  en="What this proves: the contract pays whoever signed this invoice, never an address the agency types. Without a valid vendor claim in ClaimRegistry, payment is refused with VendorClaimMissing."
+                />
+              </p>
+            </div>
           ) : (
             <>
               <div className="grid grid-cols-[120px_minmax(0,1fr)] gap-x-4 gap-y-2 items-baseline">

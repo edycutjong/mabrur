@@ -231,7 +231,7 @@ describe("RegulatorPanel component", () => {
       expect(screen.getByText(/Σ pos tersimpan/)).toBeInTheDocument();
       expect(screen.getAllByText(/Σ earmarks/).length).toBeGreaterThan(0);
       expect(screen.getAllByText(/Surplus/).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(/Surplus \(direct donations\)/).length).toBeGreaterThan(0);
+      expect(screen.queryAllByText(/direct donations/).length).toBe(0);
     });
   });
 

@@ -44,9 +44,20 @@ const REVERTS = [
 
 const short = (h: string) => `${h.slice(0, 10)}…${h.slice(-6)}`;
 
+// The same command in both languages (copy-pasteable, identical to README / JUDGE.md); the gloss is in the caption.
 const REPRO = `git clone --recursive https://github.com/edycutjong/mabrur.git
 cd mabrur/packages/foundry && forge test
-`;
+cast run <any tx above> --rpc-url https://arb1.arbitrum.io/rpc --quick`;
+
+/** The agency console with the sample invoices loaded and Pak Ahmad's booking selected: DITOLAK in two clicks. */
+const SAMPLE_CONSOLE = "/app/agen?contoh=1";
+
+/** EN-only gloss under an Indonesian brand seal word (hidden in ID mode). */
+const Gloss = ({ en }: { en: string }) => (
+  <span className="mb-stamp-gloss t-en" lang="en">
+    {en}
+  </span>
+);
 
 const RULES = [
   [
@@ -113,6 +124,17 @@ const JudgePage: NextPage = () => (
             <T id="Buku besar DEMO.md" en="DEMO.md ledger" />
           </a>
         </div>
+        <div className="mb-judge-quick">
+          <Link className="mb-link mb-judge-step-link" href={SAMPLE_CONSOLE}>
+            <T id="Lihat cap DITOLAK sendiri, tanpa dompet" en="See a DITOLAK (rejected) seal yourself, no wallet" />
+          </Link>
+          <span className="mb-p text-sm mb-ink-soft">
+            <T
+              id="Konsol agen memuat contoh faktur; tekan Simulasi saja pada faktur mana pun."
+              en="The agency console loads sample invoices; press Simulate only on any of them."
+            />
+          </span>
+        </div>
       </header>
 
       <section className="mb-sheet mb-slip mb-judge-proof flex flex-col gap-4" aria-labelledby="judge-proof">
@@ -129,7 +151,7 @@ const JudgePage: NextPage = () => (
           <thead>
             <tr>
               <th scope="col">
-                <T id="Percobaan yang ditolak" en="Rejected attempt" />
+                <T id="Percobaan ditolak" en="Rejected attempt" />
               </th>
               <th scope="col">
                 <T id="Yang dicoba agen" en="What the agency tried" />
@@ -145,6 +167,7 @@ const JudgePage: NextPage = () => (
                 <td>
                   <span className="mb-stamp mb-stamp-sm">
                     <span className="mb-stamp-word">Ditolak</span>
+                    <Gloss en="rejected" />
                     <span className="mb-stamp-error mb-receipt-err">{err}</span>
                   </span>
                 </td>
@@ -227,7 +250,10 @@ const JudgePage: NextPage = () => (
             <Link className="mb-link mb-judge-step-link" href={`/app/jamaah?id=${AHMAD_ID}`}>
               <T id="Buka booking Pak Ahmad" en="Open Pak Ahmad's booking" />
             </Link>{" "}
-            <span className="mb-chip mb-chip-paid">LUNAS</span>
+            <span className="mb-chip mb-chip-paid">
+              LUNAS
+              <Gloss en="· paid" />
+            </span>
             <span className="block mt-1">
               <T
                 id="Tiket, hotel, dan visa dibayar ke penanda tangannya masing-masing; ujrah dibuka setelah ia menandatangani keberangkatan."
@@ -239,7 +265,10 @@ const JudgePage: NextPage = () => (
             <Link className="mb-link mb-judge-step-link" href={`/app/jamaah?id=${SITI_ID}`}>
               <T id="Buka booking Ibu Siti" en="Open Ibu Siti's booking" />
             </Link>{" "}
-            <span className="mb-chip mb-chip-returned">DIKEMBALIKAN</span>
+            <span className="mb-chip mb-chip-returned">
+              DIKEMBALIKAN
+              <Gloss en="· refunded" />
+            </span>
             <span className="block mt-1">
               <T
                 id="Tiketnya tidak dibeli sampai batas tiket, jadi pihak ketiga mengembalikan setiap rupiah yang belum terpakai."
@@ -252,6 +281,36 @@ const JudgePage: NextPage = () => (
               id="Buka empat percobaan yang ditolak di atas di Arbiscan: masing-masing adalah transaksi gagal yang tertambang, lengkap dengan nama error-nya."
               en="Open the four rejected attempts above on Arbiscan: each is a mined, failed transaction with a named error."
             />
+          </li>
+          <li>
+            <Link className="mb-link mb-judge-step-link" href={SAMPLE_CONSOLE}>
+              <T id="Muat contoh faktur di konsol agen" en="Load the sample invoices in the agency console" />
+            </Link>
+            <span className="block mt-1">
+              <T
+                id={
+                  <>
+                    Booking Pak Ahmad sudah terpilih. Tekan <em>Simulasi saja</em> pada faktur hotel Ibu Siti: cap
+                    DITOLAK · EarmarkMismatch mendarat tanpa dompet dan tanpa transaksi. Filenya:{" "}
+                    <a className="mb-link mb-data text-sm" href="/demo/invoices.json">
+                      /demo/invoices.json
+                    </a>
+                    .
+                  </>
+                }
+                en={
+                  <>
+                    Pak Ahmad&apos;s booking is already selected. Press <em>Simulate only</em> on Ibu Siti&apos;s hotel
+                    invoice: a DITOLAK (rejected) · EarmarkMismatch seal lands with no wallet and no transaction. The
+                    file:{" "}
+                    <a className="mb-link mb-data text-sm" href="/demo/invoices.json">
+                      /demo/invoices.json
+                    </a>
+                    .
+                  </>
+                }
+              />
+            </span>
           </li>
           <li>
             <T
@@ -301,14 +360,10 @@ const JudgePage: NextPage = () => (
           </span>
           <pre className="mb-pre" tabIndex={0} role="region" aria-labelledby="repro-label">
             {REPRO}
-            <T
-              id="cast run <tx mana pun di atas> --rpc-url https://arb1.arbitrum.io/rpc --quick"
-              en="cast run <any tx above> --rpc-url https://arb1.arbitrum.io/rpc --quick"
-            />
           </pre>
           <p className="mb-p text-sm mb-muted">
             <T
-              id="Setiap skrip demo mengirim transaksi ke Arbitrum One; tidak ada mode mock, offline, atau dry-run."
+              id="Ganti <any tx above> dengan hash transaksi mana pun di atas. Setiap skrip demo mengirim transaksi ke Arbitrum One; tidak ada mode mock, offline, atau dry-run."
               en="Every demo script broadcasts to Arbitrum One; there is no mock, offline or dry-run mode."
             />
           </p>

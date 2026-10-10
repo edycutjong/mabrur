@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useAccount, useWalletClient } from "wagmi";
@@ -244,11 +244,17 @@ describe("Passbook component", () => {
       expect(screen.getByText(/Berangkat paling lambat/)).toBeInTheDocument();
     });
 
-    it("displays refunded status in header", () => {
+    it("leads a refunded booking with the DIKEMBALIKAN seal, not the depart-by date", () => {
       const booking = createBooking({ refunded: true });
       render(<Passbook b={booking} />);
 
-      expect(screen.getByText(/Dana sudah dikembalikan/)).toBeInTheDocument();
+      const hero = screen.getByTestId("refund-hero");
+      expect(within(hero).getByTestId("stamp-dikembalikan")).toBeInTheDocument();
+      expect(within(hero).getByText(/kembali ke .* · booking ditutup/)).toBeInTheDocument();
+      expect(within(hero).getByText(/Batas berangkat semula/)).toBeInTheDocument();
+      // amount unknown until the ledger is read
+      expect(within(hero).getByText("…")).toBeInTheDocument();
+      expect(screen.queryByText(/^Berangkat paling lambat$/)).toBeNull();
     });
 
     it("displays departed chip when departed", () => {
@@ -455,7 +461,9 @@ describe("Passbook component", () => {
       const booking = createBooking({ refunded: true });
       render(<Passbook b={booking} />);
 
-      expect(screen.getByText(/Dikembalikan/)).toBeInTheDocument();
+      // each refunded line carries its own seal, like a paid line
+      expect(screen.getAllByTestId("stamp-dikembalikan").some(el => el.textContent?.includes("500"))).toBe(true);
+      expect(screen.getByText("Kembali ke jamaah")).toBeInTheDocument();
     });
 
     it("renders line card with returned state without refund amount", () => {
@@ -475,7 +483,8 @@ describe("Passbook component", () => {
       const booking = createBooking({ refunded: true });
       render(<Passbook b={booking} />);
 
-      expect(screen.getByText(/Dikembalikan/)).toBeInTheDocument();
+      expect(screen.getAllByTestId("stamp-dikembalikan").length).toBeGreaterThan(1);
+      expect(screen.getByText("Kembali ke jamaah")).toBeInTheDocument();
     });
 
     it("renders line card with empty state", () => {

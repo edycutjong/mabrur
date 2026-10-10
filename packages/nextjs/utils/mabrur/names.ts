@@ -28,7 +28,7 @@ const CHAIN_NAMES: Record<number, Record<string, string>> = {
         ["0x2e427dD87F7cEd8148de179D1CC9A9e9f13f3A4a", "PT Amanah Contoh Wisata"],
         ["0xA3bA677CCc570f683E59c757Ae8eaAa935dfa450", "Regulator (kunci demo)"],
         ["0x4d22e6a56346addd2D73433AB182B9823db6c215", "Penerbit klaim (kunci demo)"],
-        ["0xc0Fcf4b18B3217615ecF8714F6Af2378454e8A32", "Deployer · pihak ketiga"],
+        ["0xc0Fcf4b18B3217615ecF8714F6Af2378454e8A32", "Deployer"],
       ] as const
     ).map(([a, n]) => [a.toLowerCase(), n]),
   ),

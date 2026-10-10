@@ -10,6 +10,7 @@ import { WagmiProvider } from "wagmi";
 import { Footer } from "~~/components/Footer";
 import { Header } from "~~/components/Header";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
+import { useLang } from "~~/hooks/mabrur/useLang";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
 // RainbowKit modal in the v2 palette: old-green accent, cream text on it, white sheet, hairlines, Inter.
@@ -80,6 +81,8 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === "dark";
   const [mounted, setMounted] = useState(false);
+  // The wallet modal follows the site's ID/EN switch (it was English-only on an Indonesian page).
+  const lang = useLang();
 
   useEffect(() => {
     setMounted(true);
@@ -88,7 +91,11 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider avatar={BlockieAvatar} theme={mounted && isDarkMode ? darkTheme() : MABRUR_THEME}>
+        <RainbowKitProvider
+          avatar={BlockieAvatar}
+          locale={lang === "en" ? "en-US" : "id-ID"}
+          theme={mounted && isDarkMode ? darkTheme() : MABRUR_THEME}
+        >
           <ProgressBar height="2px" color="#0E8A5F" />
           <ScaffoldEthApp>{children}</ScaffoldEthApp>
         </RainbowKitProvider>

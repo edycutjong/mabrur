@@ -26,6 +26,7 @@ import {
   useMabrurContracts,
   useMabrurTx,
 } from "~~/hooks/mabrur/useMabrur";
+import { AHMAD_ID, DEMO_CHAIN_ID, SAMPLE_INVOICES_URL, SITI_ID, hasSampleParam } from "~~/utils/mabrur/demo";
 import { DecodedRevert, errorArgParts, formatErrorCall } from "~~/utils/mabrur/errors";
 import {
   LINES,
@@ -61,6 +62,9 @@ type Attempt = {
   ref?: string;
   hash?: string;
 };
+
+/** A cold visit on the demo chain starts on these two bookings (hex ids, as the console stores them). */
+const DEMO_BOOKINGS = [AHMAD_ID, SITI_ID].map(id => idHex(BigInt(id)));
 
 /** wall-clock ms for attempt rows (called from event handlers only) */
 const nowMs = () => Date.now();
@@ -419,7 +423,12 @@ const InvoiceRow = ({
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <span className="min-w-0">
           <span className="mb-data font-medium text-[14px]">{inv.refLabel ?? refToLabel(inv.invoice.ref)}</span>
-          {inv.label && inv.label !== inv.refLabel && <span className="text-sm mb-muted"> · {inv.label}</span>}
+          {inv.label && inv.label !== inv.refLabel && (
+            <span className="text-sm mb-muted">
+              {" "}
+              · <T id={inv.label} en={inv.labelEn ?? inv.label} />
+            </span>
+          )}
         </span>
         <span className="mb-amt text-[16px]">{formatRp(inv.invoice.amount)}</span>
       </div>
@@ -550,7 +559,9 @@ const ConsoleInner = () => {
 
   const storeKey = (k: string) => `${k}.${chainId}`;
   useEffect(() => {
-    setIds(loadJson<string[]>(storeKey(BOOKINGS_KEY), []));
+    // A cold visit (nothing stored) starts on the two demo bookings, Pak Ahmad first, so the console is never empty.
+    const stored = loadJson<string[]>(storeKey(BOOKINGS_KEY), []);
+    setIds(stored.length ? stored : chainId === DEMO_CHAIN_ID ? DEMO_BOOKINGS : []);
     setAttempts(loadJson<Attempt[]>(storeKey(ATTEMPTS_KEY), []));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId]);
@@ -626,6 +637,32 @@ const ConsoleInner = () => {
       );
     }
   };
+
+  const [sampleBusy, setSampleBusy] = useState(false);
+  /** The sample invoices (public/demo/invoices.json): three signed invoices the contract refuses by name. */
+  const loadSample = async () => {
+    setSampleBusy(true);
+    try {
+      const res = await fetch(SAMPLE_INVOICES_URL);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      loadText(await res.text());
+    } catch (e) {
+      setParseErr({
+        id: `Contoh faktur tidak bisa dimuat: ${(e as Error).message}`,
+        en: `Could not load the sample invoices: ${(e as Error).message}`,
+      });
+    } finally {
+      setSampleBusy(false);
+    }
+  };
+  // /app/agen?contoh=1 (linked from /judge) loads the sample on arrival. Read once from the URL, no Suspense needed.
+  const autoSample = useRef(false);
+  useEffect(() => {
+    if (autoSample.current || !hasSampleParam(window.location.search)) return;
+    autoSample.current = true;
+    void loadSample();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onFile = async (f: File | undefined) => {
     if (!f) return;
@@ -870,14 +907,14 @@ const ConsoleInner = () => {
               <T
                 id={
                   <>
-                    Tempel JSON dari halaman vendor, atau pilih <span className="mb-data text-sm">invoices.json</span>.
-                    Tidak ada yang diambil dari server.
+                    Tempel JSON dari halaman vendor, pilih <span className="mb-data text-sm">invoices.json</span>, atau
+                    muat contoh faktur lalu tekan <em>Simulasi saja</em>: tanpa dompet, tanpa transaksi.
                   </>
                 }
                 en={
                   <>
-                    Paste the vendor page&apos;s JSON or pick <span className="mb-data text-sm">invoices.json</span> —
-                    nothing is fetched from a server.
+                    Paste the vendor page&apos;s JSON, pick <span className="mb-data text-sm">invoices.json</span>, or
+                    load the sample invoices and press <em>Simulate only</em>: no wallet, no transaction.
                   </>
                 }
               />
@@ -896,6 +933,9 @@ const ConsoleInner = () => {
                 disabled={!paste.trim()}
               >
                 <T id="Baca faktur" en="Read invoice" />
+              </button>
+              <button className="mb-btn mb-btn-sm" onClick={loadSample} disabled={sampleBusy}>
+                <T id="Muat contoh faktur" en="Load sample invoices" />
               </button>
               <button className="mb-btn mb-btn-ghost mb-btn-sm" onClick={() => fileRef.current?.click()}>
                 <T id="Pilih invoices.json" en="Pick invoices.json" />
@@ -944,25 +984,38 @@ const ConsoleInner = () => {
               placeholder={t("0x… atau JSON", "0x… or JSON")}
               aria-label={t("Tanda tangan keberangkatan", "Departure signature")}
             />
-            <div className="flex flex-wrap gap-2 mt-2">
-              <button
-                className="mb-btn"
-                disabled={!booking || !depPaste.trim() || busy}
-                onClick={() => releaseMargin(false)}
-              >
-                <T
-                  id={`Buka ujrah ${booking ? formatRp(booking.remaining[3]) : ""}`}
-                  en={`Release the fee ${booking ? formatRp(booking.remaining[3]) : ""}`}
-                />
-              </button>
-              <button
-                className="mb-btn mb-btn-ghost"
-                disabled={!booking || !depPaste.trim() || busy}
-                onClick={() => releaseMargin(true)}
-              >
-                <T id="Simulasi saja" en="Simulate only" />
-              </button>
-            </div>
+            {booking && (booking.refunded || booking.marginReleased) ? (
+              <p className="mb-p text-sm mt-2 mb-muted" data-testid="fee-closed">
+                {booking.refunded ? (
+                  <T
+                    id="Booking ditutup: dana sudah dikembalikan ke jamaah, tidak ada ujrah yang bisa dibuka."
+                    en="Booking closed: the money went back to the pilgrim, there is no fee to release."
+                  />
+                ) : (
+                  <T id="Ujrah agen sudah dibuka setelah keberangkatan." en="The agency fee was already released." />
+                )}
+              </p>
+            ) : (
+              <div className="flex flex-wrap gap-2 mt-2">
+                <button
+                  className="mb-btn"
+                  disabled={!booking || !depPaste.trim() || busy}
+                  onClick={() => releaseMargin(false)}
+                >
+                  <T
+                    id={`Buka ujrah ${booking ? formatRp(booking.remaining[3]) : ""}`}
+                    en={`Release the fee ${booking ? formatRp(booking.remaining[3]) : ""}`}
+                  />
+                </button>
+                <button
+                  className="mb-btn mb-btn-ghost"
+                  disabled={!booking || !depPaste.trim() || busy}
+                  onClick={() => releaseMargin(true)}
+                >
+                  <T id="Simulasi saja" en="Simulate only" />
+                </button>
+              </div>
+            )}
             <InlineResult a={lastRelease} />
           </div>
 

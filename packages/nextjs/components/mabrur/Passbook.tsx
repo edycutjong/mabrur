@@ -46,7 +46,7 @@ const LineCard = ({ i, st }: { i: number; st: ReturnType<typeof deriveLines>[num
           </span>
         )}
       </div>
-      <div className={`mt-auto ${st.state === "lunas" ? "mb-seal-row" : ""}`}>
+      <div className={`mt-auto ${st.state === "lunas" || st.state === "returned" ? "mb-seal-row" : ""}`}>
         <div className="min-w-0">
           <Label>
             <T id="Sisa" en="Remaining" />
@@ -63,6 +63,11 @@ const LineCard = ({ i, st }: { i: number; st: ReturnType<typeof deriveLines>[num
             {st.spent[0] ? formatRp(st.spent[0].amount) : null}
           </Stamp>
         )}
+        {st.state === "returned" && (
+          <Stamp kind="dikembalikan" small>
+            {st.refunded !== undefined ? formatRp(st.refunded) : null}
+          </Stamp>
+        )}
       </div>
       {st.state === "lunas" && (
         <div className="flex flex-col gap-1 border-t border-dashed border-[#c7e2d6] pt-3">
@@ -77,10 +82,7 @@ const LineCard = ({ i, st }: { i: number; st: ReturnType<typeof deriveLines>[num
       )}
       {st.state === "returned" && (
         <div className="mb-returned-text font-medium text-sm">
-          <T
-            id={`Dikembalikan ${st.refunded !== undefined ? formatRp(st.refunded) : ""}`.trim()}
-            en={`Returned ${st.refunded !== undefined ? formatRp(st.refunded) : ""}`.trim()}
-          />
+          <T id="Kembali ke jamaah" en="Returned to the pilgrim" />
         </div>
       )}
     </div>
@@ -113,6 +115,8 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
   const canRefund = b.refundable && !b.refunded && total > 0n;
   const isPilgrim = address?.toLowerCase() === b.pilgrim.toLowerCase();
   const refundRow = ledger?.find(r => r.kind === "Refunded");
+  const refundedAmt = refundOutcome?.amount ?? refundRow?.amount;
+  const refundCaller = refundOutcome?.caller ?? refundRow?.counterparty;
   const flightVendor = flightPaid ? (getLabel(b.flightVendor, chainId) ?? shortHex(b.flightVendor)) : "";
 
   const signDeparture = async () => {
@@ -185,34 +189,61 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
         </div>
         <div className="mb-perforation" />
 
-        <Label>
-          <T id="Berangkat paling lambat" en="Depart by" />
-        </Label>
-        <div className={`mb-big-date ${departPassed ? "mb-strike" : ""}`}>
-          <T id={formatDateWIB(b.departBy, false)} en={formatDateWIB(b.departBy, false, "en")} />
-        </div>
-        <div className="mt-1">
-          {b.refunded ? (
-            <span className="mb-returned-text font-medium">
-              <T id={`Dana sudah dikembalikan ke ${who.id}`} en={`Refunded to ${who.en} — this booking is closed`} />
-            </span>
-          ) : departed ? (
-            <span className="mb-chip mb-chip-paid">
-              <T id="Sudah berangkat" en="Departed" />
-            </span>
-          ) : departPassed ? (
-            <span className="mb-refused-text font-medium">
-              <T id="Batas berangkat lewat — siapa pun bisa refund" en="Depart-by date passed — anyone can refund" />
-            </span>
-          ) : (
-            <span className="mb-num">
-              <T
-                id={`${formatDateWIB(b.departBy)} · ${daysLeft} hari lagi`}
-                en={`${formatDateWIB(b.departBy, true, "en")} · ${daysLeft} days left`}
-              />
-            </span>
-          )}
-        </div>
+        {b.refunded ? (
+          /* A refunded booking leads with the refund (the story), not with a departure date that no longer applies. */
+          <div className="mb-refund-hero" data-testid="refund-hero">
+            <Stamp kind="dikembalikan">
+              <T id={`ke ${who.id}`} en={`to ${who.en}`} />
+            </Stamp>
+            <div className="min-w-0">
+              <div className="mb-big-date mb-returned-text">
+                {refundedAmt !== undefined ? formatRp(refundedAmt) : "…"}
+              </div>
+              <div className="mb-returned-text font-medium mt-2">
+                <T
+                  id={`kembali ke ${who.id} · booking ditutup`}
+                  en={`returned to ${who.en} · this booking is closed`}
+                />
+              </div>
+              <div className="text-sm mb-muted mt-1 mb-num">
+                <T
+                  id={`Batas berangkat semula ${formatDateWIB(b.departBy, false)}`}
+                  en={`Original depart-by date ${formatDateWIB(b.departBy, false, "en")}`}
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <Label>
+              <T id="Berangkat paling lambat" en="Depart by" />
+            </Label>
+            <div className={`mb-big-date ${departPassed ? "mb-strike" : ""}`}>
+              <T id={formatDateWIB(b.departBy, false)} en={formatDateWIB(b.departBy, false, "en")} />
+            </div>
+            <div className="mt-1">
+              {departed ? (
+                <span className="mb-chip mb-chip-paid">
+                  <T id="Sudah berangkat" en="Departed" />
+                </span>
+              ) : departPassed ? (
+                <span className="mb-refused-text font-medium">
+                  <T
+                    id="Batas berangkat lewat — siapa pun bisa refund"
+                    en="Depart-by date passed — anyone can refund"
+                  />
+                </span>
+              ) : (
+                <span className="mb-num">
+                  <T
+                    id={`${formatDateWIB(b.departBy)} · ${daysLeft} hari lagi`}
+                    en={`${formatDateWIB(b.departBy, true, "en")} · ${daysLeft} days left`}
+                  />
+                </span>
+              )}
+            </div>
+          </>
+        )}
 
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <Label>
@@ -292,26 +323,29 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
           )}
           {(refundOutcome || refundRow) && (
             <div className="mt-3 flex flex-col gap-2 items-start">
-              <Stamp kind="dikembalikan">
+              {!b.refunded && (
+                <Stamp kind="dikembalikan">
+                  <T id={`${formatRp(refundedAmt)} ke ${who.id}`} en={`${formatRp(refundedAmt)} to ${who.en}`} />
+                </Stamp>
+              )}
+              <p className="mb-p">
                 <T
-                  id={`${formatRp(refundOutcome?.amount ?? refundRow?.amount)} ke ${who.id}`}
-                  en={`${formatRp(refundOutcome?.amount ?? refundRow?.amount)} to ${who.en}`}
+                  id={`${formatRp(refundedAmt)} dikembalikan ke ${who.id}.`}
+                  en={`${formatRp(refundedAmt)} returned to ${who.en}.`}
                 />
-              </Stamp>
+              </p>
               <div className="text-sm flex flex-wrap gap-2 items-center">
                 <span>
                   <T id="Ditekan oleh" en="Pressed by" />
                 </span>
-                <AddressChip address={refundOutcome?.caller ?? refundRow?.counterparty} />
+                <AddressChip address={refundCaller} />
+                {refundCaller && refundCaller.toLowerCase() !== b.pilgrim.toLowerCase() && (
+                  <span className="mb-muted">
+                    <T id="(pihak ketiga)" en="(a third party)" />
+                  </span>
+                )}
                 <TxLink hash={(refundOutcome?.hash ?? refundRow?.hash) as string} />
               </div>
-            </div>
-          )}
-          {b.refunded && !refundOutcome && !refundRow && (
-            <div className="mt-3">
-              <Stamp kind="dikembalikan">
-                <T id={`ke ${who.id}`} en={`to ${who.en}`} />
-              </Stamp>
             </div>
           )}
           {refundErr && (
@@ -461,11 +495,15 @@ export const Passbook = ({ b, name }: { b: Booking; name?: string }) => {
                           <TxLink hash={r.hash} />
                         </td>
                         <td
+                          data-label-id="keluar"
+                          data-label-en="out"
                           className={`text-right mb-amt ${r.kind === "Refunded" ? "mb-returned-text" : r.kind === "Booked" ? "mb-muted" : "mb-paid-text"}`}
                         >
                           {r.kind === "Booked" ? "–" : formatRp(r.amount)}
                         </td>
-                        <td className="text-right mb-amt mb-bal">{formatRp(bal)}</td>
+                        <td className="text-right mb-amt mb-bal" data-label-id="sisa" data-label-en="balance">
+                          {formatRp(bal)}
+                        </td>
                       </tr>
                     );
                   });

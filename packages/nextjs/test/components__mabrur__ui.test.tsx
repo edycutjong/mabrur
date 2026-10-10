@@ -9,11 +9,14 @@ import {
   CopyButton,
   ErrorCall,
   Label,
+  NetworkNotice,
   PageShell,
   RevertStamp,
   Rp,
+  SealGloss,
   Stamp,
   TxLink,
+  reloadPage,
 } from "~~/components/mabrur/ui";
 import type { DecodedRevert } from "~~/utils/mabrur/errors";
 
@@ -1017,6 +1020,65 @@ describe("components/mabrur/ui", () => {
     it("handles undefined children", () => {
       const { container } = render(<PageShell>{undefined}</PageShell>);
       expect(container.firstChild).toBeDefined();
+    });
+  });
+
+  describe("round-1 QA: seal glosses and the slow-network state", () => {
+    it("keeps the brand seal word and adds an English gloss shown only in EN mode", () => {
+      const { container, unmount } = render(<Stamp kind="ditolak" />);
+      const gloss = container.querySelector(".mb-stamp-gloss")!;
+      expect(gloss).toHaveTextContent("rejected");
+      expect(gloss).toHaveClass("t-en");
+      expect(container.querySelector(".mb-stamp")).toHaveAttribute("aria-label", "Ditolak");
+      unmount();
+      document.documentElement.classList.add("lang-en");
+      const r = render(<Stamp kind="lunas" />);
+      expect(r.container.querySelector(".mb-stamp")).toHaveAttribute("aria-label", "Lunas (paid)");
+      r.unmount();
+      const sim = render(<Stamp kind="simulasi" />);
+      expect(sim.container.querySelector(".mb-stamp-gloss")).toBeNull();
+      expect(sim.container.querySelector(".mb-stamp")).toHaveAttribute("aria-label", "Would pass");
+      document.documentElement.classList.remove("lang-en");
+    });
+
+    it("SealGloss renders its word as an EN-only span", () => {
+      const { container } = render(<SealGloss word="refunded" />);
+      expect(container.querySelector("span.t-en")).toHaveTextContent("refunded");
+    });
+
+    it("an unreachable RPC keeps the screen and shows a retry notice, never 'no deployment'", () => {
+      useMabrurContracts.mockReturnValue({
+        ready: true,
+        isLoading: false,
+        unreachable: true,
+        chainName: "Arbitrum One",
+        chainId: 42161,
+      });
+      render(
+        <ContractsGuard>
+          <div>Protected Content</div>
+        </ContractsGuard>,
+      );
+      expect(screen.getByText("Protected Content")).toBeInTheDocument();
+      expect(screen.getByText(/^Jaringan lambat: Arbitrum One belum terjangkau/)).toBeInTheDocument();
+      expect(screen.queryByText(/Kontrak Mabrur belum ada/)).toBeNull();
+      expect(screen.getByRole("button", { name: "Coba lagi" })).toBeInTheDocument();
+    });
+
+    it("NetworkNotice calls its retry handler", async () => {
+      const onRetry = vi.fn();
+      render(<NetworkNotice chainName="Arbitrum One" onRetry={onRetry} />);
+      await userEvent.click(screen.getByRole("button", { name: "Coba lagi" }));
+      expect(onRetry).toHaveBeenCalledTimes(1);
+    });
+
+    it("reloadPage reloads the window", () => {
+      const reload = vi.fn();
+      const orig = window.location;
+      Object.defineProperty(window, "location", { configurable: true, value: { ...orig, reload } });
+      reloadPage();
+      expect(reload).toHaveBeenCalled();
+      Object.defineProperty(window, "location", { configurable: true, value: orig });
     });
   });
 });

@@ -1898,4 +1898,107 @@ describe("app/app/agen/page.tsx", () => {
       });
     });
   });
+
+  describe("round-1 QA: sample invoices, demo bookings, closed booking", () => {
+    const inv = {
+      invoice: { bookingId: 1n, line: 1, amount: 5n, ref: "0xref", expiry: 1n },
+      signature: "0xsig",
+      label: "Label ID",
+      labelEn: "Label EN",
+    };
+    const okFetch = () =>
+      vi.fn(() => Promise.resolve({ ok: true, status: 200, text: () => Promise.resolve('{"ahmadBookingId":"0x1"}') }));
+
+    it("loads /demo/invoices.json with one click and shows its bilingual labels", async () => {
+      const f = okFetch();
+      vi.stubGlobal("fetch", f);
+      (parseInvoices as any).mockReturnValue([inv]);
+      render(<AgenPage />);
+      await userEvent.click(screen.getByRole("button", { name: "Muat contoh faktur" }));
+      expect(f).toHaveBeenCalledWith("/demo/invoices.json");
+      expect(await screen.findByText("Label ID")).toBeInTheDocument();
+      expect(screen.getByText("Label EN")).toHaveClass("t-en");
+      vi.unstubAllGlobals();
+    });
+
+    it("falls back to the plain label when no English label is given", async () => {
+      vi.stubGlobal("fetch", okFetch());
+      (parseInvoices as any).mockReturnValue([{ ...inv, labelEn: undefined }]);
+      render(<AgenPage />);
+      await userEvent.click(screen.getByRole("button", { name: "Muat contoh faktur" }));
+      expect(await screen.findByText("· Label ID")).toBeInTheDocument();
+      vi.unstubAllGlobals();
+    });
+
+    it("says so when the sample cannot be fetched", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(() => Promise.resolve({ ok: false, status: 404, text: () => Promise.resolve("") })),
+      );
+      render(<AgenPage />);
+      await userEvent.click(screen.getByRole("button", { name: "Muat contoh faktur" }));
+      expect(await screen.findByText("Contoh faktur tidak bisa dimuat: HTTP 404")).toBeInTheDocument();
+      vi.unstubAllGlobals();
+    });
+
+    it("loads the sample on arrival with ?contoh=1 (the /judge link)", async () => {
+      const f = okFetch();
+      vi.stubGlobal("fetch", f);
+      (parseInvoices as any).mockReturnValue([inv]);
+      window.history.pushState({}, "", "/app/agen?contoh=1");
+      render(<AgenPage />);
+      await waitFor(() => expect(f).toHaveBeenCalledTimes(1));
+      window.history.pushState({}, "", "/");
+      vi.unstubAllGlobals();
+    });
+
+    it("starts a cold visit on the demo chain with the two demo bookings", () => {
+      (useMabrurContracts as any).mockReturnValue({ pbm: { address: "0xpbm", abi: [] }, chainId: 42161 });
+      render(<AgenPage />);
+      expect(screen.queryByText("Muat invoices.json atau tambah booking di bawah.")).toBeNull();
+    });
+
+    it("shows a closed booking instead of a meaningless fee release (refunded)", () => {
+      (useBooking as any).mockReturnValue({
+        data: {
+          id: 1n,
+          pilgrim: "0x1111111111111111111111111111111111111111",
+          agency: "0x2222222222222222222222222222222222222222",
+          ticketBy: 1,
+          departBy: 2,
+          flightVendor: "0x0000000000000000000000000000000000000000",
+          remaining: [0n, 0n, 0n, 0n],
+          refunded: true,
+          departed: false,
+          marginReleased: false,
+          refundable: false,
+        },
+      });
+      (loadJson as any).mockImplementation((key: string, def: any) => (key.includes("bookings") ? ["0x1"] : def));
+      render(<AgenPage />);
+      expect(screen.getByTestId("fee-closed")).toHaveTextContent(/Booking ditutup/);
+      expect(screen.queryByRole("button", { name: /^Buka ujrah/ })).toBeNull();
+    });
+
+    it("says the fee was already released after departure", () => {
+      (useBooking as any).mockReturnValue({
+        data: {
+          id: 1n,
+          pilgrim: "0x1111111111111111111111111111111111111111",
+          agency: "0x2222222222222222222222222222222222222222",
+          ticketBy: 1,
+          departBy: 2,
+          flightVendor: "0x3333333333333333333333333333333333333333",
+          remaining: [0n, 0n, 0n, 0n],
+          refunded: false,
+          departed: true,
+          marginReleased: true,
+          refundable: false,
+        },
+      });
+      (loadJson as any).mockImplementation((key: string, def: any) => (key.includes("bookings") ? ["0x1"] : def));
+      render(<AgenPage />);
+      expect(screen.getByTestId("fee-closed")).toHaveTextContent(/Ujrah agen sudah dibuka/);
+    });
+  });
 });

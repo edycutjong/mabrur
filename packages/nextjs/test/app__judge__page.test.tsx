@@ -58,7 +58,7 @@ describe("app/judge/page", () => {
     it("walks the 30-second path with working links", () => {
       render(<JudgePage />);
       const list = screen.getAllByRole("list").find(l => l.tagName === "OL")!;
-      expect(within(list).getAllByRole("listitem")).toHaveLength(4);
+      expect(within(list).getAllByRole("listitem")).toHaveLength(5);
       expect(within(list).getByRole("link", { name: "Buka booking Pak Ahmad" })).toHaveAttribute(
         "href",
         expect.stringContaining("/app/jamaah?id=9307128895"),
@@ -69,9 +69,21 @@ describe("app/judge/page", () => {
       );
       expect(within(list).getByText("LUNAS")).toHaveClass("mb-chip-paid");
       expect(within(list).getByText("DIKEMBALIKAN")).toHaveClass("mb-chip-returned");
+      // the EN gloss sits beside the brand seal word and is hidden in ID mode
+      expect(within(list).getByText("· paid")).not.toBeVisible();
+      const sample = within(list).getByRole("link", { name: "Muat contoh faktur di konsol agen" });
+      expect(sample).toHaveAttribute("href", "/app/agen?contoh=1");
+      expect(within(list).getAllByRole("link", { name: "/demo/invoices.json" })[0]).toHaveAttribute(
+        "href",
+        "/demo/invoices.json",
+      );
+      expect(screen.getByRole("link", { name: "Lihat cap DITOLAK sendiri, tanpa dompet" })).toHaveAttribute(
+        "href",
+        "/app/agen?contoh=1",
+      );
       expect(screen.getByRole("link", { name: "halaman vendor" })).toHaveAttribute("href", "/app/vendor");
       expect(screen.getByRole("link", { name: "konsol agen" })).toHaveAttribute("href", "/app/agen");
-      const step4 = within(list).getAllByRole("listitem")[3];
+      const step4 = within(list).getAllByRole("listitem")[4];
       expect(step4.querySelector(".t-id")).toHaveTextContent(
         "(Tempel faktur → Baca faktur), lalu tekan Simulasi saja di sana.",
       );
@@ -85,11 +97,12 @@ describe("app/judge/page", () => {
           .getAllByRole("columnheader")
           .map(th => th.textContent),
       ).toEqual([
-        "Percobaan yang ditolakRejected attempt",
+        "Percobaan ditolakRejected attempt",
         "Yang dicoba agenWhat the agency tried",
         "Tx tertambangMined tx",
       ]);
-      expect(within(table).getByRole("columnheader", { name: "Percobaan yang ditolak" })).toBeInTheDocument();
+      expect(within(table).getByRole("columnheader", { name: "Percobaan ditolak" })).toBeInTheDocument();
+      expect(within(table).getAllByText("rejected")).toHaveLength(4);
       expect(within(table).getAllByRole("row")).toHaveLength(5);
       for (const [err, tx, short] of TXS) {
         expect(within(table).getByText(err)).toHaveClass("mb-receipt-err");
@@ -128,7 +141,9 @@ describe("app/judge/page", () => {
       expect(pre).toHaveAttribute("tabindex", "0");
       expect(pre.textContent).toContain("git clone --recursive https://github.com/edycutjong/mabrur.git");
       expect(pre.textContent).toContain("forge test");
-      expect(screen.getByText(/^cast run <tx mana pun di atas>/)).toBeVisible();
+      // one copy-pasteable command in both languages; the gloss is in the caption
+      expect(pre.textContent).toContain("cast run <any tx above> --rpc-url https://arb1.arbitrum.io/rpc --quick");
+      expect(screen.getByText(/^Ganti <any tx above> dengan hash/)).toBeVisible();
     });
 
     it("keeps the honest limits and the CTAs", () => {
@@ -168,7 +183,7 @@ describe("app/judge/page", () => {
       expect(screen.getByRole("link", { name: "vendor page" })).toHaveAttribute("href", "/app/vendor");
       expect(screen.getByRole("link", { name: "agency console" })).toHaveAttribute("href", "/app/agen");
       const ol = screen.getAllByRole("list").find(l => l.tagName === "OL")!;
-      const step4 = within(ol).getAllByRole("listitem")[3];
+      const step4 = within(ol).getAllByRole("listitem")[4];
       expect(step4.querySelector(".t-en")).toHaveTextContent(
         "(Paste invoice → Read invoice), then press Simulate only there.",
       );
@@ -180,7 +195,11 @@ describe("app/judge/page", () => {
       expect(screen.getByText("87 tests")).toBeVisible();
       expect(screen.getByText(/907,185 gas ≈ Rp 809/)).toBeVisible();
       expect(screen.getByRole("region", { name: /^Reproduce commands/ })).toBeInTheDocument();
-      expect(screen.getByText(/^cast run <any tx above>/)).toBeVisible();
+      expect(screen.getByRole("region", { name: /^Reproduce commands/ }).textContent).toContain(
+        "cast run <any tx above>",
+      );
+      expect(within(ol).getByText("· paid")).toBeVisible();
+      expect(screen.getAllByText("rejected")[0]).toBeVisible();
       expect(screen.getByText(/^tIDR is a test token with no value/)).toBeVisible();
       expect(screen.getByRole("link", { name: "GitHub repo" })).toBeInTheDocument();
       expect(screen.getByRole("link", { name: "DEMO.md ledger" })).toBeInTheDocument();

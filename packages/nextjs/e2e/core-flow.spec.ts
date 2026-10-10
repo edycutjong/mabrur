@@ -48,3 +48,33 @@ test("vendor → agency round trip: an unlicensed signer is refused with VendorC
   // … and in the attempt ledger
   await expect(page.getByText(/simulated, nothing sent|tidak ada transaksi dikirim/).first()).toBeVisible();
 });
+
+/**
+ * The no-wallet route a judge takes from /judge: the sample invoices load on arrival, Pak Ahmad's booking is selected,
+ * and a dry run of Ibu Siti's hotel invoice lands DITOLAK · EarmarkMismatch. Read-only (simulateContract).
+ */
+test("judge route: sample invoices → DITOLAK EarmarkMismatch without a wallet", async ({ page }) => {
+  await page.goto("/judge");
+  await page.getByRole("link", { name: "Lihat cap DITOLAK sendiri, tanpa dompet" }).click();
+  await expect(page).toHaveURL(/\/app\/agen\?contoh=1$/);
+  const row = page.locator(".mb-row").filter({ hasText: "INV-HTL-DR-S" }).first();
+  await expect(row).toBeVisible();
+  await expect(row.getByText("booking lain", { exact: true })).toBeVisible();
+  await expect(async () => {
+    await row.getByRole("button", { name: "Simulasi saja" }).click();
+    await expect(row.locator(".mb-stamp-ditolak")).toBeVisible({ timeout: 5_000 });
+  }).toPass({ timeout: 45_000 });
+  await expect(row.locator(".mb-stamp-ditolak")).toContainText("EarmarkMismatch");
+});
+
+test("Ibu Siti's refunded booking leads with the DIKEMBALIKAN seal and the amount, above the fold", async ({
+  page,
+}) => {
+  await page.goto("/app/jamaah?id=38303033312745746094663211795656914215448779063347601464497604008460359611737");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Ibu Siti");
+  const hero = page.getByTestId("refund-hero");
+  await expect(hero.locator(".mb-stamp-dikembalikan")).toBeVisible();
+  await expect(hero).toContainText("Rp 23.000.000");
+  const box = await hero.boundingBox();
+  expect(box!.y + box!.height).toBeLessThanOrEqual(page.viewportSize()!.height + 400);
+});

@@ -45,9 +45,11 @@ export const useMabrurContracts = () => {
   // While the on-chain bytecode check is still running, trust the static deployment record (deployedContracts.ts)
   // so the page renders on the server and on first paint instead of after an RPC round trip (LCP / CLS). If the check
   // then finds no code, `data` stays undefined with isLoading false and the page falls back to the network notice.
+  // If the check could not reach the RPC at all, keep trusting the record and flag `unreachable` (venue wifi is not
+  // proof that the contracts are gone).
   const known = contracts?.[targetNetwork.id];
-  const pick = <T>(info: { data: T | undefined; isLoading: boolean }, name: string) =>
-    info.data ?? (info.isLoading ? (known?.[name] as T | undefined) : undefined);
+  const pick = <T>(info: { data: T | undefined; isLoading: boolean; isError?: boolean }, name: string) =>
+    info.data ?? (info.isLoading || info.isError ? (known?.[name] as T | undefined) : undefined);
   const pbm = pick(pbmInfo, "MabrurPBM");
   const tidr = pick(tidrInfo, "TIDR");
   const registry = pick(registryInfo, "ClaimRegistry");
@@ -59,6 +61,7 @@ export const useMabrurContracts = () => {
     registry,
     publicClient,
     isLoading: (pbmInfo.isLoading && !pbm) || (tidrInfo.isLoading && !tidr) || (registryInfo.isLoading && !registry),
+    unreachable: Boolean(pbmInfo.isError || tidrInfo.isError || registryInfo.isError),
     ready: Boolean(pbm && tidr && registry && publicClient),
   };
 };

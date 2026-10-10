@@ -1,10 +1,11 @@
 import { useRouter, useSearchParams } from "next/navigation";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import type { Address } from "viem";
 import { parseSignature } from "viem";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useAccount, useWalletClient } from "wagmi";
-import JamaahPage from "~~/app/app/jamaah/page";
+import JamaahPage, { paramsOf } from "~~/app/app/jamaah/JamaahScreen";
+import JamaahServerPage, { first } from "~~/app/app/jamaah/page";
 import {
   ZERO,
   eventsFrom,
@@ -1059,11 +1060,42 @@ describe("app/app/jamaah/page.tsx behaviour", () => {
       expect(screen.getByTestId("bi").textContent).toBe("Booking tidak ditemukan.");
     });
 
-    it("keeps the pick prompt while the selected booking is still loading", () => {
+    it("reserves the passbook while a deep-linked booking is still loading (no empty picker, no jump)", () => {
       mk.p.mockReturnValue({ get: (k: string) => (k === "id" ? "99" : null) });
       mk.b.mockReturnValue({ data: undefined });
       render(<JamaahPage />);
-      expect(screen.getByTestId("bi").textContent).toBe("Pilih atau buat booking.");
+      expect(screen.queryByTestId("bi")).toBeNull();
+      expect(screen.getByTestId("passbook-loading")).toHaveAttribute("aria-busy", "true");
+      expect(screen.getByText("Membaca booking dari Arbitrum One…")).toBeInTheDocument();
+    });
+
+    it("offers a retry when the deep-linked booking cannot be read (slow network)", () => {
+      const refetch = vi.fn(() => Promise.resolve());
+      mk.p.mockReturnValue({ get: (k: string) => (k === "id" ? "99" : null) });
+      mk.b.mockReturnValue({ data: undefined, isError: true, refetch });
+      render(<JamaahPage />);
+      expect(screen.getByText("Jaringan lambat: booking ini belum terbaca dari Arbitrum One.")).toBeInTheDocument();
+      fireEvent.click(screen.getByRole("button", { name: "Coba lagi" }));
+      expect(refetch).toHaveBeenCalled();
+    });
+
+    it("names a demo booking in the heading before any chain data arrives", () => {
+      const AHMAD = "93071288952676167289577516806255635492368093588595261547394544652192346034554";
+      mk.p.mockReturnValue({ get: (k: string) => (k === "id" ? AHMAD : null) });
+      mk.b.mockReturnValue({ data: undefined });
+      render(<JamaahPage />);
+      expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName("Buku Amanah Pak Ahmad");
+    });
+
+    it("folds the booking form behind a disclosure on a deep link without a wallet", () => {
+      mk.a.mockReturnValue({ address: undefined });
+      mk.p.mockReturnValue({ get: (k: string) => (k === "id" ? "1" : null) });
+      mk.b.mockReturnValue({ data: baseBooking });
+      const { container } = render(<JamaahPage />);
+      const details = container.querySelector("details.mb-disclosure")!;
+      expect(details).toBeInTheDocument();
+      expect(details).not.toHaveAttribute("open");
+      expect(within(details as HTMLElement).getByText("Pesan paket baru")).toBeInTheDocument();
     });
   });
 });
@@ -1095,7 +1127,10 @@ describe("app/app/jamaah/page.tsx — ID/EN", () => {
     setup();
     render(<JamaahPage />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName("Buku Amanah Jamaah");
-    expect(screen.getByPlaceholderText("Nama (disimpan di browser ini saja)")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Nama (opsional)")).toHaveAttribute(
+      "title",
+      "Nama disimpan di browser ini saja",
+    );
     expect(screen.getByLabelText("Alamat agen")).toBeInTheDocument();
     expect(screen.getByText("tIDR = token uji, tanpa nilai")).toBeVisible();
   });
@@ -1106,7 +1141,7 @@ describe("app/app/jamaah/page.tsx — ID/EN", () => {
     render(<JamaahPage />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName("Pilgrim's passbook");
     expect(screen.getByRole("heading", { level: 2 })).toHaveAccessibleName("Book an umrah package");
-    expect(screen.getByPlaceholderText("Name (kept in this browser only)")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Name (optional)")).toBeInTheDocument();
     expect(screen.getByLabelText("Agency address")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "View" })).toBeInTheDocument();
     expect(screen.getByText("tIDR = test token, no value")).toBeVisible();
@@ -1119,5 +1154,49 @@ describe("app/app/jamaah/page.tsx — ID/EN", () => {
     expect(screen.getByLabelText("Batas tiket")).toBeInTheDocument();
     act(() => document.documentElement.classList.add("lang-en"));
     expect(await screen.findByLabelText("Ticket-by date")).toBeInTheDocument();
+  });
+});
+
+describe("app/app/jamaah — server page + initial params", () => {
+  it("first() takes the first value of a repeated query key", () => {
+    expect(first(["a", "b"])).toBe("a");
+    expect(first("x")).toBe("x");
+    expect(first(undefined)).toBeUndefined();
+  });
+
+  it("passes ?id= / ?pilgrim= read on the server to the client screen", async () => {
+    const el = await JamaahServerPage({ searchParams: Promise.resolve({ id: ["7", "8"], pilgrim: "0xabc" }) });
+    expect(el.props).toEqual({ initialId: "7", initialPilgrim: "0xabc" });
+  });
+
+  it("paramsOf answers id and pilgrim, null otherwise", () => {
+    const p = paramsOf({ id: "1" });
+    expect(p.get("id")).toBe("1");
+    expect(p.get("pilgrim")).toBeNull();
+    expect(p.get("other")).toBeNull();
+    expect(paramsOf({ pilgrim: "0xp" }).get("pilgrim")).toBe("0xp");
+    expect(paramsOf({}).get("id")).toBeNull();
+  });
+
+  it("renders with server-known params (the Suspense fallback carries them)", () => {
+    (useRouter as any).mockReturnValue({ push: vi.fn(), refresh: vi.fn() });
+    (useSearchParams as any).mockReturnValue({ get: vi.fn(() => null) });
+    (useAccount as any).mockReturnValue({ address: undefined });
+    (useWalletClient as any).mockReturnValue({ data: undefined });
+    (useChainNow as any).mockReturnValue({ now: 1704067200 });
+    (useMabrurContracts as any).mockReturnValue({
+      pbm: undefined,
+      tidr: undefined,
+      publicClient: undefined,
+      chainId: 1,
+    });
+    (useMabrurTx as any).mockReturnValue({ run: vi.fn(), busy: false });
+    (useScaffoldReadContract as any).mockReturnValue({ data: undefined });
+    (useScaffoldWriteContract as any).mockReturnValue({ writeContractAsync: vi.fn(), isMining: false });
+    (useBooking as any).mockReturnValue({ data: undefined });
+    (useBookingsOf as any).mockReturnValue({ data: undefined });
+    render(<JamaahPage initialId="5" />);
+    render(<JamaahPage initialPilgrim="0xp" />);
+    expect(screen.getAllByRole("heading", { level: 1 }).length).toBe(2);
   });
 });

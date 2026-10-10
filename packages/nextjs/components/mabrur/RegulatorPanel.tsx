@@ -82,7 +82,7 @@ export const RegulatorPanel = ({ agency }: { agency?: string }) => {
         </dt>
         <dd className={`mb-amt ${m}`}>{formatRp(sumEarmarks)}</dd>
         <dt className="min-w-0 leading-tight mb-muted">
-          <T id="Surplus" en="Surplus (direct donations)" />
+          <T id="Surplus" en="Surplus" />
         </dt>
         <dd className="mb-amt mb-muted">{formatRp(surplus)}</dd>
       </dl>

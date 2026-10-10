@@ -567,4 +567,16 @@ describe("Type definitions and constants", () => {
     expect(PERMIT_TYPES.Permit[0].name).toBe("owner");
     expect(PERMIT_TYPES.Permit[4].name).toBe("deadline");
   });
+
+  it("keeps an English label when the source gives one (the sample file)", async () => {
+    const { parseInvoices } = await import("~~/utils/mabrur/invoice");
+    const sig = "0x" + "ab".repeat(65);
+    const [one] = parseInvoices(
+      JSON.stringify({ x: { bookingId: "1", line: 1, amount: "5", signature: sig, label: "ID", labelEn: "EN" } }),
+    );
+    expect(one.label).toBe("ID");
+    expect(one.labelEn).toBe("EN");
+    const [two] = parseInvoices(JSON.stringify({ bookingId: "1", line: 1, amount: "5", signature: sig, labelEn: 3 }));
+    expect(two.labelEn).toBeUndefined();
+  });
 });

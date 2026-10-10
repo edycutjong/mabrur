@@ -13,6 +13,8 @@ import {
 type DeployedContractData<TContractName extends ContractName> = {
   data: Contract<TContractName> | undefined;
   isLoading: boolean;
+  /** Mabrur: the bytecode check could not reach the RPC (not the same as "no contract at this address"). */
+  isError?: boolean;
 };
 
 /**
@@ -48,6 +50,7 @@ export function useDeployedContractInfo<TContractName extends ContractName>(
   const selectedNetwork = useSelectedNetwork(chainId);
   const deployedContract = contracts?.[selectedNetwork.id]?.[contractName as ContractName] as Contract<TContractName>;
   const [status, setStatus] = useState<ContractCodeStatus>(ContractCodeStatus.LOADING);
+  const [isError, setIsError] = useState(false);
   const publicClient = usePublicClient({ chainId: selectedNetwork.id });
 
   useEffect(() => {
@@ -69,9 +72,12 @@ export function useDeployedContractInfo<TContractName extends ContractName>(
           setStatus(ContractCodeStatus.NOT_FOUND);
           return;
         }
+        setIsError(false);
         setStatus(ContractCodeStatus.DEPLOYED);
       } catch (e) {
+        // An unreachable RPC is not a missing contract: flag it so the UI can say "network slow", not "no deployment".
         console.error(e);
+        setIsError(true);
         setStatus(ContractCodeStatus.NOT_FOUND);
       }
     };
@@ -82,5 +88,6 @@ export function useDeployedContractInfo<TContractName extends ContractName>(
   return {
     data: status === ContractCodeStatus.DEPLOYED ? deployedContract : undefined,
     isLoading: status === ContractCodeStatus.LOADING,
+    isError,
   };
 }

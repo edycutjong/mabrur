@@ -27,7 +27,7 @@ test.describe("/judge", () => {
 
   test("step 4 says sign → paste → simulate, with a space after the italics, in both languages", async ({ page }) => {
     await page.goto("/judge");
-    const step = page.getByRole("listitem").filter({ hasText: "Simulasi saja" });
+    const step = page.getByRole("listitem").filter({ hasText: "tanda tangani satu di" });
     const id = step.locator(".t-id");
     await expect(id).toBeVisible();
     await expect(id).toContainText(/tanda tangani satu di halaman vendor, tempel JSON-nya di konsol agen/);

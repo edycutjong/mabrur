@@ -76,7 +76,7 @@ const ROLES = [
 ];
 
 const AppHome: NextPage = () => (
-  <div className="w-full max-w-6xl mx-auto px-4 lg:px-8 py-10 lg:py-16">
+  <div className="w-full max-w-[1600px] mx-auto px-4 lg:px-8 py-10 lg:py-16">
     <h1 className="mb-title max-w-4xl">
       <T
         id={

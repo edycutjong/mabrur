@@ -118,7 +118,7 @@ describe("app/app/page", () => {
       const { container } = render(<AppHome />);
 
       // Main container structure
-      const mainDiv = container.querySelector(".w-full.max-w-6xl");
+      const mainDiv = container.querySelector(".w-full.max-w-\\[1600px\\]");
       expect(mainDiv).toBeInTheDocument();
 
       // One hairline-ruled sheet holds the three roles (bento), not three floating cards
