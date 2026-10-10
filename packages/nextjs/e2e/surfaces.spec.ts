@@ -61,9 +61,9 @@ test.describe("pitch deck at /pitch", () => {
     expect(res?.status()).toBe(200);
     await expect(page).toHaveTitle(/Mabrur · Pitch deck/);
     await expect(page.locator(".slide.on h1")).toContainText("berangkat bersamanya");
-    await expect(page.locator("#count")).toHaveText("01 / 09");
+    await expect(page.locator("#count")).toHaveText("01 / 11");
     await page.keyboard.press("ArrowRight");
-    await expect(page.locator("#count")).toHaveText("02 / 09");
+    await expect(page.locator("#count")).toHaveText("02 / 11");
     await expect(page.locator(".slide.on")).toHaveAttribute("data-title", "Masalah");
     expect(errors, errors.join("\n")).toEqual([]);
   });

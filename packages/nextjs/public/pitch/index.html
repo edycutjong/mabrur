@@ -116,7 +116,7 @@ h2 em, h1 em { font-style: normal; color: var(--paid);
 .who { display: grid; grid-template-columns: auto 1fr; gap: 8px 24px; padding: 18px 0; border-bottom: 1.5px solid var(--rule); font-size: 24px; align-items: baseline; }
 .who b { font-weight: 600; }
 .line { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 20px; padding: 17px 16px; margin: 0 -16px; border-bottom: 1.5px dashed var(--rule); border-radius: 10px; align-items: center; }
-.line b { font-size: 27px; font-weight: 500; display: block; } .line small { font-size: 19px; color: var(--muted); }
+.line b { font-size: 27px; font-weight: 500; display: block; } .line small { font-size: 20px; color: var(--muted); }
 .line .amt { font: 500 26px var(--font-data); color: var(--ink); grid-column: 3; grid-row: 1; text-align: right; font-variant-numeric: tabular-nums; }
 .line.held { background: linear-gradient(90deg, var(--earmarked-wash), rgba(247, 241, 227, 0) 75%); }
 .line.held .amt { color: var(--earmarked-ink); }
@@ -124,7 +124,7 @@ h2 em, h1 em { font-style: normal; color: var(--paid);
 .line.refused { background: linear-gradient(90deg, var(--refused-wash), rgba(247, 232, 230, 0) 80%); }
 .line.refused .amt { color: var(--refused); }
 .line .stamp { position: relative; grid-column: 2; grid-row: 1; justify-self: center; font-size: 26px; padding: 10px 20px 11px; box-shadow: inset 0 0 0 4px rgba(255, 255, 255, .95), inset 0 0 0 5.5px currentColor; }
-.line .stamp small { font-size: 16px; margin-top: 7px; }
+.line .stamp small { font-size: 19px; margin-top: 7px; }
 .held-tag { grid-column: 2; grid-row: 1; justify-self: center; font: 500 18px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--earmarked-ink); border: 1.5px solid var(--earmarked); border-radius: 999px; padding: 8px 16px; }
 .total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 20px; }
 .total strong { font: 500 50px var(--font-display); letter-spacing: -.02em; font-variant-numeric: lining-nums; }
@@ -148,7 +148,7 @@ h2 em, h1 em { font-style: normal; color: var(--paid);
 .flow { display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 64px; overflow: hidden; }
 .step { padding: 30px 30px; border-right: 1.5px solid var(--rule); display: grid; gap: 12px; align-content: start; }
 .step:last-child { border-right: 0; background: var(--returned-wash); }
-.step .n { font: 500 17px var(--font-body); letter-spacing: .14em; color: var(--earmarked-ink); }
+.step .n { font: 500 20px var(--font-body); letter-spacing: .14em; color: var(--earmarked-ink); }
 .step h3 { font-size: 46px; } .step p { margin: 0; font-size: 22px; color: var(--muted); line-height: 1.4; }
 .step .code { font: 500 19px var(--font-data); }
 .shot { overflow: hidden; }
@@ -167,7 +167,7 @@ h2 em, h1 em { font-style: normal; color: var(--paid);
 .qr svg { width: 100%; height: 100%; display: block; }
 .list { margin: 0; padding: 0 0 0 30px; display: grid; gap: 14px; font-size: 26px; color: var(--muted); line-height: 1.4; }
 .list b { color: var(--ink); }
-.app-tag { display: inline-block; font: 500 16px var(--font-body); letter-spacing: .16em; padding: 7px 16px; border-radius: 999px; background: var(--returned); color: var(--on-dark); }
+.app-tag { display: inline-block; font: 500 18px var(--font-body); letter-spacing: .16em; padding: 7px 16px; border-radius: 999px; background: var(--returned); color: var(--on-dark); }
 .tcard { padding: 44px 40px; display: grid; gap: 16px; align-content: start; min-height: 440px; }
 .tcard .n { font: 500 62px/1 var(--font-display); color: var(--returned); letter-spacing: -.02em; font-variant-numeric: lining-nums; }
 .tcard h3 { font-size: 44px; } .tcard p { margin: 0; font-size: 27px; color: var(--muted); line-height: 1.45; }
@@ -225,6 +225,15 @@ table.cmp thead th, .step .n, .app-tag { font-weight: 600; }
 }
 @media (prefers-reduced-motion: reduce) { .slide.on .up, .slide.on .stamp.anim { animation: none !important; } }
 .step:last-child .n { color: var(--returned); }
+/* the green swash marks emphasis only on the cover, the solution and the ask; elsewhere emphasis is colour alone */
+h2 em { background: none; }
+.slide.sw h2 em { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 24' preserveAspectRatio='none'%3E%3Cpath d='M2 15C70 7 150 5 220 8s120 6 176 2' fill='none' stroke='%230E8A5F' stroke-opacity='.22' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E") 0 94% / 100% .28em no-repeat; }
+/* app screenshots: never hard-cropped mid-row; the whole capture fits its slot */
+.shot img { object-fit: contain; object-position: center top; background: var(--paper); }
+/* presentation chrome (HUD, version, key hint) stays out of the projected picture: shown 4 s after load, then H toggles it */
+.hud, .hint, .ver { transition: opacity .3s var(--ease), visibility .3s; }
+body.chrome-off .hud, body.chrome-off .hint, body.chrome-off .ver { opacity: 0; visibility: hidden; }
+.dark .en { color: var(--on-dark-muted); }
 </style>
 </head>
 <body>
@@ -232,26 +241,27 @@ table.cmp thead th, .step .n, .app-tag { font-weight: 600; }
 <main class="stage" id="stage" aria-live="polite">
 
 <!-- 1 · COVER -->
-<section class="slide" data-title="Sampul">
+<section class="slide sw" data-title="Sampul">
   <div class="cols" style="grid-template-columns:.95fr 1.05fr;gap:56px;height:100%;align-items:center">
     <div>
       <div class="label kicker up" style="font-size:19px">ETHJKT × HackQuest 2026 · Build the Real World Onchain</div>
       <div class="up" style="--u:.05s;display:flex;align-items:center;gap:22px;margin:40px 0 30px"><img src="/pitch/assets/icon.svg" alt="" width="92" height="92"><span style="font:600 76px var(--font-display);color:var(--returned)">Mabrur</span></div>
       <h1>Uang umrah Pak Ahmad hanya mau <em>berangkat bersamanya.</em></h1>
-      <div class="up" style="--u:.28s;display:flex;flex-wrap:wrap;gap:12px;margin-top:44px"><span class="chip">Arbitrum One · <span class="mono">42161</span></span><span class="chip">3 kontrak terverifikasi</span><span class="chip warn">tIDR = token uji tanpa nilai</span></div>
+      <p class="en up" style="--u:.2s">Pak Ahmad’s umrah money only departs with him.</p>
+      <div class="up" style="--u:.28s;display:flex;flex-wrap:wrap;gap:12px;margin-top:36px"><span class="chip">Arbitrum One · <span class="mono">42161</span></span><span class="chip">3 kontrak terverifikasi</span><span class="chip warn">tIDR = token uji tanpa nilai</span></div>
     </div>
     <div class="paper slip up" style="--u:.1s">
-      <div class="slip-top"><div><div class="slip-title">Kuitansi Amanah</div><div class="label" style="font-size:17px">No. Kuitansi · <span class="mono">mUMRAH · 42161</span></div></div><img src="/pitch/assets/icon.svg" alt="" width="64" height="64"></div>
-      <div class="who"><span class="label" style="font-size:17px">Sudah terima dari</span><b>Pak Ahmad</b><span class="label" style="font-size:17px">Agen</span><span>PT Amanah Contoh Wisata</span></div>
+      <div class="slip-top"><div><div class="slip-title">Kuitansi Amanah</div><div class="label" style="font-size:19px">No. Kuitansi · <span class="mono">mUMRAH · 42161</span></div></div><img src="/pitch/assets/icon.svg" alt="" width="64" height="64"></div>
+      <div class="who"><span class="label" style="font-size:19px">Sudah terima dari</span><b>Pak Ahmad</b><span class="label" style="font-size:19px">Agen</span><span>PT Amanah Contoh Wisata</span></div>
       <div class="line paid"><div><b>Tiket pesawat</b><small>hanya ke maskapai berizin</small></div><span class="amt">Rp 14.000.000</span><span class="stamp ok anim" style="--rot:-4deg;--d:1.5s">Lunas<small>ke PT Contoh GSA</small></span></div>
-      <div class="line refused"><div><b>Hotel</b><small class="mono">INV-HTL-0001 · faktur Ibu Siti</small></div><span class="amt">Rp 9.000.000</span><span class="stamp no anim" style="--rot:-7deg;--d:.8s">Ditolak<small>EarmarkMismatch</small></span></div>
+      <div class="line refused"><div><b>Hotel</b><small class="mono">faktur Ibu Siti</small></div><span class="amt">Rp 9.000.000</span><span class="stamp no anim" style="--rot:-7deg;--d:.8s">Ditolak<small>EarmarkMismatch</small></span></div>
       <div class="line held"><div><b>Visa</b><small>hanya ke penyedia visa berizin</small></div><span class="amt">Rp 4.000.000</span><span class="held-tag">Disimpan</span></div>
-      <div class="line refused"><div><b>Ujrah agen</b><small>terbuka setelah berangkat</small></div><span class="amt">Rp 5.000.000</span><span class="stamp no anim" style="--rot:-5deg;--d:2.2s">Ditolak<small>NotDeparted</small></span></div>
-      <div class="total"><span class="label" style="font-size:17px">Jumlah</span><strong>Rp 32.000.000</strong></div>
+      <div class="line refused"><div><b>Ujrah (upah agen)</b><small>terbuka setelah berangkat</small></div><span class="amt">Rp 5.000.000</span><span class="stamp no anim" style="--rot:-5deg;--d:2.2s">Ditolak<small>NotDeparted</small></span></div>
+      <div class="total"><span class="label" style="font-size:19px">Jumlah</span><strong>Rp 32.000.000</strong></div>
       <div class="terbilang">Terbilang: tiga puluh dua juta rupiah</div>
     </div>
   </div>
-  <aside class="note">Assalamualaikum. Saya Edy, ini Mabrur. Uang umrah Pak Ahmad hanya mau berangkat bersamanya. Di kuitansi ini, setiap cap adalah transaksi nyata di Arbitrum One: agen mencoba membayar hotel Ibu Siti dengan uang Pak Ahmad, dan kontrak menolaknya.</aside>
+  <aside class="note">Assalamualaikum, saya Edy, ini Mabrur. Uang umrah Pak Ahmad hanya mau berangkat bersamanya. Setiap cap di kuitansi ini adalah transaksi nyata di Arbitrum One.</aside>
 </section>
 
 <!-- 2 · MASALAH -->
@@ -268,16 +278,17 @@ table.cmp thead th, .step .n, .app-tag { font-weight: 600; }
     <div class="paper" style="padding:24px 30px"><b style="font:600 60px/1 var(--font-display);color:var(--earmarked-ink);letter-spacing:-.02em">±1,4 juta</b> <span style="font-size:24px;display:block">jamaah lewat PPIU, 2024</span><div class="mono" style="font-size:18px;color:var(--muted)">HIMPUH, 18 Feb 2025 (sekunder)</div></div>
     <div style="font:600 34px/1.3 var(--font-display);align-self:center;padding-left:12px">Rekening bank tidak bisa menolak perintah transfer dari agen.</div>
   </div>
-  <aside class="note">Tahun 2017, First Travel membuat 63.310 jamaah gagal umrah, Rp 905 miliar. Abu Tours: 86.720 jamaah. Polanya sama: uang jamaah baru membiayai keberangkatan jamaah lama. Setiap tahun sekitar 1,4 juta jamaah berangkat lewat PPIU, dan uangnya masih masuk ke satu rekening agen. Rekening bank tidak bisa menolak perintah agen.</aside>
+  <aside class="note">First Travel: 63.310 jamaah gagal berangkat, Rp 905 miliar. Abu Tours: 86.720 jamaah. Polanya sama: uang jamaah baru membiayai keberangkatan jamaah lama. Dan rekening bank tidak bisa menolak perintah agen.</aside>
 </section>
 
 <!-- 3 · SOLUSI -->
-<section class="slide" data-title="Solusi">
+<section class="slide sw" data-title="Solusi">
   <div class="label kicker">02 · Solusi</div>
   <h2>Setiap rupiah dikunci <em>per jamaah, per pos.</em></h2>
+  <p class="en">Every rupiah is locked per pilgrim, per line.</p>
   <div class="cols c55 mid" style="gap:72px;align-items:center">
     <div class="folder up"><div class="label" style="color:var(--earmarked-ink);margin-bottom:10px">Map amanah · Pak Ahmad</div>
-      <div class="row"><span>Tiket pesawat</span><b>Rp 14.000.000</b></div><div class="row"><span>Hotel</span><b>Rp 9.000.000</b></div><div class="row"><span>Visa</span><b>Rp 4.000.000</b></div><div class="row" style="border:0"><span>Ujrah agen</span><b>Rp 5.000.000</b></div>
+      <div class="row"><span>Tiket pesawat</span><b>Rp 14.000.000</b></div><div class="row"><span>Hotel</span><b>Rp 9.000.000</b></div><div class="row"><span>Visa</span><b>Rp 4.000.000</b></div><div class="row" style="border:0"><span>Ujrah (upah agen)</span><b>Rp 5.000.000</b></div>
     </div>
     <div class="rules">
       <div class="paper rule up" style="--u:.1s"><span class="n">1</span><div><h3>Bayar hanya ke vendor berizin</h3><p>penerima = penanda tangan faktur</p></div></div>
@@ -285,44 +296,59 @@ table.cmp thead th, .step .n, .app-tag { font-weight: 600; }
       <div class="paper rule up" style="--u:.3s"><span class="n">3</span><div><h3>Tiket lunas, atau dana kembali</h3><p>siapa pun bisa menekan refund</p></div></div>
     </div>
   </div>
-  <aside class="note">Mabrur mengunci setoran tiap jamaah di smart contract, dipecah per pos: tiket, hotel, visa, ujrah. Tiga aturan: agen hanya bisa membayar faktur vendor berizin, dan uangnya mengalir ke penanda tangan faktur, bukan ke alamat yang ditulis agen. Ujrah agen baru cair setelah jamaah berangkat. Kalau tiket tidak dibeli sampai batasnya, siapa pun bisa memicu refund.</aside>
+  <aside class="note">Mabrur mengunci setoran tiap jamaah per pos: tiket, hotel, visa, dan ujrah, yaitu upah agen. Tiga aturan: bayar hanya ke vendor berizin yang menandatangani faktur, ujrah setelah berangkat, dan kalau tiket tidak dibeli, siapa pun bisa refund.</aside>
+</section>
+
+<!-- 4 · KENAPA BUKAN BANK / ESCROW (compact; full table = appendix A6) -->
+<section class="slide" data-title="Kenapa bukan bank">
+  <div class="label kicker">02 · Kenapa bukan rekening bank atau escrow</div>
+  <h2>Bank menjawab <em>di mana.</em> Mabrur menjawab <em>untuk apa.</em></h2>
+  <table class="cmp up mid" style="font-size:34px;margin-top:0">
+    <thead><tr><th><span class="sr-only">Aspek</span></th><th>Rekening penampungan</th><th>Escrow bertahap</th><th>Mabrur</th></tr></thead>
+    <tbody>
+      <tr><td><b>Penerima dipilih oleh</b></td><td>agen</td><td>agen</td><td>penanda tangan faktur</td></tr>
+      <tr><td><b>Agen menghilang</b></td><td>pengadilan</td><td>arbiter</td><td>refund() siapa pun</td></tr>
+      <tr><td><b>Pandangan regulator</b></td><td>setelah runtuh</td><td>tidak ada</td><td>langsung</td></tr>
+    </tbody>
+  </table>
+  <aside class="note">Kenapa bukan rekening bank atau escrow? Di sana agen tetap memilih penerima, dan kalau agen menghilang, jamaah butuh pengadilan. Bank menjawab di mana uang disimpan; Mabrur menjawab untuk apa uang boleh dipakai.</aside>
 </section>
 
 <!-- 4 · USE CASE RWA -->
 <section class="slide" data-title="Use case RWA">
   <div class="label kicker">03 · Use case RWA</div>
   <h2>Asetnya: <em>hak jamaah</em> atas layanan berizin.</h2>
-  <div class="paper flow up" style="margin-top:44px">
+  <div class="paper flow up" style="margin-top:36px">
     <div class="step"><span class="n">1 · JAMAAH</span><h3>Pesan</h3><p>permit + book</p><span class="code">mUMRAH</span></div>
     <div class="step"><span class="n">2 · PENERBIT</span><h3>Akui</h3><p>pengganti Kemenag / IATA</p><span class="code">ClaimRegistry</span></div>
     <div class="step"><span class="n">3 · VENDOR</span><h3>Tagih</h3><p>faktur satu booking, satu pos</p><span class="code">EIP-712</span></div>
     <div class="step"><span class="n">4 · AGEN</span><h3>Bayar</h3><p>uang ke penanda tangan</p><span class="code">spend()</span></div>
     <div class="step"><span class="n">5 · SIAPA PUN</span><h3>Kembalikan</h3><p>lewat batas tiket</p><span class="code">refund()</span></div>
   </div>
-  <div class="cols mid up" style="--u:.2s;grid-template-columns:.8fr 1.2fr;gap:48px;align-items:center;padding-top:36px">
-    <div style="font:600 38px/1.35 var(--font-display)">Uang muka umrah adalah aktivitas ekonomi nyata. Mabrur menjadikannya klaim yang dipegang jamaah sendiri, <span style="color:var(--earmarked-ink)">tidak bisa dipindahtangankan.</span></div>
-    <div class="paper shot"><div class="bar"><i></i><i></i><i></i>Buku tabungan amanah · Pak Ahmad</div><img src="/pitch/assets/passbook-ahmad.webp" width="1648" height="1122" style="max-height:360px;object-fit:cover;object-position:top" alt="Buku tabungan amanah Pak Ahmad: pemesanan, tiket, hotel, visa, ujrah, dengan tx hash."></div>
+  <div class="cols mid up" style="--u:.2s;grid-template-columns:.62fr 1.38fr;gap:44px;align-items:center;padding-top:28px">
+    <div style="font:600 36px/1.35 var(--font-display)">Uang muka umrah adalah aktivitas ekonomi nyata. Mabrur menjadikannya klaim yang dipegang jamaah sendiri, <span style="color:var(--earmarked-ink)">tidak bisa dipindahtangankan.</span></div>
+    <div class="paper shot"><div class="bar"><i></i><i></i><i></i>Buku tabungan amanah · Pak Ahmad</div><img src="/pitch/assets/passbook-deck.webp" width="1956" height="890" style="width:100%;height:390px;object-fit:contain;object-position:center top" alt="Buku tabungan amanah Pak Ahmad: pemesanan, tiket, hotel, visa, ujrah, dengan tx hash."></div>
   </div>
-  <aside class="note">Aset dunia nyatanya bukan token spekulatif: ini hak jamaah atas layanan berizin. Lima pelaku nyata: jamaah memesan dengan satu tanda tangan, penerbit klaim (di demo: kunci pengganti Kemenag / IATA) mengakui vendor, vendor menandatangani faktur, agen hanya meneruskan, dan siapa pun bisa mengembalikan dana. mUMRAH tidak bisa dipindahtangankan.</aside>
+  <aside class="note">Asetnya adalah hak jamaah atas layanan berizin: jamaah memesan, penerbit klaim mengakui vendor, vendor menagih, agen hanya meneruskan, siapa pun bisa mengembalikan. Token mUMRAH tidak bisa dipindahtangankan.</aside>
 </section>
 
 <!-- 5 · ONCHAIN: PROOF MOMENT -->
 <section class="slide" data-title="Implementasi onchain · bukti">
   <div class="label kicker">04 · Implementasi onchain · bukti</div>
   <div class="mid" style="display:grid;justify-items:center;text-align:center;gap:26px">
-    <div class="up" style="font:600 40px/1.3 var(--font-display);color:var(--muted);max-width:1400px">Agen membayar hotel Ibu Siti dari dana Pak Ahmad.</div>
-    <div style="position:relative;height:380px;width:1100px">
+    <div class="up" style="font:600 46px/1.25 var(--font-display);color:var(--ink);max-width:1400px">Agen membayar hotel Ibu Siti dari dana Pak Ahmad.<span class="en" style="display:block;margin-top:10px;font-size:30px">The agency pays Siti’s hotel from Ahmad’s money. The contract rejects it.</span></div>
+    <div style="position:relative;height:340px;width:1100px">
       <span class="stamp no anim" style="--rot:-6deg;--d:.5s;font-size:110px;left:50%;top:50%;translate:-50% -50%;border-width:4px;padding:30px 70px 32px;box-shadow:inset 0 0 0 9px rgba(255,255,255,.95),inset 0 0 0 12px currentColor">Ditolak<small style="font-size:44px;margin-top:18px">EarmarkMismatch</small></span>
     </div>
     <a class="up mono" style="--u:.9s;font-size:31px;color:var(--ink);text-decoration:none;border-bottom:1.5px solid var(--rule);padding-bottom:8px" href="https://arbiscan.io/tx/0x9ed30e3802f988fb2219a08c9d184ab779da13d2afbc7f9314d0ab3fa0bbc316">0x9ed30e3802f988fb2219a08c9d184ab779da13d2afbc7f9314d0ab3fa0bbc316</a>
-    <div class="up" style="--u:1s;font-size:26px;color:var(--muted)">transaksi gagal yang <b style="color:var(--ink)">ditambang</b> di Arbitrum One · buka di Arbiscan, nama error-nya ada di sana</div>
+    <div class="up" style="--u:1s;font-size:28px;color:var(--ink-soft)">transaksi gagal yang <b style="color:var(--ink)">ditambang</b> di Arbitrum One · buka di Arbiscan, nama error-nya ada di sana</div>
   </div>
   <div class="up" style="--u:1.1s;display:flex;justify-content:center;gap:56px;margin-bottom:6px">
-    <span class="mono" style="font-size:22px;color:var(--muted)"><b style="color:var(--refused);font-size:26px">VendorClaimMissing</b> 0x887d6b86…</span>
-    <span class="mono" style="font-size:22px;color:var(--muted)"><b style="color:var(--refused);font-size:26px">InvoiceReplayed</b> 0x952f30ad…</span>
-    <span class="mono" style="font-size:22px;color:var(--muted)"><b style="color:var(--refused);font-size:26px">NotDeparted</b> 0xe4855ebd…</span>
+    <span class="mono" style="font-size:24px;color:var(--ink-soft)"><b style="color:var(--refused);font-size:27px">VendorClaimMissing</b> 0x887d6b86…</span>
+    <span class="mono" style="font-size:24px;color:var(--ink-soft)"><b style="color:var(--refused);font-size:27px">InvoiceReplayed</b> 0x952f30ad…</span>
+    <span class="mono" style="font-size:24px;color:var(--ink-soft)"><b style="color:var(--refused);font-size:27px">NotDeparted</b> 0xe4855ebd…</span>
   </div>
-  <aside class="note">Ini momen intinya. Agen mencoba membayar hotel Ibu Siti dari dana Pak Ahmad. Kontrak menolak: EarmarkMismatch. Ini bukan simulasi di layar: transaksi gagal ini ditambang di Arbitrum One, hash-nya di sini, bisa dibuka siapa pun. Tiga kecurangan lain juga ditambang dan ditolak: faktur direktur sendiri, faktur ganda, dan ujrah sebelum berangkat.</aside>
+  <aside class="note">Momen intinya: agen membayar hotel Ibu Siti dari dana Pak Ahmad. Kontrak menolak, EarmarkMismatch. Transaksi gagal ini ditambang di Arbitrum One; tiga kecurangan lain juga.</aside>
 </section>
 
 <!-- 6 · ONCHAIN: DEMO -->
@@ -330,14 +356,14 @@ table.cmp thead th, .step .n, .app-tag { font-weight: 600; }
   <div class="label kicker">04 · Implementasi onchain · aplikasi</div>
   <h2 style="font-size:72px">Di aplikasi, capnya mendarat <em>di baris yang tepat.</em></h2>
   <div class="cols c64 mid" style="gap:44px;align-items:center">
-    <div class="paper shot up"><div class="bar"><i></i><i></i><i></i>mabrur.edycu.dev/app/agen</div><img src="/pitch/assets/ditolak-earmark.webp" width="1300" height="838" alt="Konsol agen: cap DITOLAK EarmarkMismatch pada faktur hotel Ibu Siti yang dicoba di booking Pak Ahmad."></div>
+    <div class="paper shot up"><div class="bar"><i></i><i></i><i></i>mabrur.edycu.dev/app/agen</div><img src="/pitch/assets/ditolak-earmark.webp" width="1268" height="886" style="max-height:600px" alt="Konsol agen: cap DITOLAK EarmarkMismatch pada faktur hotel Ibu Siti yang dicoba di booking Pak Ahmad."></div>
     <div class="rules up" style="--u:.15s">
       <div class="paper rule"><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></span><div><h3 style="font-size:32px">Simulasi saja</h3><p>keputusan kontrak dari Arbitrum One, tanpa dompet, tanpa transaksi</p></div></div>
       <div class="paper rule"><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></span><div><h3 style="font-size:32px">Penerima = penanda tangan</h3><p>tidak ada kolom alamat yang bisa diisi agen</p></div></div>
       <div class="paper rule"><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></span><div><h3 style="font-size:32px">Coba sendiri</h3><p class="mono">mabrur.edycu.dev/app/agen</p></div></div>
     </div>
   </div>
-  <aside class="note">Di aplikasinya sama: konsol agen memuat faktur, tombol Simulasi saja meminta keputusan kontrak dari Arbitrum One tanpa dompet, dan capnya mendarat di baris faktur itu. Penerimanya selalu penanda tangan faktur; tidak ada kolom alamat. Silakan coba sendiri.</aside>
+  <aside class="note">Di aplikasi sama: Simulasi saja meminta keputusan kontrak tanpa dompet, dan capnya mendarat di baris faktur itu. Silakan coba sendiri.</aside>
 </section>
 
 <!-- 6 · ONCHAIN: CONTRACTS -->
@@ -353,45 +379,60 @@ table.cmp thead th, .step .n, .app-tag { font-weight: 600; }
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-content:start">
       <div class="paper k up" style="--u:.1s"><span class="big">87</span><p>tes kontrak, cakupan 100 %</p></div>
-      <div class="paper k up" style="--u:.15s"><span class="big">7<small style="font-size:.45em"> × 256</small></span><p>invariant × run, kedalaman 100</p></div>
+      <div class="paper k up" style="--u:.15s"><span class="big">7<small style="font-size:.6em"> × 256</small></span><p>invariant × run, kedalaman 100</p></div>
       <div class="paper k up" style="--u:.2s"><span class="big">100 %</span><p>cakupan per file frontend (Vitest) + E2E Playwright</p></div>
       <div class="paper k up" style="--u:.25s"><span class="big">3</span><p>putaran review kontrak, putaran 3 bersih</p></div>
     </div>
   </div>
-  <aside class="note">Tiga kontrak, terverifikasi di Arbiscan. Aturannya ada di jalur transfer token itu sendiri: _update memblokir semua transfer, spend membayar penanda tangan faktur EIP-712 yang memegang klaim, dan tidak ada owner atau pause atas saldo. 87 tes kontrak dengan cakupan 100 persen, tujuh invariant, dan tiga putaran review internal; putaran ketiga bersih.</aside>
+  <aside class="note">Tiga kontrak terverifikasi di Arbiscan. Aturannya ada di jalur transfer token, tanpa owner atau pause atas saldo. 87 tes, cakupan 100 persen, tujuh invariant.</aside>
 </section>
 
 <!-- 7 · DAMPAK -->
 <section class="slide" data-title="Dampak">
   <div class="label kicker">05 · Dampak</div>
-  <div class="mid" style="display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center">
-    <div class="up" style="display:grid;gap:10px">
-      <div class="label">Mengunci uang satu jamaah, dari pesan sampai berangkat</div>
-      <div style="font:600 250px/.9 var(--font-display);letter-spacing:-.04em;color:var(--returned);font-variant-numeric:lining-nums">Rp 809</div>
-      <div class="terbilang" style="font-size:34px;margin-top:22px">Terbilang: delapan ratus sembilan rupiah</div>
-      <div style="font-size:28px;margin-top:14px">≈ <b>0,0025 %</b> dari paket Rp 32.000.000 · refund: <b>Rp 520</b></div>
-      <div class="mono" style="font-size:19px;color:var(--muted)">907.185 gas · ETH/IDR 44.563.294 · CoinGecko 9 Okt 2026 · receipt asli</div>
+  <div class="mid" style="display:grid;grid-template-columns:1.12fr .88fr;gap:56px;align-items:center">
+    <div class="up" style="display:grid;gap:12px">
+      <div class="label" style="font-size:21px">Mengunci uang satu jamaah, dari pesan sampai berangkat</div>
+      <div style="font:600 300px/.92 var(--font-display);letter-spacing:-.04em;color:var(--returned);font-variant-numeric:lining-nums;white-space:nowrap">Rp 809</div>
+      <div class="terbilang" style="font-size:36px;margin-top:20px">Terbilang: delapan ratus sembilan rupiah</div>
+      <p class="en" style="margin-top:6px">Guarding one pilgrim’s money costs Rp 809 in gas.</p>
+      <div style="font-size:30px;margin-top:10px">≈ <b>0,0025 %</b> dari paket Rp 32.000.000 · refund: <b>Rp 520</b></div>
+      <div class="mono" style="font-size:20px;color:var(--muted)">907.185 gas · ETH/IDR 44.563.294 · CoinGecko 9 Okt 2026 · receipt asli</div>
     </div>
-    <div class="up" style="--u:.15s;background:var(--returned-wash);border-radius:var(--radius);padding:38px 40px;display:grid;gap:18px">
+    <div class="up" style="--u:.15s;background:var(--returned-wash);border-radius:var(--radius);padding:44px 44px;display:grid;gap:22px">
       <div class="label" style="color:var(--returned)">Ibu Siti · tiket tidak dibeli</div>
-      <div style="font:600 60px/1.05 var(--font-display)">Rp 23.000.000 kembali, ditekan pihak ketiga.</div>
-      <img src="/pitch/assets/dikembalikan-siti.webp" width="1648" height="356" alt="Cap DIKEMBALIKAN Rp 23.000.000 ke Ibu Siti." style="width:100%;height:auto;border-radius:10px;border:1.5px solid #D3DED8">
-      <div style="font-size:24px;color:var(--ink)">Tanpa izin agen, tanpa pengadilan.</div>
+      <div style="font:600 66px/1.05 var(--font-display)">Rp 23.000.000 kembali, ditekan pihak ketiga.</div>
+      <img src="/pitch/assets/dikembalikan-siti.webp" width="1764" height="310" alt="Cap DIKEMBALIKAN Rp 23.000.000 ke Ibu Siti." style="width:100%;height:auto;border-radius:10px;border:1.5px solid #D3DED8">
+      <div style="font-size:28px;color:var(--ink)">Tanpa izin agen, tanpa pengadilan.</div>
     </div>
   </div>
-  <aside class="note">Dampaknya: mengunci uang satu jamaah dari pesan sampai berangkat butuh gas sekitar Rp 809, kira-kira 0,0025 persen dari paket. Dan saat batas tiket Ibu Siti lewat tanpa tiket dibeli, pihak ketiga menekan refund dan Rp 23.000.000 kembali kepadanya, tanpa izin agen. Untuk agen jujur tidak ada yang berubah: vendor tetap bisa dibayar kapan saja; hanya ujrah yang menunggu keberangkatan.</aside>
+  <aside class="note">Biayanya sekitar Rp 809 per jamaah, 0,0025 persen dari paket. Batas tiket Ibu Siti lewat tanpa tiket: pihak ketiga menekan refund, Rp 23.000.000 kembali, tanpa izin agen.</aside>
+</section>
+
+<!-- 10 · JALUR ADOPSI (compact; detail = appendix A4, A5) -->
+<section class="slide" data-title="Jalur adopsi">
+  <div class="label kicker">06 · Jalur adopsi</div>
+  <h2>Biro jujur dulu, lalu <em>Kemenag.</em></h2>
+  <div class="mid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+    <div class="paper tcard up" style="min-height:0"><span class="n">PPIU</span><h3>Keunggulan jual</h3><p>Biro jujur membuktikan uang jamaah aman, melawan biro promo yang murah.</p></div>
+    <div class="paper tcard up" style="--u:.1s;min-height:0"><span class="n">Kemenag</span><h3>Penerbit &amp; mandat</h3><p>Kemenag dan akreditor maskapai/IATA sebagai penerbit klaim; regulator mewajibkan dana PPIU di earmark.</p></div>
+    <div class="paper tcard up" style="--u:.2s;min-height:0"><span class="n">Rupiah</span><h3>Rupiah berizin</h3><p>Rupiah Digital atau deposito tertokenisasi bank menggantikan tIDR; wrapper menerima ERC-20 apa pun.</p></div>
+  </div>
+  <aside class="note">Jalur adopsi: biro jujur dulu, karena bukti uang jamaah aman adalah keunggulan jual. Lalu Kemenag sebagai penerbit klaim dan mandat earmark, dan rupiah berizin menggantikan token uji.</aside>
 </section>
 
 <!-- 8 · PENUTUP -->
-<section class="slide dark" data-title="Coba sekarang">
+<section class="slide dark" data-title="Yang kami minta">
   <div class="cols" style="grid-template-columns:1.3fr .7fr;height:100%;align-items:center">
     <div>
-      <div class="label kicker" style="color:var(--earmarked)">Coba sekarang · tanpa dompet</div>
-      <h2 style="color:var(--on-dark);font-size:96px">Buka buku Pak Ahmad. <span style="color:var(--earmarked)">Coba bayar hotel orang lain.</span></h2>
-      <div style="margin-top:44px;display:grid;gap:12px;font:400 30px var(--font-data);color:#DDE6E1">
-        <span>mabrur.edycu.dev/app/jamaah</span><span>mabrur.edycu.dev/judge</span><span>github.com/edycutjong/mabrur</span><span>github.com/edycutjong/mabrur/releases</span>
+      <div class="label kicker" style="color:var(--earmarked)">07 · Yang kami minta</div>
+      <h2 style="color:var(--on-dark);font-size:94px">Satu PPIU untuk pilot, <span style="color:var(--earmarked)">dan masukan regulator.</span></h2>
+      <p class="en">Our ask: one PPIU agency for a pilot, and regulator feedback on an earmark mandate.</p>
+      <div style="margin-top:40px;font:600 40px/1.25 var(--font-display);color:var(--on-dark)">Coba sekarang, tanpa dompet: buka buku Pak Ahmad, coba bayar hotel orang lain.</div>
+      <div style="margin-top:22px;display:grid;gap:10px;font:400 28px var(--font-data);color:#DDE6E1">
+        <span>mabrur.edycu.dev/judge</span><span>github.com/edycutjong/mabrur</span>
       </div>
-      <div style="margin-top:40px;font-size:24px;color:var(--on-dark-muted)">tIDR token uji tanpa nilai · tidak menjamin kursi: tiket lunas, atau sisa dana kembali.</div>
+      <div style="margin-top:32px;font-size:24px;color:var(--on-dark-muted)">tIDR token uji tanpa nilai · tidak menjamin kursi: tiket lunas, atau sisa dana kembali.</div>
     </div>
     <div style="display:grid;justify-items:center;gap:16px">
       <div class="qr" role="img" aria-label="Kode QR ke https://mabrur.edycu.dev"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 290 290" aria-hidden="true"><g transform="scale(10)"><path fill="#ffffff" d="M0 0h29v29h-29z"/><path class="qrline" stroke="#0F3D30" d="M2 2.5h7m1 0h2m5 0h2m1 0h7m-25 1h1m5 0h1m3 0h1m2 0h2m3 0h1m5 0h1m-25 1h1m1 0h3m1 0h1m2 0h3m2 0h2m2 0h1m1 0h3m1 0h1m-25 1h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h5m1 0h1m1 0h3m1 0h1m-25 1h1m1 0h3m1 0h1m1 0h2m3 0h4m1 0h1m1 0h3m1 0h1m-25 1h1m5 0h1m1 0h1m2 0h2m1 0h1m1 0h1m1 0h1m5 0h1m-25 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-17 1h4m2 0h2m-16 1h1m3 0h1m1 0h3m8 0h5m2 0h1m-23 1h2m1 0h1m1 0h3m3 0h1m1 0h2m3 0h2m1 0h1m-24 1h1m1 0h1m2 0h5m4 0h4m1 0h1m1 0h2m-23 1h1m1 0h2m3 0h1m2 0h3m1 0h1m4 0h2m1 0h2m-22 1h1m2 0h2m2 0h1m1 0h2m1 0h2m1 0h3m1 0h4m-25 1h4m4 0h1m5 0h2m4 0h1m2 0h1m-22 1h7m4 0h5m1 0h4m-19 1h1m3 0h2m2 0h1m3 0h5m1 0h2m-24 1h3m1 0h3m2 0h4m3 0h7m-15 1h3m1 0h5m3 0h1m-21 1h7m1 0h2m1 0h1m2 0h1m1 0h1m1 0h1m1 0h1m-21 1h1m5 0h1m3 0h2m4 0h1m3 0h4m-24 1h1m1 0h3m1 0h1m1 0h1m3 0h1m3 0h7m-23 1h1m1 0h3m1 0h1m2 0h2m1 0h4m1 0h3m2 0h3m-25 1h1m1 0h3m1 0h1m4 0h1m2 0h1m1 0h1m1 0h1m2 0h1m1 0h1m-24 1h1m5 0h1m3 0h1m1 0h1m1 0h1m2 0h1m1 0h5m-24 1h7m1 0h1m1 0h1m4 0h1m6 0h3"/></g></svg>
@@ -399,7 +440,7 @@ table.cmp thead th, .step .n, .app-tag { font-weight: 600; }
       <span class="mono" style="color:#DDE6E1;font-size:22px">mabrur.edycu.dev</span>
     </div>
   </div>
-  <aside class="note">Silakan coba sendiri, tanpa dompet: buka buku Pak Ahmad dan coba bayar hotel orang lain di konsol agen. Kami jujur soal batasnya: tIDR adalah token uji tanpa nilai, dan Mabrur tidak menjamin kursi; yang dijamin tiket lunas atau sisa dana kembali. Terima kasih.</aside>
+  <aside class="note">Yang kami minta: satu PPIU untuk pilot, dan masukan regulator tentang mandat earmark. tIDR token uji, dan kami tidak menjamin kursi: tiket lunas, atau sisa dana kembali. Terima kasih.</aside>
 </section>
 
 <!-- A1 · MODEL BISNIS -->
@@ -481,14 +522,14 @@ table.cmp thead th, .step .n, .app-tag { font-weight: 600; }
 
 </main>
 </div>
-<nav aria-label="Navigasi deck"><div class="hint">← → navigasi · N catatan pembicara · ⌘P → PDF</div>
-<div class="hud"><span id="count">01 / 09</span><button type="button" id="prev" aria-label="Slide sebelumnya">←</button><button type="button" id="next" aria-label="Slide berikutnya">→</button><button type="button" id="notesBtn" aria-label="Catatan pembicara">N</button></div>
-<div class="ver" style="position:fixed;top:12px;right:18px;font:400 12px var(--font-data);color:var(--muted);z-index:10">v4 · 10 Okt 2026</div></nav>
+<nav aria-label="Navigasi deck"><div class="hint">← → navigasi (berhenti di slide terakhir) · A lampiran · N catatan · H sembunyikan/tampilkan · ⌘P → PDF</div>
+<div class="hud"><span id="count">01 / 11</span><button type="button" id="prev" aria-label="Slide sebelumnya">←</button><button type="button" id="next" aria-label="Slide berikutnya">→</button><button type="button" id="notesBtn" aria-label="Catatan pembicara">N</button></div>
+<div class="ver" style="position:fixed;top:12px;right:18px;font:400 12px var(--font-data);color:var(--muted);z-index:10">v5 · 10 Okt 2026</div></nav>
 <aside class="notes" id="notes" aria-live="polite" aria-label="Catatan pembicara"><div class="label">Catatan pembicara · <span id="ntitle"></span></div><p id="ntext"></p></aside>
 <script>
 (function () {
   var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
-  var MAIN = 9, i = 0, stage = document.getElementById("stage");
+  var MAIN = 11, i = 0, stage = document.getElementById("stage");
   function label(k) { return k < MAIN ? String(k + 1).padStart(2, "0") + " / " + String(MAIN).padStart(2, "0") : "A" + (k - MAIN + 1) + " · lampiran"; }
   function fit() {
     var w = document.documentElement.clientWidth, h = document.documentElement.clientHeight;
@@ -505,21 +546,28 @@ table.cmp thead th, .step .n, .app-tag { font-weight: 600; }
     document.getElementById("ntext").textContent = n ? n.textContent : "";
     if (location.hash !== "#" + (i + 1)) history.replaceState(null, "", "#" + (i + 1));
   }
+  // forward stops at the last main slide (the ask); the appendix is reached with A, End or #12 and pages on from there
+  function next() { if (i === MAIN - 1) return; show(i + 1); }
   document.getElementById("prev").onclick = function () { show(i - 1); };
-  document.getElementById("next").onclick = function () { show(i + 1); };
+  document.getElementById("next").onclick = next;
+  // chrome: visible for 4 s after load so the presenter sees the keys, then hidden; H toggles it
+  var chromeTimer = setTimeout(function () { document.body.classList.add("chrome-off"); }, 4000);
+  function toggleChrome() { clearTimeout(chromeTimer); document.body.classList.toggle("chrome-off"); }
   var notes = document.getElementById("notes");
   document.getElementById("notesBtn").onclick = function () { notes.classList.toggle("on"); };
   document.addEventListener("keydown", function (e) {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     var k = e.key;
-    if (k === "ArrowRight" || k === "PageDown" || k === " " || k === "Enter") { show(i + 1); e.preventDefault(); }
+    if (k === "ArrowRight" || k === "PageDown" || k === " " || k === "Enter") { next(); e.preventDefault(); }
     else if (k === "ArrowLeft" || k === "PageUp" || k === "Backspace") { show(i - 1); e.preventDefault(); }
     else if (k === "Home") show(0); else if (k === "End") show(slides.length - 1);
     else if (k === "n" || k === "N" || k === "p" || k === "P") notes.classList.toggle("on");
+    else if (k === "a" || k === "A") show(MAIN);
+    else if (k === "h" || k === "H") toggleChrome();
   });
   var x0 = null;
   document.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
-  document.addEventListener("touchend", function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1)); x0 = null; });
+  document.addEventListener("touchend", function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) { if (dx < 0) next(); else show(i - 1); } x0 = null; });
   window.addEventListener("resize", fit);
   window.addEventListener("hashchange", function () { var n = parseInt(location.hash.slice(1), 10); if (n) show(n - 1); });
   fit();
