@@ -36,6 +36,9 @@
 
 ## 📸 See it in action
 
+<p align="center"><img src="docs/ditolak-earmark.gif" alt="The Mabrur agency console: Ibu Siti's hotel invoice is tried on Pak Ahmad's booking, Simulate only is pressed, and a red DITOLAK (rejected) EarmarkMismatch seal lands" width="720"></p>
+<p align="center"><sub>Real screen capture of the agency console: <b>Simulate only</b> is a real call to the contract that sends no transaction. The mined versions are in the table below.</sub></p>
+
 > **One booking, four attempts.** The agency tries Siti's hotel invoice on Ahmad's money (**EarmarkMismatch**), tries
 > to pay the director (**VendorClaimMissing**), pays the airline (✔ Rp 14.000.000 to the invoice signer), reaches for
 > its fee before departure (**NotDeparted**). Siti's ticket-by date passes with no ticket bought, and **anyone** taps

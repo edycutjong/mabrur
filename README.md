@@ -36,6 +36,9 @@
 
 ## 📸 Lihat cara kerjanya
 
+<p align="center"><img src="docs/ditolak-earmark.gif" alt="Konsol agen di aplikasi Mabrur: faktur hotel Ibu Siti dicoba pada booking Pak Ahmad, tombol Simulasi saja ditekan, dan cap merah DITOLAK EarmarkMismatch muncul" width="720"></p>
+<p align="center"><sub>Rekaman layar asli dari konsol agen: <b>Simulasi saja</b> adalah panggilan nyata ke kontrak tanpa mengirim transaksi. Versi yang benar-benar ditambang ada di tabel di bawah.</sub></p>
+
 > **Satu booking, empat percobaan.** Agen mencoba memakai faktur hotel Ibu Siti dengan dana Pak Ahmad
 > (**EarmarkMismatch**), mencoba membayar direkturnya sendiri (**VendorClaimMissing**), membayar maskapai (✔ Rp 14.000.000
 > ke penanda tangan faktur), lalu mencoba mengambil ujrah sebelum jamaah berangkat (**NotDeparted**). Batas tiket
