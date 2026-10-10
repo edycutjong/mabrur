@@ -2,8 +2,12 @@
 
 import React from "react";
 import Link from "next/link";
+import { getAddress } from "viem";
 import { T } from "~~/components/mabrur/T";
 import { useT } from "~~/hooks/mabrur/useLang";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { TESTNET_CHAIN_ID } from "~~/utils/mabrur/demo";
+import { contracts } from "~~/utils/scaffold-eth/contract";
 
 const REPO = "https://github.com/edycutjong/mabrur";
 const PBM_CODE = "https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code";
@@ -11,6 +15,12 @@ const PBM_CODE = "https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe98922
 /** Site footer: the honesty line, always visible, plus the judge path and the source. */
 export const Footer = () => {
   const t = useT();
+  // The verified MabrurPBM of the network the Mainnet | Testnet toggle points at (mainnet when there is no explorer).
+  const { targetNetwork } = useTargetNetwork();
+  const pbm = contracts?.[targetNetwork.id]?.MabrurPBM?.address;
+  const scan = targetNetwork.blockExplorers?.default.url;
+  const pbmCode = pbm && scan ? `${scan}/address/${getAddress(pbm)}#code` : PBM_CODE;
+  const testnet = pbm && scan && targetNetwork.id === TESTNET_CHAIN_ID;
   return (
     <footer className="mb-footer mt-16">
       <div className="max-w-[1600px] mx-auto px-4 lg:px-8 pt-10 pb-12 text-[13px] flex flex-col gap-6">
@@ -23,8 +33,12 @@ export const Footer = () => {
             <a href={REPO} className="mb-ext" target="_blank" rel="noreferrer">
               GitHub: edycutjong/mabrur
             </a>
-            <a href={PBM_CODE} className="mb-ext" target="_blank" rel="noreferrer">
-              <T id="Kontrak terverifikasi (Arbiscan)" en="Verified contract (Arbiscan)" />
+            <a href={pbmCode} className="mb-ext" target="_blank" rel="noreferrer" data-testid="footer-contract">
+              {testnet ? (
+                <T id="Kontrak terverifikasi (Arbiscan, testnet)" en="Verified contract (Arbiscan, testnet)" />
+              ) : (
+                <T id="Kontrak terverifikasi (Arbiscan)" en="Verified contract (Arbiscan)" />
+              )}
             </a>
           </nav>
         </div>

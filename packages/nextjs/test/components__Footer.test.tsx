@@ -1,8 +1,33 @@
 import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { arbitrum, arbitrumSepolia, foundry } from "viem/chains";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Footer } from "~~/components/Footer";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth";
+
+vi.mock("~~/hooks/scaffold-eth", () => ({ useTargetNetwork: vi.fn() }));
+const on = (chain: object) => (useTargetNetwork as any).mockReturnValue({ targetNetwork: chain });
 
 describe("Footer component", () => {
+  beforeEach(() => on(arbitrum));
+
+  it("links the testnet's verified contract when the toggle is on Testnet", () => {
+    on(arbitrumSepolia);
+    render(<Footer />);
+    expect(screen.getByRole("link", { name: "Kontrak terverifikasi (Arbiscan, testnet)" })).toHaveAttribute(
+      "href",
+      "https://sepolia.arbiscan.io/address/0xa2BC8c2959b1c9d5A90B750aCFfbD52181CE98f1#code",
+    );
+  });
+
+  it("falls back to the mainnet contract on a chain without an explorer (local anvil)", () => {
+    on(foundry);
+    render(<Footer />);
+    expect(screen.getByRole("link", { name: "Kontrak terverifikasi (Arbiscan)" })).toHaveAttribute(
+      "href",
+      "https://arbiscan.io/address/0x36f1d899d9d4411b2DdfB60Dbbe989220336d2D5#code",
+    );
+  });
+
   it("renders a contentinfo landmark with the links nav", () => {
     render(<Footer />);
     const footer = screen.getByRole("contentinfo");
