@@ -226,7 +226,7 @@ const VendorInner = () => {
             </div>
           </div>
           {/* The burner key loads from localStorage after hydration: reserve its address + claim rows (no CLS). */}
-          <div className="min-h-[80px]">
+          <div className="min-h-[120px] sm:min-h-[84px]">
             <Label>
               <T id="Alamat penanda tangan" en="Signer address" />
             </Label>
