@@ -52,7 +52,7 @@ you can open on Arbiscan, decoded by name. See [DEMO.md](DEMO.md) for the full l
 Umrah is prepaid, often months ahead, to a licensed travel agency (PPIU). When an agency treats that money as working
 capital, new pilgrims pay for earlier pilgrims' trips until it collapses:
 
-- **First Travel:** 63,310 prospective pilgrims, IDR 905 billion lost ([Kompas, 5 Jan 2023](https://megapolitan.kompas.com/read/2023/01/05/15482901/aset-first-travel-dirampas-negara-mahkamah-agung-putuskan-dikembalikan-ke)); new sign-ups funded earlier departures ([detik, 24 Jul 2017](https://finance.detik.com/moneter/d-3571069/first-travel-diduga-pakai-skema-ponzi-apa-itu)).
+- **First Travel:** 63,310 prospective pilgrims, IDR 905 billion lost ([Kompas, 5 Jan 2023](https://megapolitan.kompas.com/read/2023/01/05/15482901/aset-first-travel-dirampas-negara-mahkamah-agung-putuskan-dikembalikan-ke)); new sign-ups were allegedly funding earlier departures ([detik, 24 Jul 2017](https://finance.detik.com/moneter/d-3571069/first-travel-diduga-pakai-skema-ponzi-apa-itu)).
 - **Abu Tours:** 86,720 pilgrims, an estimated IDR 1.8 trillion ([Kompas, 29 Jan 2019](https://regional.kompas.com/read/2019/01/29/13221841/5-fakta-vonis-20-tahun-bos-abu-tour-tipu-86720-jemaah-umrah-hingga-30-kali?page=all)).
 - **Scale:** about 1.4 million pilgrims departed through licensed agencies (PPIU) in 2024 (SISKOPATUH data as reported by [HIMPUH, 18 Feb 2025](https://himpuh.or.id/blog/detail/2307/himpuh-400-ribu-jemaah-indonesia-berangkat-umrah-tidak-lewat-ppiu-di-tahun-2024); secondary source).
 
@@ -80,7 +80,7 @@ service (`mUMRAH`), split into FLIGHT · HOTEL · VISA · MARGIN lines. The agen
 
 ### Compared with existing RWA solutions
 
-- **Centrifuge, Ondo, Securitize** tokenize **investors'** assets (credit, bonds, funds). Mabrur protects **consumers'** prepaid money: pilgrims' funds already paid for a service not yet delivered.
+- **[Centrifuge](https://github.com/centrifuge/protocol), [Ondo](https://docs.ondo.finance/), [Securitize](https://github.com/securitize-io/DSTokenInterfaces)** tokenize **investors'** assets (credit, bonds, funds). Mabrur protects **consumers'** prepaid money: pilgrims' funds already paid for a service not yet delivered.
 - **MAS Project Orchid** (Singapore) tested *purpose-bound money* for vouchers and payments ([MAS, 31 Oct 2022](https://www.mas.gov.sg/news/media-releases/2022/mas-report-on-potential-uses-of-a-purpose-bound-digital-singapore-dollar)). Mabrur applies that purpose-bound pattern to consumer prepayments: separated per pilgrim, payable only to claim-verified vendors, and refundable by anyone if no ticket is paid.
 
 ---
@@ -152,7 +152,7 @@ Replaying the Arbitrum One demo (`script/run.sh SeedDemo`, `script/proof.sh`) ne
 | Invariant suite | **7 invariants** × 256 runs × depth 100: Σ earmarks == `mUMRAH` supply == tracked total; tIDR held == supply + donations; per-booking and per-agency ledgers balance; no payment ever reaches an unclaimed address; no spend after a booking turns refundable; after warping past every deadline and refunding, supply is 0 |
 | T1 bound | `test_CaptureIssuer_Bound`: even a captured issuer cannot take more than the unexpired FLIGHT+HOTEL+VISA lines; the margin only ever goes to the agency |
 | Mined reverts | 4 adversarial attempts mined on Arbitrum One, each replayed by `script/proof.sh` and required to decode to the expected error |
-| Reviews | 3 internal adversarial review rounds of the contracts: no High or Medium findings; four Low ClaimRegistry issues (issuer overwrite, issuer re-add, topic narrowing, expired-claim blocking) were fixed with regression tests; round 3 clean |
+| Reviews | 3 internal adversarial review rounds of the contracts: no High or Medium findings; four Low ClaimRegistry issues (issuer overwrite, issuer re-add, topic narrowing, expired-claim blocking) were fixed with regression tests; round 3 found nothing new ([review log](docs/AUDIT.md)) |
 
 | Layer | Tool |
 |---|---|

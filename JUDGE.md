@@ -21,7 +21,7 @@ Web version: **https://mabrur.edycu.dev/judge**
 | `InvoiceReplayed` | An already-paid invoice submitted again | [0x952f30ad…](https://arbiscan.io/tx/0x952f30adf9d7cc08982d8128c5e0de85a241d92a2d0e099799df6c7a75b9619a) |
 | `NotDeparted` | Agency signs its own "departure" to take its fee | [0xe4855ebd…](https://arbiscan.io/tx/0xe4855ebd72f05a8756a814cc8fbfb963b18f70bdd16856130cff391e1df5291b) |
 
-- **87 tests** (100 % line, branch and function coverage), including 7 invariants × 256 runs × depth 100.
+- **87 tests** as reported by forge (86 unit/fuzz + the invariant suite, which runs 7 invariants × 256 runs × depth 100), 100 % line, branch and function coverage.
 - Cost from real receipts: departed lifecycle 907,185 gas ≈ Rp 809; refunded lifecycle 582,938 gas ≈ Rp 520 (ETH/IDR 44,563,294, CoinGecko, 9 Oct 2026).
 - Full ledger: [DEMO.md](DEMO.md).
 
@@ -34,6 +34,6 @@ cast run <any tx above> --rpc-url https://arb1.arbitrum.io/rpc --quick
 Every demo script broadcasts to Arbitrum One; there is no mock, offline or dry-run mode.
 
 ## Honest limits
-- tIDR is a test token with no value: no licensed rupiah token is usable on Arbitrum One. The wrapper takes any plain ERC-20.
+- tIDR is a test token with no value: we found no licensed rupiah token on Arbitrum One at build time. The wrapper takes any plain ERC-20.
 - The claim issuer is a demo key standing in for Kemenag / IATA. A captured issuer could certify a fake vendor; the damage is bounded and tested (`test_CaptureIssuer_Bound`).
 - Mabrur cannot guarantee a seat: it guarantees a paid ticket, or every unspent rupiah back.

@@ -1,7 +1,7 @@
 # DEMO — every step is a public transaction on Arbitrum One
 
 Chain **Arbitrum One (42161)** · contracts verified on Arbiscan · `tIDR` is a **test rupiah with no monetary value**
-(no permit-capable IDR stablecoin is usable on Arbitrum One; the wrapper is token-agnostic).
+(we found no permit-capable IDR stablecoin on Arbitrum One at build time; the wrapper is token-agnostic).
 
 | Contract | Address |
 |---|---|
@@ -35,8 +35,8 @@ At block 513365690 (2026-10-10 00:58 UTC), for the demo agency:
 
 `conservation()` → Σ earmarks Rp 175.000.000 · `mUMRAH` supply Rp 175.000.000 · tIDR held by the contract Rp 175.000.000:
 **every rupiah of outstanding prepayment is backed by rupiah held in-contract.**
-These are the figures at the time of writing. They grow with every demo re-seed (each `SeedDemo` run opens new bookings;
-the first snapshot, at block 513093334 on 2026-10-09, read 3 bookings and Rp 84.000.000). The agency console's regulator
+These are the figures at the time of writing. They change with every demo re-seed, payment or refund (§6: 230 → 216 → 193 in one session;
+each `SeedDemo` run opens new bookings; the first snapshot, at block 513093334 on 2026-10-09, read 3 bookings and Rp 84.000.000). The agency console's regulator
 panel always shows the live chain state; read it yourself with `script/proof.sh`.
 
 ## 3. What one pilgrim costs — from the real receipts

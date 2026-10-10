@@ -82,7 +82,7 @@ jalan untuk memindahkan uang.
 
 ### Dibanding solusi RWA yang sudah ada
 
-- **Centrifuge, Ondo, Securitize** menokenisasi aset milik **investor** (kredit, obligasi, dana). Mabrur melindungi uang muka milik **konsumen**: dana jamaah yang sudah dibayar untuk layanan yang belum diterima.
+- **[Centrifuge](https://github.com/centrifuge/protocol), [Ondo](https://docs.ondo.finance/), [Securitize](https://github.com/securitize-io/DSTokenInterfaces)** menokenisasi aset milik **investor** (kredit, obligasi, dana). Mabrur melindungi uang muka milik **konsumen**: dana jamaah yang sudah dibayar untuk layanan yang belum diterima.
 - **MAS Project Orchid** (Singapura) menguji *purpose-bound money* untuk voucher dan pembayaran ([MAS, 31 Okt 2022](https://www.mas.gov.sg/news/media-releases/2022/mas-report-on-potential-uses-of-a-purpose-bound-digital-singapore-dollar)). Mabrur menerapkan pola uang berbatas-tujuan itu pada uang muka konsumen: dipisah per jamaah, dibayar hanya ke vendor yang klaimnya terverifikasi, dan dikembalikan oleh siapa pun bila tiket tidak lunas.
 
 ---
@@ -154,7 +154,7 @@ Memutar ulang demo Arbitrum One (`script/run.sh SeedDemo`, `script/proof.sh`) me
 | Suite invariant | **7 invariant** × 256 run × kedalaman 100: Σ dana per pos == suplai `mUMRAH` == total tercatat; tIDR di kontrak == suplai + donasi; buku besar per booking dan per agen seimbang; tidak ada pembayaran ke alamat tanpa klaim; tidak ada pembayaran setelah booking bisa di-refund; setelah semua tenggat lewat dan semua di-refund, suplai menjadi 0 |
 | Batas T1 | `test_CaptureIssuer_Bound`: penerbit yang dibajak pun tidak bisa mengambil lebih dari pos TIKET+HOTEL+VISA yang belum kedaluwarsa; ujrah hanya pernah dibayar ke agen |
 | Revert yang ditambang | 4 percobaan curang ditambang di Arbitrum One, masing-masing diputar ulang oleh `script/proof.sh` dan wajib terdekode ke error yang diharapkan |
-| Review | 3 putaran review adversarial internal atas kontrak: tidak ada temuan High atau Medium; empat temuan Low di ClaimRegistry (penimpaan klaim penerbit lain, penambahan ulang penerbit, penyempitan topik, klaim kedaluwarsa yang memblokir) diperbaiki dengan tes regresi; putaran 3 bersih |
+| Review | 3 putaran review adversarial internal atas kontrak: tidak ada temuan High atau Medium; empat temuan Low di ClaimRegistry (penimpaan klaim penerbit lain, penambahan ulang penerbit, penyempitan topik, klaim kedaluwarsa yang memblokir) diperbaiki dengan tes regresi; putaran 3 tanpa temuan baru ([log review](docs/AUDIT.md)) |
 
 | Lapisan | Alat |
 |---|---|
