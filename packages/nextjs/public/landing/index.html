@@ -231,6 +231,13 @@ a.arr-ext:hover:after { transform: translate(2px, -2px); } a.arr-go:hover:after 
 .clip.scale .big { color: var(--earmarked-ink); }
 .pools { background: var(--bg); border: 1px solid var(--rule); border-radius: var(--radius); padding: 28px; }
 .pools svg { width: 100%; height: auto; }
+/* phone: the full diagram would render its labels at ~6px, so its two halves are stacked instead (cloned at parse time) */
+.pools svg.half { display: none; }
+@media (max-width: 640px) {
+  .pools svg:not(.half) { display: none; }
+  .pools svg.half { display: block; max-width: 330px; margin: 0 auto; }
+  .pools svg.half + svg.half { margin-top: 12px; border-top: 1px dashed var(--rule); padding-top: 12px; }
+}
 .pools figcaption { font: 500 21px/1.35 var(--font-display); color: var(--ink); margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
 
 /* ---------- demo ---------- */
@@ -291,7 +298,8 @@ a.arr-ext:hover:after { transform: translate(2px, -2px); } a.arr-go:hover:after 
 .folder .label { color: var(--earmarked-ink); margin-bottom: 4px; }
 .folder .row { display: flex; justify-content: space-between; font-size: 14px; padding: 6px 0; border-bottom: 1px dashed #E3D3AE; }
 .folder .row b { color: var(--earmarked-ink); font: 500 13px var(--font-data); }
-.folders .stamp { position: absolute; left: 50%; top: 50%; translate: -50% -50%; font-size: 14px; z-index: 2; background: var(--paper); }
+/* the seal sits under the two folders (its own grid row), never on top of the amounts */
+.folders .stamp { position: relative; grid-column: 1 / -1; justify-self: center; margin-top: -54px; font-size: 14px; z-index: 2; background: var(--paper); }
 .folders:after { content: ""; position: absolute; left: calc(50% - 46px); right: calc(50% - 46px); top: 30%; border-top: 1px dashed var(--refused); }
 
 /* ---------- RWA flow ---------- */
@@ -683,52 +691,55 @@ html.lang-en .stamp > .gl { display: block; }
     <figure class="pools rise" style="margin:0">
       <svg viewBox="0 0 560 470" role="img" aria-label="Kiri: setoran semua jamaah masuk ke satu rekening agen dan keluar ke mana saja. Kanan: di Mabrur setiap jamaah punya map sendiri, dan faktur hotel Ibu Siti ditolak di map Pak Ahmad.">
         <style>
-          .t{font:500 10.5px 'Inter',sans-serif;letter-spacing:.14em;fill:#5D646D;text-transform:uppercase}
+          .t{font:600 13px 'Inter',sans-serif;letter-spacing:.08em;fill:#5D646D;text-transform:uppercase}
           .s{font:400 13px 'Inter',sans-serif;fill:#14181C}
-          .m{font:500 11px 'JetBrains Mono',monospace;fill:#9E2A2B}
+          .m{font:500 12.6px 'JetBrains Mono',monospace;fill:#9E2A2B}
         </style>
         <text class="t t-id" x="20" y="28">HARI INI · SATU REKENING</text><text class="t t-en" x="20" y="28">TODAY · ONE ACCOUNT</text>
-        <text class="t t-id" x="300" y="28">MABRUR · SATU MAP PER JAMAAH</text><text class="t t-en" x="300" y="28">MABRUR · ONE FOLDER PER PILGRIM</text>
+        <text class="t t-id" x="300" y="28">MABRUR · MAP PER JAMAAH</text><text class="t t-en" x="300" y="28">MABRUR · FOLDER PER PILGRIM</text>
         <line x1="280" y1="14" x2="280" y2="456" stroke="#E4E6EA" stroke-dasharray="5 6"/>
         <!-- left: three slips into one tub -->
         <g>
           <rect x="22" y="52" width="68" height="44" rx="6" fill="#FFFFFF" stroke="#C9CED4" stroke-width="1"/><text class="s" x="34" y="79">Ahmad</text>
           <rect x="104" y="52" width="68" height="44" rx="6" fill="#FFFFFF" stroke="#C9CED4" stroke-width="1"/><text class="s" x="125" y="79">Siti</text>
-          <rect x="186" y="52" width="72" height="44" rx="6" fill="#FFFFFF" stroke="#C9CED4" stroke-width="1"/><text class="s t-id" x="198" y="79">jamaah</text><text class="s t-id" x="204" y="92" style="font-size:11px;font-weight:400">lain …</text><text class="s t-en" x="198" y="84">others …</text>
+          <rect x="186" y="52" width="72" height="44" rx="6" fill="#FFFFFF" stroke="#C9CED4" stroke-width="1"/><text class="s t-id" x="198" y="73">jamaah</text><text class="s t-id" x="206" y="88" style="font-size:12.6px;font-weight:400">lain …</text><text class="s t-en" x="198" y="84">others …</text>
           <path d="M56 98 C60 140 110 150 130 176 M138 98 V176 M222 98 C218 140 170 150 150 176" fill="none" stroke="#C5A869" stroke-width="1.25"/>
           <path d="M40 180 h196 l-18 104 h-160 z" fill="#F7F1E3" stroke="#C5A869" stroke-width="1.25"/>
           <text class="s t-id" x="80" y="226">Rekening agen</text><text class="s t-en" x="80" y="226">Agency account</text>
           <text class="s t-id" x="76" y="248" style="font-weight:400;fill:#5D646D">semua uang tercampur</text><text class="s t-en" x="76" y="248" style="font-weight:400;fill:#5D646D">all money pooled</text>
           <path d="M80 286 C70 330 50 340 40 372 M138 286 V372 M196 286 C206 330 226 340 236 372" fill="none" stroke="#9E2A2B" stroke-width="1.25" stroke-dasharray="4 4"/>
-          <text class="s t-id" x="14" y="396" style="font-size:12px">tiket jamaah</text><text class="s t-id" x="14" y="412" style="font-size:12px">lama</text><text class="s t-en" x="14" y="396" style="font-size:12px">earlier</text><text class="s t-en" x="14" y="412" style="font-size:12px">pilgrims</text>
-          <text class="s t-id" x="108" y="396" style="font-size:12px">operasional</text><text class="s t-en" x="108" y="396" style="font-size:12px">operations</text>
-          <text class="s" x="204" y="396" style="font-size:12px">promo</text>
+          <text class="s t-id" x="14" y="396" style="font-size:12.6px">tiket jamaah</text><text class="s t-id" x="14" y="412" style="font-size:12.6px">lama</text><text class="s t-en" x="14" y="396" style="font-size:12.6px">earlier</text><text class="s t-en" x="14" y="412" style="font-size:12.6px">pilgrims</text>
+          <text class="s t-id" x="108" y="396" style="font-size:12.6px">operasional</text><text class="s t-en" x="108" y="396" style="font-size:12.6px">operations</text>
+          <text class="s" x="204" y="396" style="font-size:12.6px">promo</text>
           <text class="s t-id" x="22" y="446" style="fill:#9E2A2B">Agen memilih tujuan uang.</text><text class="s t-en" x="22" y="446" style="fill:#9E2A2B">The agency picks where money goes.</text>
         </g>
         <!-- right: separate folders -->
         <g>
           <path d="M300 60 h46 l8 10 h96 v124 h-150 z" fill="#F7F1E3"/>
           <text class="t" x="312" y="92" style="fill:#85672A">PAK AHMAD</text>
-          <g class="s" style="font-size:12px"><text class="t-id" x="312" y="116">Tiket</text><text class="t-en" x="312" y="116">Flight</text><text x="412" y="116" text-anchor="end">14jt</text><text x="312" y="136">Hotel</text><text x="412" y="136" text-anchor="end">9jt</text><text x="312" y="156">Visa</text><text x="412" y="156" text-anchor="end">4jt</text><text class="t-id" x="312" y="176">Ujrah</text><text class="t-en" x="312" y="176">Fee</text><text x="412" y="176" text-anchor="end">5jt</text></g>
+          <g class="s" style="font-size:12.6px"><text class="t-id" x="312" y="116">Tiket</text><text class="t-en" x="312" y="116">Flight</text><text x="412" y="116" text-anchor="end">14jt</text><text x="312" y="136">Hotel</text><text x="412" y="136" text-anchor="end">9jt</text><text x="312" y="156">Visa</text><text x="412" y="156" text-anchor="end">4jt</text><text class="t-id" x="312" y="176">Ujrah</text><text class="t-en" x="312" y="176">Fee</text><text x="412" y="176" text-anchor="end">5jt</text></g>
           <path d="M470 60 h46 l8 10 h24 v124 h-78 z" fill="#F7F1E3" opacity=".8"/>
           <text class="t" x="478" y="92" style="fill:#85672A">SITI</text>
-          <path d="M300 230 h46 l8 10 h96 v124 h-150 z" fill="#E8F3EE"/>
-          <text class="t t-id" x="312" y="262" style="fill:#0B6E4F">VENDOR BERIZIN</text><text class="t t-en" x="312" y="262" style="fill:#0B6E4F">LICENSED VENDOR</text>
-          <text class="s t-id" x="312" y="290" style="font-size:12px">maskapai · hotel · visa</text><text class="s t-en" x="312" y="290" style="font-size:12px">airline · hotel · visa</text>
-          <text class="s t-id" x="312" y="310" style="font-size:12px">penerima = penanda tangan</text><text class="s t-en" x="312" y="310" style="font-size:12px">payee = signer</text>
-          <path d="M376 196 V226" stroke="#0B6E4F" stroke-width="1.5" marker-end="url(#ah)"/>
+          <path d="M300 262 h46 l8 10 h176 v108 h-230 z" fill="#E8F3EE"/>
+          <text class="t t-id" x="312" y="296" style="fill:#0B6E4F">VENDOR BERIZIN</text><text class="t t-en" x="312" y="296" style="fill:#0B6E4F">LICENSED VENDOR</text>
+          <text class="s t-id" x="312" y="322" style="font-size:12.6px">maskapai · hotel · visa</text><text class="s t-en" x="312" y="322" style="font-size:12.6px">airline · hotel · visa</text>
+          <text class="s t-id" x="312" y="344" style="font-size:12.6px">penerima = penanda tangan</text><text class="s t-en" x="312" y="344" style="font-size:12.6px">payee = signer</text>
+          <path d="M330 196 V258" stroke="#0B6E4F" stroke-width="1.5" marker-end="url(#ah)"/>
           <defs><marker id="ah" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0B6E4F"/></marker></defs>
-          <path d="M508 196 C508 250 470 240 430 150" fill="none" stroke="#9E2A2B" stroke-width="1.25" stroke-dasharray="4 4"/>
-          <g transform="rotate(-4 470 230)">
-            <rect x="426" y="210" width="96" height="42" rx="5" fill="#FFFFFF" stroke="#9E2A2B" stroke-width="1.5"/>
-            <rect x="430" y="214" width="88" height="34" rx="3" fill="none" stroke="#9E2A2B" stroke-width=".75"/>
-            <text x="474" y="237" text-anchor="middle" style="font:600 12px 'Inter',sans-serif;letter-spacing:.2em;fill:#9E2A2B">DITOLAK</text>
+          <path d="M508 196 C508 205 500 212 492 214 M404 206 C410 196 424 188 440 182" fill="none" stroke="#9E2A2B" stroke-width="1.25" stroke-dasharray="4 4"/>
+          <!-- the seal carries its error name, like the app's stamps; it sits clear of the folders' amounts and the vendor box -->
+          <g transform="rotate(-4 468 232)">
+            <rect x="384" y="204" width="168" height="58" rx="5" fill="#FFFFFF" stroke="#9E2A2B" stroke-width="1.5"/>
+            <rect x="388" y="208" width="160" height="50" rx="3" fill="none" stroke="#9E2A2B" stroke-width=".75"/>
+            <text class="t-id" x="468" y="229" text-anchor="middle" style="font:600 12.6px 'Inter',sans-serif;letter-spacing:.18em;fill:#9E2A2B">DITOLAK</text>
+            <text class="t-en" x="468" y="229" text-anchor="middle" style="font:600 12.6px 'Inter',sans-serif;letter-spacing:.06em;fill:#9E2A2B">DITOLAK · rejected</text>
+            <text class="m" x="468" y="249" text-anchor="middle">EarmarkMismatch</text>
           </g>
-          <text class="m" x="430" y="274">EarmarkMismatch</text><text class="m t-en" x="430" y="290" style="fill:#5D646D">(rejected)</text>
           <text class="s t-id" x="300" y="410" style="fill:#0B6E4F">Kontrak memilih tujuan uang:</text><text class="s t-en" x="300" y="410" style="fill:#0B6E4F">The contract picks where money goes:</text>
           <text class="s t-id" x="300" y="430" style="fill:#0B6E4F">hanya untuk jamaah itu sendiri.</text><text class="s t-en" x="300" y="430" style="fill:#0B6E4F">only for that same pilgrim.</text>
         </g>
       </svg>
+      <script>(function(){var f=document.currentScript.parentNode,a=f.querySelector("svg"),b=a.cloneNode(!0),c=a.cloneNode(!0);b.setAttribute("viewBox","0 0 280 470");c.setAttribute("viewBox","280 0 280 470");b.setAttribute("class","half");c.setAttribute("class","half");c.setAttribute("aria-hidden","true");c.removeAttribute("role");c.removeAttribute("aria-label");a.after(b,c)})();</script>
       <figcaption class="t-id">Bank menjawab <i>di mana</i> uang disimpan. Mabrur menjawab <i>untuk apa</i> uang boleh dipakai.</figcaption>
       <figcaption class="t-en">A bank answers <i>where</i> money is kept. Mabrur answers <i>what</i> it may be spent on.</figcaption>
     </figure>
@@ -753,6 +764,7 @@ html.lang-en .stamp > .gl { display: block; }
         </div>
         <div class="frame">
           <div class="frame-bar"><i></i><i></i><i></i><span class="url" id="frame-url">mabrur.edycu.dev/app/agen</span></div>
+          <p class="t-en" style="margin:0;padding:9px 18px;font-size:13.5px;color:var(--ink-soft);background:var(--surface);border-bottom:1px solid var(--rule)">Captures show the app in Indonesian (it has an ID/EN switch): <i>Berlaku s.d.</i> = valid until · <i>Penerima = penanda tangan</i> = the payee is the signer · <i>Faktur untuk booking lain</i> = invoice for another booking.</p>
           <div class="panel on" id="p-1" role="tabpanel" aria-labelledby="tab-1" data-url="mabrur.edycu.dev/app/agen">
             <img src="/landing/assets/ditolak-earmark.webp" width="1268" height="886" loading="lazy" alt="Konsol agen: faktur hotel INV-HTL-DR-S milik Ibu Siti dicoba pada booking Pak Ahmad. Cap merah DITOLAK, EarmarkMismatch: faktur untuk booking lain, dana jamaah ini tidak bisa membayarnya.">
             <div class="cap"><span class="t-id">Konsol agen, <b>Simulasi saja</b>: faktur hotel Ibu Siti pada dana Pak Ahmad. Kontrak menjawab <span class="mono" style="color:var(--refused)">EarmarkMismatch</span>; tidak ada transaksi dikirim.</span><span class="t-en">Agency console, <b>simulate only</b>: Siti’s hotel invoice against Ahmad’s money. The contract answers <span class="mono" style="color:var(--refused)">EarmarkMismatch</span>; nothing is sent.</span><a href="/app/agen" class="arr-go"><span class="t-id">Coba sendiri</span><span class="t-en">Try it yourself</span></a></div>

@@ -53,7 +53,7 @@ transaksi gagal yang bisa dibuka di Arbiscan, lengkap dengan nama error-nya. Buk
 Umrah dibayar di muka, sering berbulan-bulan sebelumnya, kepada biro perjalanan berizin (PPIU). Ketika agen
 memperlakukan dana itu sebagai modal kerja, jamaah baru membiayai keberangkatan jamaah lama sampai semuanya runtuh:
 
-- **First Travel:** 63.310 calon jamaah, kerugian Rp 905 miliar ([Kompas, 5 Jan 2023](https://megapolitan.kompas.com/read/2023/01/05/15482901/aset-first-travel-dirampas-negara-mahkamah-agung-putuskan-dikembalikan-ke)); pendaftar baru membiayai keberangkatan jamaah sebelumnya ([detik, 24 Jul 2017](https://finance.detik.com/moneter/d-3571069/first-travel-diduga-pakai-skema-ponzi-apa-itu)).
+- **First Travel:** 63.310 calon jamaah, kerugian Rp 905 miliar ([Kompas, 5 Jan 2023](https://megapolitan.kompas.com/read/2023/01/05/15482901/aset-first-travel-dirampas-negara-mahkamah-agung-putuskan-dikembalikan-ke)); pendaftar baru diduga membiayai keberangkatan jamaah sebelumnya ([detik, 24 Jul 2017](https://finance.detik.com/moneter/d-3571069/first-travel-diduga-pakai-skema-ponzi-apa-itu)).
 - **Abu Tours:** 86.720 jamaah, perkiraan kerugian Rp 1,8 triliun ([Kompas, 29 Jan 2019](https://regional.kompas.com/read/2019/01/29/13221841/5-fakta-vonis-20-tahun-bos-abu-tour-tipu-86720-jemaah-umrah-hingga-30-kali?page=all)).
 - **Skala:** sekitar 1,4 juta jamaah berangkat melalui PPIU pada 2024 (data SISKOPATUH sebagaimana dilaporkan [HIMPUH, 18 Feb 2025](https://himpuh.or.id/blog/detail/2307/himpuh-400-ribu-jemaah-indonesia-berangkat-umrah-tidak-lewat-ppiu-di-tahun-2024); sumber sekunder).
 
