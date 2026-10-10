@@ -17,8 +17,9 @@ const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
   display: "swap",
 });
-// The italic (terbilang only) and the data face are not preloaded: most first screens never use them, and an unused
-// preload is a console warning on every route (the 404 included). Both load on first use, same family name.
+// The italic (terbilang only) is not preloaded: most first screens never use it, and an unused preload is a console
+// warning on every route. It loads on first use, same family name. The data face stays preloaded: /judge and the
+// console show hashes and amounts in the first paint, and a late swap shifted the /judge proof table (CLS 0.09).
 const cormorantItalic = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["600"],
@@ -38,7 +39,6 @@ const mono = JetBrains_Mono({
   weight: ["400", "500"],
   variable: "--font-jetbrains",
   display: "swap",
-  preload: false,
 });
 
 export const metadata = getMetadata({
