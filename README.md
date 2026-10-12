@@ -181,6 +181,41 @@ Memutar ulang demo Arbitrum One (`script/run.sh SeedDemo`, `script/proof.sh`) me
 
 ---
 
+## ✈️ Bagaimana tahu tiket dan hotelnya benar-benar ada?
+
+Pertanyaan juri di Demo Day ETHJKT (11 Okt 2026). Jawaban jujurnya: **blockchain tidak bisa melihat pesawat atau kamar hotel.** Yang dibuktikan kontrak adalah *siapa* yang dibayar, *berapa*, dan *atas tanda tangan siapa*:
+
+| Pertanyaan | Yang ditegakkan kontrak | Bukti |
+|---|---|---|
+| Apakah penerimanya benar maskapai / hotel? | Penerima selalu penanda tangan faktur, dan penanda tangan itu harus punya klaim berizin yang **sesuai pos**: pos tiket hanya ke klaim `AIRLINE`, pos hotel hanya ke klaim `HOTEL` (`topicOf`). Agen tidak bisa mengetik alamat penerima, dan tidak bisa membayar dirinya sendiri (`SelfDealing`) | [`MabrurPBM.sol#L162`](packages/foundry/contracts/MabrurPBM.sol#L162), `test_TopicOf_FlightReturnsAirline`, `test_TopicOf_HotelReturnsHotel`, `test_Demo_VendorClaimMissing_DirectorCannotBePaid`, `test_Spend_RevertsSelfDealing_LicensedAgencyAsVendor` |
+| Apakah tiketnya dibayar sungguhan, bukan "tiket Rp 1"? | Faktur tiket harus melunasi **seluruh** pos tiket, dan hanya satu kali | `test_Spend_RevertsFlightNotFullyPaid_Rp1TicketIsNotATicket`, `test_Spend_RevertsFlightAlreadyPurchased` |
+| Faktur untuk booking yang mana? | Faktur menandatangani `bookingId`; faktur untuk jamaah lain ditolak (`EarmarkMismatch`, tertambang di mainnet) | [0x9ed30e38…](https://arbiscan.io/tx/0x9ed30e3802f988fb2219a08c9d184ab779da13d2afbc7f9314d0ab3fa0bbc316) |
+| Bisa dicek jamaah ke vendor? | Setiap faktur membawa nomor referensi publik (`ref`, 32 byte) yang tercatat di event `Spent`. Di demo isinya nomor faktur (mis. `INV-HTL-0001`); usulan produksi: **PNR maskapai / nomor voucher hotel**, yang bisa dicek jamaah langsung ke maskapai atau hotel | [`MabrurPBM.sol#L79`](packages/foundry/contracts/MabrurPBM.sol#L79) |
+| Kapan biro mendapat untung? | Ujrah baru cair dengan tanda tangan keberangkatan dari **jamaah**, atau dari maskapai yang memang dibayar dari pos tiket booking itu dan masih berizin | [`releaseMargin`](packages/foundry/contracts/MabrurPBM.sol#L197), `test_ReleaseMargin_UnpaidAirlineCannotCoSign`, `test_ReleaseMargin_RevokedAirlineCannotCoSign` |
+| Kalau tiket tidak pernah dibeli? | Setelah batas tiket lewat tanpa tiket lunas, siapa pun bisa me-refund sisa dana ke jamaah | [0x13b8a133…](https://arbiscan.io/tx/0x13b8a1335b64ebaaef1a2e22de87c91f4c13604d224e2f06a3dcf51ca3f78666) |
+
+**Yang tidak bisa dibuktikan onchain:** apakah layanannya benar-benar diberikan (asumsi T2 di bawah). Vendor berizin yang menagih untuk layanan yang tidak diberikan tetap mungkin; kerugiannya dibatasi oleh pos booking itu, pembayarannya tercatat publik atas nama vendor, dan regulator bisa mencabut klaimnya sehingga pembayaran berikutnya ditolak (`test_Spend_RevokedVendorClaimBlocksPayment`).
+
+**Roadmap (belum dibangun):** konfirmasi check-in hotel yang ditandatangani jamaah sebelum pos hotel dibayar penuh, dan klaim vendor yang diterbitkan langsung oleh maskapai / IATA dan regulator, bukan kunci pengganti.
+
+## 💰 Model bisnis
+
+> **Rencana, bukan traksi.** Belum ada pengguna di luar tim, mitra, atau pendapatan. Harga di bawah adalah usulan untuk versi produksi; kontrak hari ini tidak memungut biaya apa pun.
+
+Tiga angka yang sering tertukar:
+
+| Angka | Milik siapa | Artinya |
+|---|---|---|
+| **Ujrah** (maks. 20 %) | **Biro** (PPIU) | Keuntungan biro dari jamaah, terkunci sampai jamaah berangkat (`MAX_MARGIN_BPS = 2000`, [`MabrurPBM.sol#L52`](packages/foundry/contracts/MabrurPBM.sol#L52)). Mabrur tidak mengambil bagian apa pun dari ujrah |
+| **Rp 809** | **Biaya jaringan** | Gas Arbitrum untuk satu siklus jamaah lengkap (lihat Pengujian & bukti). Ini biaya, bukan pendapatan |
+| **Rp 50.000** | **Mabrur** (usulan) | Biaya layanan per jamaah yang dibayar **biro** |
+
+- **Margin per jamaah:** Rp 50.000 − Rp 809 ≈ Rp 49.000. Rp 50.000 setara sekitar 0,16 % dari paket Rp 32.000.000.
+- **Skala (ilustrasi):** dari sekitar 1,4 juta jamaah per tahun melalui PPIU (lihat Masalah & solusinya), 1 % adopsi = 14.000 jamaah ≈ Rp 700 juta per tahun; 10 % ≈ Rp 7 miliar per tahun.
+- **Kenapa biro mau membayar:** bukti terbuka bahwa dana jamaah aman, keunggulan kepercayaan terhadap biro promo. Usulan ke regulator (ide, bukan kebijakan yang ada): biro yang memakai earmark mendapat keringanan jaminan bank. Jangka panjang: mandat regulator, sehingga Mabrur menjadi infrastruktur yang dilisensikan ke regulator atau bank penerbit token rupiah.
+- **Yang tidak akan pernah dilakukan:** mengambil bunga atau imbal hasil dari dana jamaah. Dana jamaah adalah amanah; kontrak tidak punya owner, treasury, atau fungsi yield ([`MabrurPBM.sol#L19`](packages/foundry/contracts/MabrurPBM.sol#L19)), dan hanya membayar ke tiga pihak: vendor penanda tangan faktur, ujrah biro setelah berangkat, dan refund jamaah.
+- **Risiko yang diakui:** pihak yang membayar (biro) adalah pihak yang dibatasi. Biro jujur mendapat keunggulan kepercayaan; biro nakal tidak akan memilihnya, itulah sebabnya jalur jangka panjangnya mandat regulator. Hipotesis ini belum diuji dengan biro sungguhan.
+
 ## ⚖️ Asumsi kepercayaan & batasan yang jujur
 
 - **T1 · integritas registry.** Pemilik registry adalah kunci regulator, tidak pernah agen. Pemilik atau penerbit yang dibajak bisa mengakui direktur sebagai vendor; kerusakannya terbatas (`test_CaptureIssuer_Bound`) dan terlihat onchain.

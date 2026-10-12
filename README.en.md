@@ -179,6 +179,41 @@ Replaying the Arbitrum One demo (`script/run.sh SeedDemo`, `script/proof.sh`) ne
 
 ---
 
+## ✈️ How do we know the flight and hotel were real?
+
+A judge's question at the ETHJKT Demo Day (11 Oct 2026). The honest answer: **a blockchain cannot see a plane or a hotel room.** What the contract proves is *who* got paid, *how much*, and *on whose signature*:
+
+| Question | What the contract enforces | Evidence |
+|---|---|---|
+| Is the payee really an airline / hotel? | The payee is always the invoice signer, and that signer must hold a licensed claim **matching the line**: the FLIGHT line pays only an `AIRLINE` claim, the HOTEL line only a `HOTEL` claim (`topicOf`). The agency cannot type a payee address, and cannot pay itself (`SelfDealing`) | [`MabrurPBM.sol#L162`](packages/foundry/contracts/MabrurPBM.sol#L162), `test_TopicOf_FlightReturnsAirline`, `test_TopicOf_HotelReturnsHotel`, `test_Demo_VendorClaimMissing_DirectorCannotBePaid`, `test_Spend_RevertsSelfDealing_LicensedAgencyAsVendor` |
+| Was the ticket really paid, not a "Rp 1 ticket"? | The FLIGHT invoice must pay the **whole** FLIGHT line, and only once | `test_Spend_RevertsFlightNotFullyPaid_Rp1TicketIsNotATicket`, `test_Spend_RevertsFlightAlreadyPurchased` |
+| Which booking is the invoice for? | The invoice signs the `bookingId`; an invoice for another pilgrim reverts (`EarmarkMismatch`, mined on mainnet) | [0x9ed30e38…](https://arbiscan.io/tx/0x9ed30e3802f988fb2219a08c9d184ab779da13d2afbc7f9314d0ab3fa0bbc316) |
+| Can the pilgrim check it with the vendor? | Every invoice carries a public reference (`ref`, 32 bytes) logged in the `Spent` event. In the demo it holds an invoice number (e.g. `INV-HTL-0001`); the production proposal is the **airline PNR / hotel voucher number**, which the pilgrim can check directly with the airline or hotel | [`MabrurPBM.sol#L79`](packages/foundry/contracts/MabrurPBM.sol#L79) |
+| When does the agency get its margin? | The ujrah is released only on a departure signature from the **pilgrim**, or from the still-licensed airline actually paid from this booking's FLIGHT line | [`releaseMargin`](packages/foundry/contracts/MabrurPBM.sol#L197), `test_ReleaseMargin_UnpaidAirlineCannotCoSign`, `test_ReleaseMargin_RevokedAirlineCannotCoSign` |
+| What if the ticket is never bought? | Once the ticket-by date passes without a fully paid ticket, anyone can refund the unspent money to the pilgrim | [0x13b8a133…](https://arbiscan.io/tx/0x13b8a1335b64ebaaef1a2e22de87c91f4c13604d224e2f06a3dcf51ca3f78666) |
+
+**What cannot be proven on chain:** that the service was actually delivered (assumption T2 below). A licensed vendor billing for service it never delivered is still possible; the loss is capped by that booking's line, the payment is public under the vendor's name, and the regulator can revoke its claim so further payments revert (`test_Spend_RevokedVendorClaimBlocksPayment`).
+
+**Roadmap (not built):** a pilgrim-signed hotel check-in confirmation before the HOTEL line is fully paid, and vendor claims issued directly by airlines / IATA and the regulator instead of a stand-in key.
+
+## 💰 Business model
+
+> **A plan, not traction.** There are no users outside the team, no partners, and no revenue yet. The price below is a proposal for the production version; the contract charges no fee today.
+
+Three numbers that are easy to mix up:
+
+| Number | Whose | What it is |
+|---|---|---|
+| **Ujrah** (max 20 %) | **The agency** (PPIU) | The agency's margin from the pilgrim, locked until departure (`MAX_MARGIN_BPS = 2000`, [`MabrurPBM.sol#L52`](packages/foundry/contracts/MabrurPBM.sol#L52)). Mabrur takes no share of it |
+| **Rp 809** | **Network cost** | Arbitrum gas for one full pilgrim cycle (see Testing & proof). A cost, not revenue |
+| **Rp 50,000** | **Mabrur** (proposed) | Service fee per pilgrim, paid by **the agency** |
+
+- **Margin per pilgrim:** Rp 50,000 − Rp 809 ≈ Rp 49,000. Rp 50,000 is about 0.16 % of a Rp 32,000,000 package.
+- **Scale (illustration):** of about 1.4 million pilgrims a year through PPIU (see The problem & the solution), 1 % adoption = 14,000 pilgrims ≈ Rp 700 million a year; 10 % ≈ Rp 7 billion a year.
+- **Why an agency pays:** public proof that pilgrims' money is safe, a trust edge over discount agencies. A proposal to the regulator (an idea, not existing policy): agencies that use earmarking get a lighter bank-guarantee requirement. Long term: a regulator mandate, making Mabrur infrastructure licensed to the regulator or to the bank issuing the rupiah token.
+- **What it will never do:** earn interest or yield on pilgrims' money. Pilgrims' money is held in trust (amanah); the contract has no owner, treasury or yield function ([`MabrurPBM.sol#L19`](packages/foundry/contracts/MabrurPBM.sol#L19)) and pays out only three ways: the invoice-signing vendor, the agency's ujrah after departure, and the pilgrim's refund.
+- **Acknowledged risk:** the party that pays (the agency) is the party being restricted. Honest agencies gain a trust edge; dishonest ones will not opt in, which is why the long-term path is a regulator mandate. This hypothesis has not been tested with a real agency.
+
 ## ⚖️ Trust assumptions & honest limits
 
 - **T1 · registry integrity.** The registry owner is the regulator key, never the agency. A captured owner or issuer could certify the director as a vendor; the damage is bounded (`test_CaptureIssuer_Bound`) and visible on chain.
