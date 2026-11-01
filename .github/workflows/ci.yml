@@ -36,7 +36,7 @@ jobs:
         run: forge test -vv
       - name: Coverage
         run: forge coverage --report summary --report lcov --no-match-coverage "script|test"
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: contracts-coverage
           path: packages/foundry/lcov.info
@@ -50,7 +50,7 @@ jobs:
         node-version: ${{ github.event_name == 'push' && fromJSON('[22, 24]') || fromJSON('[22]') }}
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: yarn
@@ -84,7 +84,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: yarn
@@ -103,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: yarn
@@ -114,7 +114,7 @@ jobs:
         run: yarn e2e
       - name: Upload report on failure
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report
           path: |
@@ -139,7 +139,7 @@ jobs:
       VERCEL_PROJECT_ID: prj_lOJYH75rtEIF2suDMUvuD3s3dwW7
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
       - name: Deploy production
